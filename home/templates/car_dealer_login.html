@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %} Car Dealer Login {% endblock %}
+{% block css %} 
+{% endblock %}
+{% block body %}
+
+<style>
+  body{
+    background-image: url('https://wallpaperaccess.com/full/4893732.jpg');
+  }
+</style>
+
+<form method="POST"> {% csrf_token %}
+  <div class="container">
+    <h1><center><i><b style="color:whitesmoke">LOGIN</b></i></center></h1>
+    <p><center><i><b style="color:whitesmoke">Please fill in this form to login into your account......</b></i></center></p>
+
+    <hr>
+
+    <!-- <label><b>USERNAME</b></label> -->
+    <input type="text" placeholder="Enter Username" name="username" required>
+
+    <!-- <label><b>PASSWORD</b></label> -->
+    <input type="password" placeholder="Enter Password" name="password" required>
+    
+    <label>
+      <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"><b style="color:whitesmoke"> REMEMBER ME</b>
+    </label>
+    <br>
+      <center><button type="submit" class="btn" style="background-color: #447907; font-size: 22px; width: 8rem; color:whitesmoke;">LOGIN</button><br></center>
+    <br><br>
+    <center><h6><b style="color:whitesmoke">New User?, Do <a href="/car_dealer_signup/">SIGN-UP</a>!!!</b></h6></center>
+  </div>
+  
+</form>
+</body>
+</html>
+{% endblock %}
+{% block js %}
+<script>
+  {% if alert %}
+  alert("Invalid Credentials");
+  document.location = "/car_dealer_login"
+  {% endif %}
+</script>
+{% endblock %}

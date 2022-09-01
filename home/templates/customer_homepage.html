@@ -1,0 +1,22 @@
+{% extends 'customer_navbar.html' %}
+{% block title %} Search Cars {% endblock %}
+{% block css %}
+{% endblock %}
+{% block body %}
+<br>
+<div class="container">
+  <div class="p-5 bg-light rounded-3">
+    <div class="container-fluid">
+      <h1 class="display-5 fw-bold"><center>SEARCH A CAR</center></h1>
+      <p class="col-md-8 fs-4"><center><i><b>Enter your city below and see the list of available cars.......</b></i></center></p>
+    </div>
+    <form class="w3-container" action="/search_results/" method="post">
+        {% csrf_token %}
+        <br><br>
+        <!-- <lable><i style="font-weight: bold; font-size: large;">CITY NAME :</i></lable>  -->
+        <input type="text" placeholder="Enter City Name" class="form-control mt-3" name="city"><br>
+        <center><button class="btn btn-success" type="submit"><b>SEARCH</b></button></center>
+      </form>
+  </div>
+</div>
+{% endblock %}

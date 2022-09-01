@@ -27,3 +27,5 @@ Modules:
                 a.	Customer Account Creation 
                 b.	Search Feature for Car to Rent 
                 c.	View & Manage Car Orders
+
+![127 0 0 1_8000_ (1) (1)](https://user-images.githubusercontent.com/26377100/187921308-9e24c255-143d-4f8e-a4bb-77f3f35ad9e7.png)

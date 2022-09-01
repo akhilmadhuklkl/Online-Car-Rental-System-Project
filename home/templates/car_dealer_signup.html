@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %} Car Dealer Signup {% endblock %}
+{% block css %}
+{% endblock %}
+{% block body %}
+<style>
+  body{
+    background-image: url('https://wallpaperaccess.com/full/4893732.jpg');
+  }
+</style>
+
+<form method="POST"> {% csrf_token %}
+    <div class="container">
+      <h1><center><i><b style="color:whitesmoke">SIGN-UP</b></i></center></h1>
+      <p><center><i><b style="color:whitesmoke">Please fill in this form as a New Car-Dealer to create an Account for yourself......</b></i></center></p>
+      <hr>
+
+      <!-- <label><b>FIRST NAME</b></label> -->
+      <input type="text" placeholder="Enter First Name" name="firstname" required>
+
+      <!-- <label><b>LAST NAME</b></label> -->
+      <input type="text" placeholder="Enter Last Name" name="lastname" required>
+  
+      <!-- <label><b>E-MAIL</b></label> -->
+      <input type="text" placeholder="Enter Email" name="emailid" required>
+
+      <!-- <label><b>CONTACT NUMBER</b></label> -->
+      <input type="text" placeholder="Enter Contact Number" name="phonenum" required>
+
+      <!-- <label><b>CITY</b></label> -->
+      <input type="text" placeholder="Enter City" name="cityname" required>
+
+      <!-- <label><b>USERNAME</b></label> -->
+      <input type="text" placeholder="Enter Username" name="usrnam" required>
+  
+      <!-- <label><b>PASSWORD</b></label> -->
+      <input type="password" placeholder="Enter Password" name="pswd1" required>
+
+      <!-- <label><b>RE-CONFIRM PASSWORD</b></label> -->
+      <input type="password" placeholder="Confirm Password" name="pswd2" required>
+      
+      <p style="color:whitesmoke"><b>By Creating this Account, You Agree to Our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p></b>
+  
+        <center><button type="submit" class="btn" style="background-color: #447907; font-size: 22px; width: 8rem; color:whitesmoke;">SIGN-UP</button></center>
+    </div>
+  </form>
+  </body>
+  </html>{% endblock %}

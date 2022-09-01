@@ -1,0 +1,15 @@
+{% extends 'customer_navbar.html' %}
+{% block title %} Customer Login {% endblock %}
+{% block css %}
+{% endblock %}
+{% block body %}
+<div class="container mt-4">
+      <h3 style="color:rgb(27, 163, 27)"><b>ORDER COMPLETED!!!!</b><img src="https://www.pngitem.com/pimgs/m/335-3350505_check-green-green-status-icons-hd-png-download.png" alt="" width="50px" height="50px"></h3><br>
+      <b>Your Vehicle Order Has Been Processed!!!!!</b><br><br>
+      <b>Total Rent :</b> ₹ {{order.rent}}<br><br>
+      <b>Vehicle :</b> {{order.car.name}}<br><br>
+      <b>Duration :</b> {{order.days}} days<br><br>
+      <b>Car-Dealer :</b> {{order.car_dealer.car_dealer.first_name}} {{order.car_dealer.car_dealer.last_name}}<br><br>
+      <b>Car-Dealer's Contact:</b> {{order.car_dealer.phone}}<br><br>
+</div>
+{% endblock %}

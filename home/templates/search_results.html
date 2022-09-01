@@ -1,0 +1,65 @@
+{% extends 'customer_navbar.html' %}
+{% block title %} Customer Login {% endblock %}
+{% block css %}
+<style>
+    h1 {
+        text-align: center;
+        font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-style: italic;
+        color: rgb(54, 24, 7);
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        text-align: center;
+        font-size: 20px;
+    }
+
+    th {
+        background-color: #3a2204;
+        color: white;
+    }
+
+    th,
+    td {
+        border: 2px solid #ddd;
+    }
+</style>
+{% endblock %}
+{% block body %}
+<div class="container">
+    {% if request.session.vehicles_list %}
+    <h1 class="mt-4">Cars List</h1>
+    <div class="users-table mt-4">
+        <table>
+            <tbody>
+                <tr>
+                    <th><i></i></th>
+                    <th><i>CAR NAME</i></th>
+                    <th>CITY</th>
+                    <th>CAPACITY</th>
+                    <th>RENT</th>
+                </tr>
+                {% for car in request.session.vehicles_list %}
+                <tr>
+                    <td><img src="{{car.image}}" alt="" width="100px" height="100px"></td>
+                    <td>{{car.name}}</td>
+                    <td>{{car.city}}</td>
+                    <td>{{car.capacity}}</td>
+                    <td><form action = "/car_rent/" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="id" value="{{car.id}}">
+                        <input class="btn btn-success" type="submit" value="RENT">
+                        </form></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <br>
+        <h6><center><i>Sorry!!!! Currently there are NO Available Cars for Rent in your City.........</i></center></h6>
+        <br><center><img src="https://unbxd.com/wp-content/uploads/2014/02/No-results-found.jpg"></center>
+    {% endif %}
+    </div>
+{% endblock %}

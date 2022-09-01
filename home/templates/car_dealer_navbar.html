@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+  <title>{% block title %} {% endblock %}</title>
+  <style>
+    .navbar {
+      background-image:url('https://cdn.wallpapersafari.com/37/37/R4mt20.jpg');
+    }
+  </style>
+  {% block css %} {% endblock %}
+</head>
+
+<body style="background-image:url('https://cdn.wallpapersafari.com/98/12/UZK1Ho.jpg');background-size: 100%;">
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <div class="container-fluid">
+      <img src="https://monophy.com/media/jPB1VVdGWRHnJoWZ2s/monophy.gif" alt="" width="50px" height="40px">
+      <a class="navbar-brand" href="#" style="font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif">CAR RENTAL SYSTEM</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-5">
+          <!-- <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/all_cars/">All Cars</a>
+          </li> -->
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/add_car/" style="font-size:14px;"><img src="https://www.volkswagen.co.in/app/site/servicerequest/assets/images/Add-On-Warranty.png" alt="" width="20px" height="20px">ADD CAR</a>
+          </li>
+          |
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/all_cars/" style="font-size:14px;"><img src="https://www.iconsdb.com/icons/preview/white/list-xxl.png" alt="" width="20px" height="20px">VIEW CARS</a>
+          </li>
+          |
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/all_orders/" style="font-size:14px;"><img src="https://www.pikpng.com/pngl/b/330-3301754_apply-white-form-icon-white-clipart.png" alt="" width="20px" height="20px">VIEW ORDERS</a>
+          </li>
+          |
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/earnings/" style="font-size:14px;"><img src="https://www.nicepng.com/png/full/186-1864816_increased-sales-white-sales-icon-png.png" alt="" width="20px" height="20px">YOUR EARNINGS</a>
+          </li>
+          |
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/signout/" style="font-size:14px;"><img src="https://www.iconsdb.com/icons/preview/white/logout-xxl.png" alt="" width="20px" height="20px">LOGOUT</a>
+          </li>
+        </ul>
+        
+        
+      
+        <a href="#" style="text-decoration: none; color: rgb(255, 255, 255); font-size: 15px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          
+        <img src="https://admission.americancollege.edu.in/ams/images/login1.svg" alt="" width="20px" height="20px">  {{request.user}}</a>
+      </div>
+    </div>
+  </nav>
+  {% block body %}
+  {% endblock %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj"
+    crossorigin="anonymous"></script>
+
+  {% block js %} {% endblock %}
+</body>
+</html>

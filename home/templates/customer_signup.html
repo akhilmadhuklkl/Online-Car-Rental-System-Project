@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %} Customer Signup {% endblock %}
+{% block css %}
+{% endblock %}
+{% block body %}
+<style>
+  body{
+    background-image: url('https://wallpaperaccess.com/full/4893732.jpg');
+  }
+</style>
+
+<form method="POST"> {% csrf_token %}
+    <div class="container">
+      <h1><center><i><b style="color:whitesmoke">SIGN-UP</b></i></center></h1>
+      <p><center><i><b style="color:whitesmoke">Dear Customer, Please fill in this form as a New Customer to create an Account for yourself......</b></i></center></p>
+      
+      <hr>
+  
+      <!-- <label><b>FIRST NAME</b></label> -->
+      <input type="text" placeholder="Enter First Name" name="first_name" required>
+
+      <!-- <label><b>LAST NAME</b></label> -->
+      <input type="text" placeholder="Enter Last Name" name="last_name" required>
+  
+      <!-- <label><b>E-MAIL</b></label> -->
+      <input type="text" placeholder="Enter Email" name="email" required>
+
+      <!-- <label><b>CONTACT NUMBER</b></label> -->
+      <input type="text" placeholder="Enter Contact Number" name="phone" required>
+
+      <!-- <label><b>CITY</b></label> -->
+      <input type="text" placeholder="Enter City" name="city" required>
+
+      <!-- <label><b>USERNAME</b></label> -->
+      <input type="text" placeholder="Enter Username" name="username" required>
+
+      <!-- <label><b>PASSWORD</b></label> -->
+      <input type="password" placeholder="Enter Password" name="password1" required>
+
+      <!-- <label><b>RE-CONFIRM PASSWORD</b></label> -->
+      <input type="password" placeholder="Confirm Password" name="password2" required>
+            
+      <p style="color:whitesmoke"><b>By Creating this Account, You Agree to Our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p></b>
+  
+        <center><button type="submit" class="btn btn-success" style="background-color: #447907; font-size: 22px; width: 8rem; color:whitesmoke;">SIGNUP</button></center>
+    </div>
+  </form>
+  </body>
+  </html>
+  {% endblock %}
+  {% block js %}
+  <script>
+    {% if alert %}
+    alert("You are now successfully registered as a customer")
+    document.location = "/customer_login"
+    {% endif %}
+  </script>
+  {% endblock %}

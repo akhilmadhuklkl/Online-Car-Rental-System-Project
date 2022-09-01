@@ -28,4 +28,5 @@ Modules:
                 b.	Search Feature for Car to Rent 
                 c.	View & Manage Car Orders
 
-![127 0 0 1_8000_ (1) (1)](https://user-images.githubusercontent.com/26377100/187921308-9e24c255-143d-4f8e-a4bb-77f3f35ad9e7.png)
+
+![127 0 0 1_8000_ (1)](https://user-images.githubusercontent.com/26377100/187922324-4c9168c9-8294-4ea1-a1c7-1f00280507d5.jpg)

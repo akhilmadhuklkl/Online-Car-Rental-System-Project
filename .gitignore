@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local secrets and environment settings
+.env
+.env.*
+!.env.example
+
+# Local development output
+*.log
+
+# JavaScript / Next.js
+node_modules/
+.next/
+out/

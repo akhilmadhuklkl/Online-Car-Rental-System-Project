@@ -464,7 +464,8 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .showcase-visual::after {
   background: linear-gradient(90deg, #0a0c0b 0%, #0a0c0b00 42%), linear-gradient(0deg, #0a0c0b00 68%, #0a0c0b55 100%);
 }
-.showcase-car { mix-blend-mode: screen; }
+.showcase-car { mix-blend-mode: normal; filter: drop-shadow(0 24px 28px #0009); }
+.showcase-car-4 { clip-path: inset(8.5% 0 0); }
 .showcase-index { color: #f3f5f1; }
 .showcase-index i { background: #b8ff36; }
 .showcase-vertical, .showcase-footnote { color: #a6aea4; }

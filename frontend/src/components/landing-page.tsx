@@ -13,17 +13,18 @@ type Vehicle = {
   seats: number;
   price: number;
   image: string;
+  showcaseImage?: string;
   accent: string;
   tag?: string;
 };
 
 // A local preview catalog shaped from the cars in the original SQLite project.
 const vehicles: Vehicle[] = [
-  { id: 15, name: "MG Astor", category: "SUV", location: "Kozhikode", seats: 5, price: 2500, image: "/images/cars/mg-astor.jpg", accent: "#f4e8dc" },
-  { id: 4, name: "Toyota Innova Crysta", category: "Premium", location: "Trivandrum", seats: 7, price: 500, image: "/images/cars/toyota-innova.jpg", accent: "#e9ece6", tag: "7 seats" },
-  { id: 11, name: "Tata Nexon", category: "SUV", location: "Ernakulam", seats: 5, price: 1500, image: "/images/cars/tata-nexon.jpg", accent: "#e7e9e1" },
+  { id: 15, name: "MG Astor", category: "SUV", location: "Kozhikode", seats: 5, price: 2500, image: "/images/cars/mg-astor.jpg", showcaseImage: "/images/cars/slideshow/mg-astor-cutout.png", accent: "#f4e8dc" },
+  { id: 4, name: "Toyota Innova Crysta", category: "Premium", location: "Trivandrum", seats: 7, price: 500, image: "/images/cars/toyota-innova.jpg", showcaseImage: "/images/cars/slideshow/toyota-innova-cutout.png", accent: "#e9ece6", tag: "7 seats" },
+  { id: 11, name: "Tata Nexon", category: "SUV", location: "Ernakulam", seats: 5, price: 1500, image: "/images/cars/tata-nexon.jpg", showcaseImage: "/images/cars/slideshow/tata-nexon-cutout.png", accent: "#e7e9e1" },
   { id: 5, name: "Honda Amaze", category: "Sedan", location: "Palakkad", seats: 4, price: 400, image: "/images/cars/honda-amaze.jpg", accent: "#e8ece9" },
-  { id: 7, name: "Maruti Swift Dzire", category: "Sedan", location: "Alappuzha", seats: 5, price: 900, image: "/images/cars/maruti-dzire.jpg", accent: "#ece9df" },
+  { id: 7, name: "Maruti Swift Dzire", category: "Sedan", location: "Alappuzha", seats: 5, price: 900, image: "/images/cars/maruti-dzire.jpg", showcaseImage: "/images/cars/slideshow/maruti-dzire-cutout.png", accent: "#ece9df" },
   { id: 8, name: "Mahindra Scorpio", category: "SUV", location: "Kannur", seats: 7, price: 1000, image: "/images/cars/mahindra-scorpio.jpg", accent: "#e4e7e5" },
 ];
 
@@ -84,7 +85,7 @@ function CarShowcase() {
       </div>
       <div className="showcase-visual" key={vehicle.id}>
         <span className="showcase-index">0{activeSlide + 1}<i />0{featureSlides.length}</span>
-        <Image src={vehicle.image} alt={`${vehicle.name}, featured rental car`} fill priority={activeSlide === 0} sizes="(max-width: 700px) 100vw, 62vw" className="showcase-car" />
+        <Image src={vehicle.showcaseImage ?? vehicle.image} alt={`${vehicle.name}, featured rental car`} fill priority={activeSlide === 0} sizes="(max-width: 700px) 100vw, 62vw" className={`showcase-car showcase-car-${vehicle.id}`} />
         <span className="showcase-vertical" aria-hidden="true">ROVE MOBILITY · KERALA</span>
       </div>
       <div className="showcase-controls" aria-label="Featured car controls">

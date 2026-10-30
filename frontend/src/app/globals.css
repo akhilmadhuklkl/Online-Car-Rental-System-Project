@@ -403,3 +403,150 @@ body { background: #fff; color: #111; font-family: Arial, Helvetica, sans-serif;
   .showcase-visual { animation: none; }
   .showcase-dots button span { transition: none; }
 }
+
+/* Dark automotive direction, inspired by the original site's black and neon-green palette. */
+@font-face {
+  font-family: "Rove Poppins";
+  src: url("/fonts/Poppins-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Rove Poppins";
+  src: url("/fonts/Poppins-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+  --paper: #090b0a;
+  --ink: #f3f5f1;
+  --muted: #a0a69f;
+  --forest: #b8ff36;
+  --lime: #b8ff36;
+  --line: #2b322d;
+  --serif: "Rove Poppins", "Trebuchet MS", sans-serif;
+}
+
+html,
+body { background: #090b0a; color: #f3f5f1; }
+body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
+::selection { color: #050705; background: #b8ff36; }
+
+.preview-note { background: #050605; color: #d7ddd6; border-bottom: 1px solid #202520; }
+.preview-separator { color: #697267; }
+.site-header { background: #0b0e0c; border-color: #252b26; }
+.brand { color: #f4f6f3; font-family: "Rove Poppins", Arial, sans-serif; letter-spacing: -.045em; }
+.brand-mark { color: #0b0e0c; background: #b8ff36; border-radius: 3px; transform: skew(-7deg); }
+.brand-period { color: #b8ff36; }
+.desktop-nav { color: #c3c9c2; }
+.desktop-nav a:hover, .header-login:hover, .footer-links a:hover { color: #b8ff36; }
+.header-login, .header-actions { color: #e2e6e0; }
+.button-dark { color: #080a08; background: #b8ff36; }
+.button-dark:hover { color: #080a08; background: #d1ff7c; }
+.button-lime { color: #080a08; background: #b8ff36; }
+.eyebrow { color: #a2aaa1; }
+.eyebrow-line { background: #b8ff36; }
+
+.showcase {
+  background: radial-gradient(ellipse at 78% 48%, #252d24 0, #151a16 38%, #0a0c0b 76%);
+  border-color: #242b25;
+}
+.showcase-copy h1 { font-family: "Rove Poppins", "Arial Black", sans-serif; font-weight: 700; letter-spacing: -.07em; }
+.showcase-copy h1 em { color: #b8ff36; font-family: "Rove Poppins", sans-serif; font-style: normal; font-weight: 400; }
+.showcase-description { color: #c0c6bf; }
+.showcase-specs { border-color: #404941; color: #c0c6bf; }
+.showcase-specs span + span::before { color: #849080; }
+.showcase-visual::after {
+  background: linear-gradient(90deg, #0a0c0b 0%, #0a0c0b00 42%), linear-gradient(0deg, #0a0c0b00 68%, #0a0c0b55 100%);
+}
+.showcase-car { mix-blend-mode: screen; }
+.showcase-index { color: #f3f5f1; }
+.showcase-index i { background: #b8ff36; }
+.showcase-vertical, .showcase-footnote { color: #a6aea4; }
+.showcase-dots button span { border-color: #a7aea5; }
+.showcase-dots button.active span { border-color: #b8ff36; background: #b8ff36; }
+.showcase-arrows button { border-color: #656e64; color: #f2f5f0; background: #111512cc; }
+.showcase-arrows button:hover { color: #080a08; background: #b8ff36; }
+
+.search-wrap { color: #f3f5f1; }
+.search-panel { background: #111512; border-color: #343c35; box-shadow: 0 18px 50px #0008; }
+.search-field { border-color: #343c35; }
+.field-icon, .empty-state > span { color: #b8ff36; }
+.field-label { color: #edf0eb; }
+.field-copy input { color: #d8ddd6; color-scheme: dark; }
+.field-copy input::placeholder { color: #929b91; }
+.field-copy input:focus-visible { outline-color: #b8ff36; }
+.search-hint { color: #a5ada4; }
+.search-hint > span { color: #b8ff36; }
+.search-hint button { color: #c8ff72; }
+
+.intro-section { color: #f3f5f1; }
+.intro-copy h2, .fleet-heading h2, .steps-heading h2 { font-family: "Rove Poppins", "Arial Black", sans-serif; font-weight: 700; }
+.intro-copy h2 em, .fleet-heading h2 em, .steps-heading h2 em { color: #b8ff36; font-family: "Rove Poppins", sans-serif; font-style: normal; font-weight: 400; }
+.intro-description, .intro-stat { color: #aab1a9; }
+.intro-stat strong, .intro-stat strong span { color: #b8ff36; }
+
+.fleet-toolbar { border-color: #343c35; }
+.category-tab { color: #a4aca2; }
+.category-tab.active { border-color: #b8ff36; color: #d3ff8c; }
+.fleet-search { border-color: #444d45; color: #b7c0b5; }
+.fleet-search input { color: #f3f5f1; }
+.fleet-search input::placeholder { color: #9ba399; }
+.fleet-search kbd { color: #9ba399; }
+.vehicle-card { background: #111512; border-color: #303831; }
+.vehicle-card:hover { box-shadow: 0 18px 42px #0009; }
+.vehicle-visual { background-color: #e4e6e3 !important; }
+.vehicle-tag { background: #b8ff36; color: #10130e; }
+.save-button { background: #111512e8; }
+.save-button svg { stroke: #e8eee5; }
+.vehicle-category { color: #a9b2a7; }
+.vehicle-name-row h3 { color: #f4f6f2; }
+.vehicle-meta { color: #abb3a9; }
+.vehicle-meta span { color: #606a60; }
+.vehicle-bottom { border-color: #303831; }
+.vehicle-bottom p { color: #a8b0a6; }
+.vehicle-bottom strong { color: #c5ff68; }
+.text-link { color: #c5ff68; }
+.text-link:hover { color: #e0ffad; }
+.button-outline { border-color: #65705f; color: #e4e9e1; }
+.button-outline:hover { background: #202820; }
+.empty-state { background: #111512; border: 1px solid #303831; }
+.empty-state h3 { color: #f3f5f1; }
+.empty-state p { color: #a7afa5; }
+
+.steps-section { color: #f3f5f1; }
+.step-card { border-color: #343c35; background: linear-gradient(135deg, #111512, #0c0f0d); }
+.step-number, .step-card p { color: #a7afa5; }
+.step-symbol { border-color: #394339; background: #171d17; color: #b8ff36; }
+.step-card h3 { color: #f1f4ef; }
+.site-footer { background: #050605; border-top: 1px solid #252b26; }
+.site-footer .brand-mark { border-color: #b8ff36; background: #b8ff36; color: #090b0a; }
+.site-footer .brand-period { color: #b8ff36; }
+.footer-top > p, .footer-links { color: #b8c0b6; }
+.footer-bottom { border-color: #303630; color: #a0a99f; }
+.footer-bottom span span { color: #b8ff36; }
+
+.auth-page { background: radial-gradient(ellipse at 50% 20%, #1b231b 0, #0b0e0c 54%, #070807 100%); }
+.auth-card { background: #111512; border-color: #343c35; box-shadow: 0 24px 90px #0009; }
+.auth-card h1 { color: #f3f5f1; font-family: "Rove Poppins", "Arial Black", sans-serif; font-weight: 700; }
+.auth-card h1 em { color: #b8ff36; font-family: "Rove Poppins", sans-serif; font-style: normal; font-weight: 400; }
+.auth-intro, .auth-switch, .auth-home { color: #aab2a8; }
+.auth-form label { color: #dce2da; }
+.auth-form input { border-color: #414b42; color: #f3f5f1; background: #0b0e0c; }
+.auth-form input::placeholder { color: #838d83; }
+.auth-form input:focus-visible { outline-color: #b8ff36; }
+.auth-message { background: #1a2418; color: #d5ff9c; border-left: 2px solid #b8ff36; }
+.auth-switch a { color: #caff79; }
+.auth-footnote { color: #a8b0a6; }
+
+@media (max-width: 640px) {
+  .showcase { background: radial-gradient(ellipse at 50% 28%, #222a22 0, #101411 54%, #0a0c0b 100%); }
+  .showcase-visual::after { background: linear-gradient(0deg, #0a0c0b00 74%, #0a0c0b44 100%); }
+  .fleet-heading h2, .intro-copy h2, .steps-heading h2 { color: #f3f5f1; }
+  .category-tab.active { color: #d3ff8c; }
+}

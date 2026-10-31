@@ -21,7 +21,7 @@ class CarDealer(models.Model):
 class Car(models.Model):
     name = models.CharField(max_length=50)
     image = models.ImageField(upload_to="", blank=True)
-    image_url = models.URLField(blank=True)
+    image_url = models.URLField(blank=True, max_length=500)
     image_credit = models.CharField(max_length=200, blank=True)
     image_license = models.CharField(max_length=60, blank=True)
     image_source_url = models.URLField(blank=True)

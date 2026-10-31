@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from django.db import migrations
+from django.db import migrations, models
 
 
 def repair_portfolio_fleet_images(apps, schema_editor):
@@ -29,4 +29,11 @@ def repair_portfolio_fleet_images(apps, schema_editor):
 class Migration(migrations.Migration):
     dependencies = [("home", "0014_car_image_attribution_url")]
 
-    operations = [migrations.RunPython(repair_portfolio_fleet_images, migrations.RunPython.noop)]
+    operations = [
+        migrations.AlterField(
+            model_name="car",
+            name="image_url",
+            field=models.URLField(blank=True, max_length=500),
+        ),
+        migrations.RunPython(repair_portfolio_fleet_images, migrations.RunPython.noop),
+    ]

@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from urllib.parse import quote
 
+from django.contrib.auth.hashers import make_password
 from django.db import migrations, models
 
 
@@ -27,7 +28,7 @@ def seed_portfolio_fleet(apps, schema_editor):
             last_name="Demo Fleet",
             is_active=False,
         )
-        dealer_user.set_unusable_password()
+        dealer_user.password = make_password(None)
         dealer_user.save(update_fields=["password"])
     elif dealer_user.is_active:
         raise RuntimeError("The reserved Rove portfolio demo account already exists as an active user.")

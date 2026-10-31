@@ -59,12 +59,12 @@ const studioFrames = new Map(studioModelKeys.map((key, index) => {
 
 // Curated editorial slideshow; the live catalog below is loaded from the fleet API.
 const featuredCars = [
-  { id: 901, name: "Maruti Suzuki Swift", model: "maruti suzuki swift|petrol", category: "Compact" as const, location: "Kochi", seats: 5, price: 1700, fuel: "Petrol" },
-  { id: 902, name: "Hyundai Creta", model: "hyundai creta|diesel", category: "SUV" as const, location: "Trivandrum", seats: 5, price: 3200, fuel: "Diesel" },
+  { id: 901, name: "Toyota Innova Crysta", model: "toyota innova crysta|diesel", category: "Premium" as const, location: "Trivandrum", seats: 7, price: 3500, fuel: "Diesel" },
+  { id: 902, name: "Maruti Suzuki Dzire", model: "maruti suzuki dzire|petrol", category: "Sedan" as const, location: "Alappuzha", seats: 5, price: 1950, fuel: "Petrol" },
   { id: 903, name: "Tata Nexon", model: "tata nexon|petrol", category: "SUV" as const, location: "Ernakulam", seats: 5, price: 2600, fuel: "Petrol" },
   { id: 904, name: "Tata Tiago EV", model: "tata tiago ev|ev", category: "Compact" as const, location: "Kozhikode", seats: 5, price: 2300, fuel: "EV" },
   { id: 905, name: "Mahindra Thar", model: "mahindra thar|diesel", category: "SUV" as const, location: "Kannur", seats: 4, price: 5000, fuel: "Diesel" },
-  { id: 906, name: "Toyota Innova Crysta", model: "toyota innova crysta|diesel", category: "Premium" as const, location: "Kochi", seats: 7, price: 3500, fuel: "Diesel" },
+  { id: 906, name: "Hyundai Creta", model: "hyundai creta|diesel", category: "SUV" as const, location: "Kochi", seats: 5, price: 3200, fuel: "Diesel" },
   { id: 907, name: "Tata Harrier", model: "tata harrier|diesel", category: "SUV" as const, location: "Thrissur", seats: 5, price: 3700, fuel: "Diesel" },
   { id: 908, name: "Toyota Fortuner", model: "toyota fortuner|diesel", category: "Premium" as const, location: "Trivandrum", seats: 7, price: 6500, fuel: "Diesel" },
   { id: 909, name: "Honda City", model: "honda city|petrol", category: "Sedan" as const, location: "Kollam", seats: 5, price: 2800, fuel: "Petrol" },
@@ -72,9 +72,15 @@ const featuredCars = [
 ];
 const vehicles: Vehicle[] = featuredCars.map((car) => {
   const frame = studioFrames.get(car.model);
+  const cutout = {
+    "toyota innova crysta|diesel": "/images/cars/slideshow/toyota-innova-cutout.png",
+    "maruti suzuki dzire|petrol": "/images/cars/slideshow/maruti-dzire-cutout.png",
+    "tata nexon|petrol": "/images/cars/slideshow/tata-nexon-cutout.png",
+  }[car.model];
   return {
     id: car.id, name: car.name, category: car.category, location: car.location, seats: car.seats,
-    price: car.price, image: frame?.image ?? "", studioImage: frame?.image, studioPosition: frame?.position,
+    price: car.price, image: frame?.image ?? "", showcaseImage: cutout ? repositoryImage(cutout) : undefined,
+    studioImage: frame?.image, studioPosition: frame?.position,
     accent: "#171b18", fuelType: car.fuel, tag: "Portfolio demo",
   };
 });
@@ -84,12 +90,12 @@ type CategoryFilter = (typeof categories)[number];
 const fuelFilters: FuelFilter[] = ["All fuels", "Petrol", "Diesel", "CNG", "EV", "Hybrid"];
 
 const featureSlides = [
-  { carId: 901, firstLine: "THE ROAD IS", secondLine: "YOURS.", eyebrow: "THE WEEKEND EDIT", copy: "SET OUT IN THE SWIFT AND LEAVE ROOM FOR A FEW UNEXPECTED TURNS." },
-  { carId: 902, firstLine: "FIND YOUR", secondLine: "OWN WAY.", eyebrow: "THE EVERYDAY EDIT", copy: "MAKE EVERY CITY DRIVE FEEL A LITTLE MORE LIKE YOURS IN THE CRETA." },
+  { carId: 901, firstLine: "MAKE ROOM FOR", secondLine: "EVERYONE.", eyebrow: "THE TOGETHER EDIT", copy: "SEVEN SEATS, ONE SHARED PLAYLIST, AND A LONGER WAY HOME IN THE INNOVA CRYSTA." },
+  { carId: 902, firstLine: "A LITTLE CAR.", secondLine: "A BIG DAY.", eyebrow: "THE CITY ESCAPE EDIT", copy: "MAKE YOUR OWN ITINERARY IN THE DZIRE, STARTING IN ALAPPUZHA." },
   { carId: 903, firstLine: "TAKE THE", secondLine: "SCENIC ROUTE.", eyebrow: "THE OUT-OF-TOWN EDIT", copy: "A NEXON, A GOOD PLAYLIST, AND NOWHERE YOU NEED TO RUSH TO." },
   { carId: 904, firstLine: "QUIETLY", secondLine: "GO FURTHER.", eyebrow: "THE ELECTRIC EDIT", copy: "MAKE THE CITY YOURS IN THE ALL-ELECTRIC TIAGO EV." },
   { carId: 905, firstLine: "A LITTLE MORE", secondLine: "WILD.", eyebrow: "THE OPEN-ROAD EDIT", copy: "TAKE THE LONG WAY ROUND IN THE THAR AND SEE WHERE IT LEADS." },
-  { carId: 906, firstLine: "MAKE ROOM FOR", secondLine: "EVERYONE.", eyebrow: "THE TOGETHER EDIT", copy: "SEVEN SEATS, ONE SHARED PLAYLIST, AND A LONGER WAY HOME." },
+  { carId: 906, firstLine: "FIND YOUR", secondLine: "OWN WAY.", eyebrow: "THE EVERYDAY EDIT", copy: "MAKE EVERY CITY DRIVE FEEL A LITTLE MORE LIKE YOURS IN THE CRETA." },
   { carId: 907, firstLine: "MAKE EVERY", secondLine: "MILE COUNT.", eyebrow: "THE BIG-TRIP EDIT", copy: "THE HARRIER IS READY FOR THE LONG WAY, THE SCENIC WAY, YOUR WAY." },
   { carId: 908, firstLine: "ARRIVE IN", secondLine: "YOUR ELEMENT.", eyebrow: "THE PREMIUM EDIT", copy: "BRING EXTRA ROOM AND A LITTLE EXTRA PRESENCE TO THE JOURNEY." },
   { carId: 909, firstLine: "TAKE THE DAY", secondLine: "AS IT COMES.", eyebrow: "THE CITY ESCAPE EDIT", copy: "SET YOUR OWN PACE AND TAKE THE CITY ONE TURN AT A TIME." },
@@ -142,7 +148,7 @@ function CarShowcase() {
       </div>
       <div className="showcase-visual" key={vehicle.id}>
         <span className="showcase-index">{String(activeSlide + 1).padStart(2, "0")}<i />{String(featureSlides.length).padStart(2, "0")}</span>
-        <div className={`showcase-car showcase-car-studio showcase-car-${vehicle.id}`} role="img" aria-label={`${vehicle.name}, illustrative studio render`} style={{ backgroundImage: `url("${vehicle.studioImage}")`, backgroundPosition: vehicle.studioPosition }} />
+        {vehicle.showcaseImage ? <Image src={vehicle.showcaseImage} alt={`${vehicle.name}, featured rental car`} fill priority={activeSlide === 0} unoptimized sizes="(max-width: 700px) 100vw, 62vw" className={`showcase-car showcase-car-${vehicle.id}`} /> : <div className={`showcase-car showcase-car-studio showcase-car-${vehicle.id}`} role="img" aria-label={`${vehicle.name}, illustrative studio render`} style={{ backgroundImage: `url("${vehicle.studioImage}")`, backgroundPosition: vehicle.studioPosition }} />}
         {vehicle.imageCredit && vehicle.imageSourceUrl ? <a className="showcase-photo-credit" href={vehicle.imageSourceUrl} target="_blank" rel="noreferrer">Photo: {vehicle.imageCredit} · {vehicle.imageLicense}{vehicle.imageIsIllustrative ? " · representative" : ""}</a> : null}
         <span className="showcase-vertical" aria-hidden="true">ROVE MOBILITY · KERALA</span>
       </div>

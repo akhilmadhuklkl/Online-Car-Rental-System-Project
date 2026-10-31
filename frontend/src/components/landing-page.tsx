@@ -76,6 +76,13 @@ const vehicles: Vehicle[] = featuredCars.map((car) => {
     "toyota innova crysta|diesel": "/images/cars/slideshow/toyota-innova-cutout.png",
     "maruti suzuki dzire|petrol": "/images/cars/slideshow/maruti-dzire-cutout.png",
     "tata nexon|petrol": "/images/cars/slideshow/tata-nexon-cutout.png",
+    "tata tiago ev|ev": "/images/cars/slideshow/tata-tiago-ev-cutout.png",
+    "mahindra thar|diesel": "/images/cars/slideshow/mahindra-thar-cutout.png",
+    "hyundai creta|diesel": "/images/cars/slideshow/hyundai-creta-cutout.png",
+    "tata harrier|diesel": "/images/cars/slideshow/tata-harrier-cutout.png",
+    "toyota fortuner|diesel": "/images/cars/slideshow/toyota-fortuner-cutout.png",
+    "honda city|petrol": "/images/cars/slideshow/honda-city-cutout.png",
+    "maruti suzuki grand vitara|hybrid": "/images/cars/slideshow/maruti-grand-vitara-cutout.png",
   }[car.model];
   return {
     id: car.id, name: car.name, category: car.category, location: car.location, seats: car.seats,
@@ -148,7 +155,7 @@ function CarShowcase() {
       </div>
       <div className="showcase-visual" key={vehicle.id}>
         <span className="showcase-index">{String(activeSlide + 1).padStart(2, "0")}<i />{String(featureSlides.length).padStart(2, "0")}</span>
-        {vehicle.showcaseImage ? <Image src={vehicle.showcaseImage} alt={`${vehicle.name}, featured rental car`} fill priority={activeSlide === 0} unoptimized sizes="(max-width: 700px) 100vw, 62vw" className={`showcase-car showcase-car-${vehicle.id}`} /> : <div className={`showcase-car showcase-car-studio showcase-car-${vehicle.id}`} role="img" aria-label={`${vehicle.name}, illustrative studio render`} style={{ backgroundImage: `url("${vehicle.studioImage}")`, backgroundPosition: vehicle.studioPosition }} />}
+        <Image src={vehicle.showcaseImage ?? vehicle.image} alt={`${vehicle.name}, featured rental car`} fill priority={activeSlide === 0} unoptimized sizes="(max-width: 700px) 100vw, 62vw" className={`showcase-car showcase-car-${vehicle.id}`} />
         {vehicle.imageCredit && vehicle.imageSourceUrl ? <a className="showcase-photo-credit" href={vehicle.imageSourceUrl} target="_blank" rel="noreferrer">Photo: {vehicle.imageCredit} · {vehicle.imageLicense}{vehicle.imageIsIllustrative ? " · representative" : ""}</a> : null}
         <span className="showcase-vertical" aria-hidden="true">ROVE MOBILITY · KERALA</span>
       </div>

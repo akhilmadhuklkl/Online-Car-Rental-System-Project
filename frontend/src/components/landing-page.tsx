@@ -92,6 +92,7 @@ function CarShowcase({ catalog }: { catalog: Vehicle[] }) {
       <div className="showcase-visual" key={vehicle.id}>
         <span className="showcase-index">0{activeSlide + 1}<i />0{featureSlides.length}</span>
         <Image src={vehicle.showcaseImage ?? vehicle.image} alt={`${vehicle.name}, featured rental car`} fill priority={activeSlide === 0} sizes="(max-width: 700px) 100vw, 62vw" className={`showcase-car showcase-car-${vehicle.id}`} />
+        {vehicle.imageCredit && vehicle.imageSourceUrl ? <a className="showcase-photo-credit" href={vehicle.imageSourceUrl} target="_blank" rel="noreferrer">Photo: {vehicle.imageCredit} · {vehicle.imageLicense}{vehicle.imageIsIllustrative ? " · representative" : ""}</a> : null}
         <span className="showcase-vertical" aria-hidden="true">ROVE MOBILITY · KERALA</span>
       </div>
       <div className="showcase-controls" aria-label="Featured car controls">

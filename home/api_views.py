@@ -63,8 +63,8 @@ def _car_data(car):
             image = car.image.url
         except (ValueError, AttributeError):
             image = ""
-    if image.startswith("/"):
-        image = "/api/backend-proxy" + image
+        if image.startswith("/"):
+            image = "/api/backend-proxy" + image
     return {
         "id": car.pk,
         "name": car.name,

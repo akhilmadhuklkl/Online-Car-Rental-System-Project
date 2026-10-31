@@ -519,119 +519,136 @@
       "author": "Premnath Kudva",
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Swift_2093.JPG",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/swift.jpg"
     },
     "dzire": {
       "filename": "Maruti Suzuki Swift 2093.JPG",
       "author": "Premnath Kudva",
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Swift_2093.JPG",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/swift.jpg"
     },
     "ertiga": {
       "filename": "Maruti Suzuki Ertiga(1).jpg",
       "author": "Akashpbrahmavar",
       "license": "CC0 1.0",
       "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Ertiga(1).jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/ertiga.jpg"
     },
     "creta": {
       "filename": "Hyundai Creta 1.5 Design 2024.jpg",
       "author": "RL GNZLZ",
       "license": "CC BY-SA 4.0",
       "page": "https://commons.wikimedia.org/wiki/File:Hyundai_Creta_1.5_Design_2024.jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/creta.jpg"
     },
     "venue": {
       "filename": "Hyundai Venue Washington DC Metro Area, USA (1).jpg",
       "author": "OWS Photography",
       "license": "CC BY 4.0",
       "page": "https://commons.wikimedia.org/wiki/File:Hyundai_Venue_Washington_DC_Metro_Area,_USA_(1).jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/venue.jpg"
     },
     "tiago": {
       "filename": "Tata tiago.jpg",
       "author": "Bharadwaj 7645",
       "license": "CC BY-SA 4.0",
       "page": "https://commons.wikimedia.org/wiki/File:Tata_tiago.jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/tiago.jpg"
     },
     "punch": {
       "filename": "2021 Tata Punch Creative (India) front view 01.png",
       "author": "Athira Murali",
       "license": "CC BY 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:2021_Tata_Punch_Creative_(India)_front_view_01.png",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/punch.png"
     },
     "nexon": {
       "filename": "Tata Nexon Blue Dual Tone.jpg",
       "author": "Keithkberger",
       "license": "Public domain",
       "page": "https://commons.wikimedia.org/wiki/File:Tata_Nexon_Blue_Dual_Tone.jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/nexon.jpg"
     },
     "ev": {
       "filename": "2020 Tata Nexon EV (India) front view.png",
       "author": "DriveSpark",
       "license": "CC BY 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:2020_Tata_Nexon_EV_(India)_front_view.png",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/nexon-ev.png"
     },
     "thar": {
       "filename": "Mahindra Thar in dark red.jpg",
       "author": "Arjun Mohan",
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:Mahindra_Thar_in_dark_red.jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/thar.jpg"
     },
     "xuv700": {
       "filename": "2023 Mahindra XUV700 AX7L front.jpg",
       "author": "LuvsMG481",
       "license": "CC BY-SA 4.0",
       "page": "https://commons.wikimedia.org/wiki/File:2023_Mahindra_XUV700_AX7L_front.jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/xuv700.jpg"
     },
     "seltos": {
       "filename": "Kia Seltos X-line.jpg",
       "author": "Gokul Kalloor",
       "license": "CC0 1.0",
       "page": "https://commons.wikimedia.org/wiki/File:Kia_Seltos_X-line.jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/seltos.jpg"
     },
     "city": {
       "filename": "HondaCityIndiaAsia.jpg",
       "author": "KuwarOnline",
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:HondaCityIndiaAsia.jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/city.jpg"
     },
     "hatch": {
       "filename": "Maruti Suzuki Swift 2093.JPG",
       "author": "Premnath Kudva",
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Swift_2093.JPG",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/swift.jpg"
     },
     "sedan": {
       "filename": "HondaCityIndiaAsia.jpg",
       "author": "KuwarOnline",
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:HondaCityIndiaAsia.jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/city.jpg"
     },
     "suv": {
       "filename": "2023 Mahindra XUV700 AX7L front.jpg",
       "author": "LuvsMG481",
       "license": "CC BY-SA 4.0",
       "page": "https://commons.wikimedia.org/wiki/File:2023_Mahindra_XUV700_AX7L_front.jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/xuv700.jpg"
     },
     "mpv": {
       "filename": "Maruti Suzuki Ertiga(1).jpg",
       "author": "Akashpbrahmavar",
       "license": "CC0 1.0",
       "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Ertiga(1).jpg",
-      "illustrative": true
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/ertiga.jpg"
     }
   }
 }

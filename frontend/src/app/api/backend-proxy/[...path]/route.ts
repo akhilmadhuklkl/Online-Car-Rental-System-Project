@@ -9,6 +9,12 @@ async function proxy(request: Request) {
   headers.delete("content-length");
   headers.delete("accept-encoding");
   headers.delete("transfer-encoding");
+  // Keep the Django deployment behind Vercel SSO while allowing this private
+  // server-side proxy to reach it. Never expose the bypass token to browsers.
+  const protectionBypass = process.env.DJANGO_API_PROTECTION_BYPASS;
+  if (protectionBypass) {
+    headers.set("x-vercel-protection-bypass", protectionBypass);
+  }
 
   try {
     const response = await fetch(target, {

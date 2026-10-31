@@ -56,11 +56,14 @@ function HeartIcon({ filled }: { filled: boolean }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true" className={filled ? "heart-filled" : ""}><path d="M20.8 8.8c0 4.1-8.8 10-8.8 10s-8.8-5.9-8.8-10a4.6 4.6 0 0 1 8.8-1.7 4.6 4.6 0 0 1 8.8 1.7Z" /></svg>;
 }
 
-function CarShowcase({ catalog }: { catalog: Vehicle[] }) {
+function CarShowcase() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [paused, setPaused] = useState(false);
   const slide = featureSlides[activeSlide];
-  const vehicle = catalog.find((item) => item.id === slide.carId) ?? catalog[activeSlide % Math.max(catalog.length, 1)] ?? vehicles[0];
+  // Keep the editorial homepage slideshow tied to its curated photoshoot assets.
+  // The database catalog can contain hundreds of different vehicles and should
+  // only drive the searchable fleet cards below.
+  const vehicle = vehicles.find((item) => item.id === slide.carId) ?? vehicles[0];
 
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -97,7 +100,7 @@ function CarShowcase({ catalog }: { catalog: Vehicle[] }) {
       </div>
       <div className="showcase-controls" aria-label="Featured car controls">
         <div className="showcase-dots" role="group" aria-label="Choose featured car">
-          {featureSlides.map((item, index) => <button key={item.carId} type="button" aria-label={`Show ${catalog.find((car) => car.id === item.carId)?.name ?? catalog[index % Math.max(catalog.length, 1)]?.name ?? "featured car"}`} aria-pressed={activeSlide === index} className={activeSlide === index ? "active" : ""} onClick={() => setActiveSlide(index)}><span /></button>)}
+          {featureSlides.map((item, index) => <button key={item.carId} type="button" aria-label={`Show ${vehicles.find((car) => car.id === item.carId)?.name ?? "featured car"}`} aria-pressed={activeSlide === index} className={activeSlide === index ? "active" : ""} onClick={() => setActiveSlide(index)}><span /></button>)}
         </div>
         <div className="showcase-arrows">
           <button type="button" aria-label="Previous car" onClick={() => moveSlide(-1)}><span aria-hidden="true">←</span></button>
@@ -177,7 +180,7 @@ export default function LandingPage() {
         <div className="header-actions"><a className="header-login" href="/customer/login">Log in</a><a className="button button-dark button-small" href="/customer/signup">Get started <ArrowIcon /></a></div>
       </header>
 
-      <CarShowcase catalog={catalog} />
+      <CarShowcase />
 
       <section className="search-wrap" aria-label="Search for a rental car">
         <form className="search-panel" onSubmit={searchFleet}>

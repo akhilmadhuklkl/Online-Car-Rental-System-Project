@@ -837,3 +837,40 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 @media (max-width: 640px) {
   .landing-header { height: 68px; padding: 0 19px; }
 }
+
+.landing-page { text-transform: uppercase; }
+.landing-page input { text-transform: none; }
+.showcase-visual { animation: showcase-enter .9s cubic-bezier(.22,.75,.25,1) both; }
+@keyframes showcase-enter {
+  from { opacity: .55; transform: translateX(-34px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.showcase-car-studio {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 24px 0 18px;
+  background-repeat: no-repeat;
+  background-size: 300% 300%;
+  filter: drop-shadow(0 24px 28px #0009);
+}
+.showcase-controls { right: clamp(24px, 5vw, 72px); }
+.showcase-dots { gap: clamp(2px, .55vw, 8px); }
+.showcase-dots button {
+  width: clamp(29px, 3.2vw, 42px);
+  height: 44px;
+  border-radius: 50%;
+}
+.showcase-dots button span { width: 10px; height: 10px; }
+.showcase-dots button.active span { width: 30px; border-radius: 10px; }
+.showcase-dots button:focus-visible { outline: 2px solid #b8ff36; outline-offset: 1px; }
+.showcase-arrows { display: none; }
+@media (max-width: 640px) {
+  .showcase-car-studio { padding: 8px 5px 0; }
+  .showcase-controls { right: 12px; left: 12px; justify-content: center; gap: 0; }
+  .showcase-dots { width: 100%; justify-content: space-between; gap: 0; }
+  .showcase-dots button { width: 30px; height: 40px; }
+  .showcase-dots button span { width: 8px; height: 8px; }
+  .showcase-dots button.active span { width: 22px; }
+}

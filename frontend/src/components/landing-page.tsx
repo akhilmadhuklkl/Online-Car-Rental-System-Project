@@ -58,24 +58,42 @@ const studioFrames = new Map(studioModelKeys.map((key, index) => {
 }));
 
 // Curated editorial slideshow; the live catalog below is loaded from the fleet API.
-const vehicles: Vehicle[] = [
-  { id: 901, name: "MG Astor", category: "SUV", location: "Kozhikode", seats: 5, price: 2500, image: repositoryImage("/images/cars/mg-astor.jpg"), showcaseImage: repositoryImage("/images/cars/slideshow/mg-astor-cutout.png"), accent: "#f4e8dc", tag: "Portfolio demo" },
-  { id: 902, name: "Toyota Innova Crysta", category: "Premium", location: "Trivandrum", seats: 7, price: 3200, image: repositoryImage("/images/cars/toyota-innova.jpg"), showcaseImage: repositoryImage("/images/cars/slideshow/toyota-innova-cutout.png"), accent: "#e9ece6", tag: "7 seats · demo" },
-  { id: 903, name: "Tata Nexon", category: "SUV", location: "Ernakulam", seats: 5, price: 1800, image: repositoryImage("/images/cars/tata-nexon.jpg"), showcaseImage: repositoryImage("/images/cars/slideshow/tata-nexon-cutout.png"), accent: "#e7e9e1", tag: "Portfolio demo" },
-  { id: 904, name: "Honda Amaze", category: "Sedan", location: "Palakkad", seats: 4, price: 1400, image: repositoryImage("/images/cars/honda-amaze.jpg"), accent: "#e8ece9", tag: "Portfolio demo" },
-  { id: 905, name: "Maruti Swift Dzire", category: "Sedan", location: "Alappuzha", seats: 5, price: 1500, image: repositoryImage("/images/cars/maruti-dzire.jpg"), showcaseImage: repositoryImage("/images/cars/slideshow/maruti-dzire-cutout.png"), accent: "#ece9df" },
-  { id: 906, name: "Mahindra Scorpio", category: "SUV", location: "Kannur", seats: 7, price: 2800, image: repositoryImage("/images/cars/mahindra-scorpio.jpg"), accent: "#e4e7e5", tag: "7 seats · demo" },
+const featuredCars = [
+  { id: 901, name: "Maruti Suzuki Swift", model: "maruti suzuki swift|petrol", category: "Compact" as const, location: "Kochi", seats: 5, price: 1700, fuel: "Petrol" },
+  { id: 902, name: "Hyundai Creta", model: "hyundai creta|diesel", category: "SUV" as const, location: "Trivandrum", seats: 5, price: 3200, fuel: "Diesel" },
+  { id: 903, name: "Tata Nexon", model: "tata nexon|petrol", category: "SUV" as const, location: "Ernakulam", seats: 5, price: 2600, fuel: "Petrol" },
+  { id: 904, name: "Tata Tiago EV", model: "tata tiago ev|ev", category: "Compact" as const, location: "Kozhikode", seats: 5, price: 2300, fuel: "EV" },
+  { id: 905, name: "Mahindra Thar", model: "mahindra thar|diesel", category: "SUV" as const, location: "Kannur", seats: 4, price: 5000, fuel: "Diesel" },
+  { id: 906, name: "Toyota Innova Crysta", model: "toyota innova crysta|diesel", category: "Premium" as const, location: "Kochi", seats: 7, price: 3500, fuel: "Diesel" },
+  { id: 907, name: "Tata Harrier", model: "tata harrier|diesel", category: "SUV" as const, location: "Thrissur", seats: 5, price: 3700, fuel: "Diesel" },
+  { id: 908, name: "Toyota Fortuner", model: "toyota fortuner|diesel", category: "Premium" as const, location: "Trivandrum", seats: 7, price: 6500, fuel: "Diesel" },
+  { id: 909, name: "Honda City", model: "honda city|petrol", category: "Sedan" as const, location: "Kollam", seats: 5, price: 2800, fuel: "Petrol" },
+  { id: 910, name: "Maruti Grand Vitara", model: "maruti suzuki grand vitara|hybrid", category: "SUV" as const, location: "Alappuzha", seats: 5, price: 3400, fuel: "Hybrid" },
 ];
+const vehicles: Vehicle[] = featuredCars.map((car) => {
+  const frame = studioFrames.get(car.model);
+  return {
+    id: car.id, name: car.name, category: car.category, location: car.location, seats: car.seats,
+    price: car.price, image: frame?.image ?? "", studioImage: frame?.image, studioPosition: frame?.position,
+    accent: "#171b18", fuelType: car.fuel, tag: "Portfolio demo",
+  };
+});
 
 const categories = ["All cars", "SUV", "Sedan", "Compact", "Premium"] as const;
 type CategoryFilter = (typeof categories)[number];
 const fuelFilters: FuelFilter[] = ["All fuels", "Petrol", "Diesel", "CNG", "EV", "Hybrid"];
 
 const featureSlides = [
-  { carId: 901, firstLine: "The road is", secondLine: "yours.", eyebrow: "THE WEEKEND EDIT", copy: "Set out from Kozhikode in the MG Astor and leave room for a few unexpected turns." },
-  { carId: 902, firstLine: "Make room for", secondLine: "everyone.", eyebrow: "THE TOGETHER EDIT", copy: "Seven seats, one shared playlist, and a longer way home in the Innova Crysta." },
-  { carId: 903, firstLine: "The good kind of", secondLine: "detour.", eyebrow: "THE OUT-OF-TOWN EDIT", copy: "Take the scenic route out of Ernakulam in the Tata Nexon." },
-  { carId: 905, firstLine: "A little car.", secondLine: "A big day.", eyebrow: "THE CITY ESCAPE EDIT", copy: "Make your own itinerary in the Swift Dzire, starting in Alappuzha." },
+  { carId: 901, firstLine: "THE ROAD IS", secondLine: "YOURS.", eyebrow: "THE WEEKEND EDIT", copy: "SET OUT IN THE SWIFT AND LEAVE ROOM FOR A FEW UNEXPECTED TURNS." },
+  { carId: 902, firstLine: "FIND YOUR", secondLine: "OWN WAY.", eyebrow: "THE EVERYDAY EDIT", copy: "MAKE EVERY CITY DRIVE FEEL A LITTLE MORE LIKE YOURS IN THE CRETA." },
+  { carId: 903, firstLine: "TAKE THE", secondLine: "SCENIC ROUTE.", eyebrow: "THE OUT-OF-TOWN EDIT", copy: "A NEXON, A GOOD PLAYLIST, AND NOWHERE YOU NEED TO RUSH TO." },
+  { carId: 904, firstLine: "QUIETLY", secondLine: "GO FURTHER.", eyebrow: "THE ELECTRIC EDIT", copy: "MAKE THE CITY YOURS IN THE ALL-ELECTRIC TIAGO EV." },
+  { carId: 905, firstLine: "A LITTLE MORE", secondLine: "WILD.", eyebrow: "THE OPEN-ROAD EDIT", copy: "TAKE THE LONG WAY ROUND IN THE THAR AND SEE WHERE IT LEADS." },
+  { carId: 906, firstLine: "MAKE ROOM FOR", secondLine: "EVERYONE.", eyebrow: "THE TOGETHER EDIT", copy: "SEVEN SEATS, ONE SHARED PLAYLIST, AND A LONGER WAY HOME." },
+  { carId: 907, firstLine: "MAKE EVERY", secondLine: "MILE COUNT.", eyebrow: "THE BIG-TRIP EDIT", copy: "THE HARRIER IS READY FOR THE LONG WAY, THE SCENIC WAY, YOUR WAY." },
+  { carId: 908, firstLine: "ARRIVE IN", secondLine: "YOUR ELEMENT.", eyebrow: "THE PREMIUM EDIT", copy: "BRING EXTRA ROOM AND A LITTLE EXTRA PRESENCE TO THE JOURNEY." },
+  { carId: 909, firstLine: "TAKE THE DAY", secondLine: "AS IT COMES.", eyebrow: "THE CITY ESCAPE EDIT", copy: "SET YOUR OWN PACE AND TAKE THE CITY ONE TURN AT A TIME." },
+  { carId: 910, firstLine: "ROOM TO", secondLine: "ROAM.", eyebrow: "THE HYBRID EDIT", copy: "MAKE A LITTLE MORE SPACE FOR THE PLACES YOU DIDN’T PLAN TO GO." },
 ];
 
 function ArrowIcon({ diagonal = false }: { diagonal?: boolean }) {
@@ -101,13 +119,9 @@ function CarShowcase() {
 
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const timer = window.setTimeout(() => setActiveSlide((current) => (current + 1) % featureSlides.length), 6500);
+    const timer = window.setTimeout(() => setActiveSlide((current) => (current + 1) % featureSlides.length), 5000);
     return () => window.clearTimeout(timer);
   }, [activeSlide, paused]);
-
-  function moveSlide(direction: number) {
-    setActiveSlide((current) => (current + direction + featureSlides.length) % featureSlides.length);
-  }
 
   return (
     <section
@@ -123,22 +137,18 @@ function CarShowcase() {
         <p className="eyebrow"><span className="eyebrow-line" /> {slide.eyebrow}</p>
         <h1><span>{slide.firstLine}</span><em>{slide.secondLine}</em></h1>
         <p className="showcase-description">{slide.copy}</p>
-        <a className="button button-dark" href="#fleet">Explore the fleet <ArrowIcon /></a>
-        <div className="showcase-specs"><span>{vehicle.name}</span><span>{vehicle.seats} seats</span><span>{vehicle.location}</span></div>
+        <a className="button button-dark" href="#fleet">EXPLORE THE FLEET <ArrowIcon /></a>
+        <div className="showcase-specs"><span>{vehicle.name}</span><span>{vehicle.seats} SEATS · {vehicle.fuelType}</span><span>{vehicle.location}</span></div>
       </div>
       <div className="showcase-visual" key={vehicle.id}>
-        <span className="showcase-index">0{activeSlide + 1}<i />0{featureSlides.length}</span>
-        <Image src={vehicle.showcaseImage ?? vehicle.image} alt={`${vehicle.name}, featured rental car`} fill priority={activeSlide === 0} unoptimized sizes="(max-width: 700px) 100vw, 62vw" className={`showcase-car showcase-car-${vehicle.id}`} />
+        <span className="showcase-index">{String(activeSlide + 1).padStart(2, "0")}<i />{String(featureSlides.length).padStart(2, "0")}</span>
+        <div className={`showcase-car showcase-car-studio showcase-car-${vehicle.id}`} role="img" aria-label={`${vehicle.name}, illustrative studio render`} style={{ backgroundImage: `url("${vehicle.studioImage}")`, backgroundPosition: vehicle.studioPosition }} />
         {vehicle.imageCredit && vehicle.imageSourceUrl ? <a className="showcase-photo-credit" href={vehicle.imageSourceUrl} target="_blank" rel="noreferrer">Photo: {vehicle.imageCredit} · {vehicle.imageLicense}{vehicle.imageIsIllustrative ? " · representative" : ""}</a> : null}
         <span className="showcase-vertical" aria-hidden="true">ROVE MOBILITY · KERALA</span>
       </div>
       <div className="showcase-controls" aria-label="Featured car controls">
         <div className="showcase-dots" role="group" aria-label="Choose featured car">
-          {featureSlides.map((item, index) => <button key={item.carId} type="button" aria-label={`Show ${vehicles.find((car) => car.id === item.carId)?.name ?? "featured car"}`} aria-pressed={activeSlide === index} className={activeSlide === index ? "active" : ""} onClick={() => setActiveSlide(index)}><span /></button>)}
-        </div>
-        <div className="showcase-arrows">
-          <button type="button" aria-label="Previous car" onClick={() => moveSlide(-1)}><span aria-hidden="true">←</span></button>
-          <button type="button" aria-label="Next car" onClick={() => moveSlide(1)}><span aria-hidden="true">→</span></button>
+          {featureSlides.map((item, index) => <button key={item.carId} type="button" aria-label={`SHOW ${vehicles.find((car) => car.id === item.carId)?.name ?? "FEATURED CAR"}`} aria-pressed={activeSlide === index} className={activeSlide === index ? "active" : ""} onClick={() => setActiveSlide(index)}><span /></button>)}
         </div>
       </div>
       <p className="showcase-footnote">A GOOD CAR MAKES A GOOD STORY.</p>
@@ -236,11 +246,11 @@ export default function LandingPage() {
   }
 
   return (
-    <main>
+    <main className="landing-page">
       <header className={`site-header landing-header ${headerPinned ? "is-pinned" : "is-over-hero"}`}>
         <Link href="/" className="brand" aria-label="Rove home"><span className="brand-mark">r</span><span>rove<span className="brand-period">.</span></span></Link>
         <nav className="desktop-nav" aria-label="Main navigation"><a href="#fleet">Explore cars</a><a href="#how-it-works">How it works</a></nav>
-        <div className="header-actions"><a className="header-login" href="/customer/login">Log in</a><a className="button button-dark button-small" href="/customer/signup">Get started <ArrowIcon /></a></div>
+        <div className="header-actions"><a className="header-login" href="/customer/login">LOG IN</a><a className="button button-dark button-small" href="/customer/signup">RENT A CAR <ArrowIcon /></a></div>
       </header>
 
       <CarShowcase />

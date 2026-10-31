@@ -97,16 +97,16 @@ type CategoryFilter = (typeof categories)[number];
 const fuelFilters: FuelFilter[] = ["All fuels", "Petrol", "Diesel", "CNG", "EV", "Hybrid"];
 
 const featureSlides = [
-  { carId: 901, firstLine: "MAKE ROOM FOR", secondLine: "EVERYONE.", eyebrow: "THE TOGETHER EDIT", copy: "SEVEN SEATS, ONE SHARED PLAYLIST, AND A LONGER WAY HOME IN THE INNOVA CRYSTA." },
-  { carId: 902, firstLine: "A LITTLE CAR.", secondLine: "A BIG DAY.", eyebrow: "THE CITY ESCAPE EDIT", copy: "MAKE YOUR OWN ITINERARY IN THE DZIRE, STARTING IN ALAPPUZHA." },
-  { carId: 903, firstLine: "TAKE THE", secondLine: "SCENIC ROUTE.", eyebrow: "THE OUT-OF-TOWN EDIT", copy: "A NEXON, A GOOD PLAYLIST, AND NOWHERE YOU NEED TO RUSH TO." },
-  { carId: 904, firstLine: "QUIETLY", secondLine: "GO FURTHER.", eyebrow: "THE ELECTRIC EDIT", copy: "MAKE THE CITY YOURS IN THE ALL-ELECTRIC TIAGO EV." },
-  { carId: 905, firstLine: "A LITTLE MORE", secondLine: "WILD.", eyebrow: "THE OPEN-ROAD EDIT", copy: "TAKE THE LONG WAY ROUND IN THE THAR AND SEE WHERE IT LEADS." },
-  { carId: 906, firstLine: "FIND YOUR", secondLine: "OWN WAY.", eyebrow: "THE EVERYDAY EDIT", copy: "MAKE EVERY CITY DRIVE FEEL A LITTLE MORE LIKE YOURS IN THE CRETA." },
-  { carId: 907, firstLine: "MAKE EVERY", secondLine: "MILE COUNT.", eyebrow: "THE BIG-TRIP EDIT", copy: "THE HARRIER IS READY FOR THE LONG WAY, THE SCENIC WAY, YOUR WAY." },
-  { carId: 908, firstLine: "ARRIVE IN", secondLine: "YOUR ELEMENT.", eyebrow: "THE PREMIUM EDIT", copy: "BRING EXTRA ROOM AND A LITTLE EXTRA PRESENCE TO THE JOURNEY." },
-  { carId: 909, firstLine: "TAKE THE DAY", secondLine: "AS IT COMES.", eyebrow: "THE CITY ESCAPE EDIT", copy: "SET YOUR OWN PACE AND TAKE THE CITY ONE TURN AT A TIME." },
-  { carId: 910, firstLine: "ROOM TO", secondLine: "ROAM.", eyebrow: "THE HYBRID EDIT", copy: "MAKE A LITTLE MORE SPACE FOR THE PLACES YOU DIDN’T PLAN TO GO." },
+  { carId: 901, firstLine: "Make room for", secondLine: "everyone.", eyebrow: "THE TOGETHER EDIT", copy: "Seven seats, one shared playlist, and a longer way home in the Innova Crysta." },
+  { carId: 902, firstLine: "A little car.", secondLine: "A big day.", eyebrow: "THE CITY ESCAPE EDIT", copy: "Make your own itinerary in the Dzire, starting in Alappuzha." },
+  { carId: 903, firstLine: "The good kind of", secondLine: "detour.", eyebrow: "THE OUT-OF-TOWN EDIT", copy: "A Nexon, a good playlist, and nowhere you need to rush to." },
+  { carId: 904, firstLine: "Quietly", secondLine: "go further.", eyebrow: "THE ELECTRIC EDIT", copy: "Make the city yours in the all-electric Tiago EV." },
+  { carId: 905, firstLine: "A little more", secondLine: "wild.", eyebrow: "THE OPEN-ROAD EDIT", copy: "Take the long way round in the Thar and see where it leads." },
+  { carId: 906, firstLine: "Find your", secondLine: "own way.", eyebrow: "THE EVERYDAY EDIT", copy: "Make every city drive feel a little more like yours in the Creta." },
+  { carId: 907, firstLine: "Make every", secondLine: "mile count.", eyebrow: "THE BIG-TRIP EDIT", copy: "The Harrier is ready for the long way, the scenic way, your way." },
+  { carId: 908, firstLine: "Arrive in", secondLine: "your element.", eyebrow: "THE PREMIUM EDIT", copy: "Bring extra room and a little extra presence to the journey." },
+  { carId: 909, firstLine: "Take the day", secondLine: "as it comes.", eyebrow: "THE CITY ESCAPE EDIT", copy: "Set your own pace and take the city one turn at a time." },
+  { carId: 910, firstLine: "Room to", secondLine: "roam.", eyebrow: "THE HYBRID EDIT", copy: "Make a little more space for the places you didn’t plan to go." },
 ];
 
 function ArrowIcon({ diagonal = false }: { diagonal?: boolean }) {
@@ -150,7 +150,7 @@ function CarShowcase() {
         <p className="eyebrow"><span className="eyebrow-line" /> {slide.eyebrow}</p>
         <h1><span>{slide.firstLine}</span><em>{slide.secondLine}</em></h1>
         <p className="showcase-description">{slide.copy}</p>
-        <a className="button button-dark" href="#fleet">EXPLORE THE FLEET <ArrowIcon /></a>
+        <a className="button button-dark" href="#fleet">Explore the fleet <ArrowIcon /></a>
         <div className="showcase-specs"><span>{vehicle.name}</span><span>{vehicle.seats} SEATS · {vehicle.fuelType}</span><span>{vehicle.location}</span></div>
       </div>
       <div className="showcase-visual" key={vehicle.id}>
@@ -259,11 +259,11 @@ export default function LandingPage() {
   }
 
   return (
-    <main className="landing-page">
+    <main>
       <header className={`site-header landing-header ${headerPinned ? "is-pinned" : "is-over-hero"}`}>
         <Link href="/" className="brand" aria-label="Rove home"><span className="brand-mark">r</span><span>rove<span className="brand-period">.</span></span></Link>
         <nav className="desktop-nav" aria-label="Main navigation"><a href="#fleet">Explore cars</a><a href="#how-it-works">How it works</a></nav>
-        <div className="header-actions"><a className="header-login" href="/customer/login">LOG IN</a><a className="button button-dark button-small" href="/customer/signup">RENT A CAR <ArrowIcon /></a></div>
+        <div className="header-actions"><a className="header-login" href="/customer/login">Log in</a><a className="button button-dark button-small" href="/customer/signup">Rent a car <ArrowIcon /></a></div>
       </header>
 
       <CarShowcase />

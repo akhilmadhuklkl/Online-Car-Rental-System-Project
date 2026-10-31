@@ -838,8 +838,6 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .landing-header { height: 68px; padding: 0 19px; }
 }
 
-.landing-page { text-transform: uppercase; }
-.landing-page input { text-transform: none; }
 .showcase-visual { animation: showcase-enter .9s cubic-bezier(.22,.75,.25,1) both; }
 @keyframes showcase-enter {
   from { opacity: .55; transform: translateX(-34px); }

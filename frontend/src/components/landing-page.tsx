@@ -22,16 +22,40 @@ type Vehicle = {
   imageAttributionUrl?: string;
   imageIsIllustrative?: boolean;
   showcaseImage?: string;
+  studioImage?: string;
+  studioPosition?: string;
   accent: string;
   tag?: string;
 };
 
 const repositoryImage = (path: string) => `https://raw.githubusercontent.com/akhilmadhuklkl/Online-Car-Rental-System-Project/main/frontend/public${path}`;
-const modelPhotoOverrides: Record<string, string> = {
-  "maruti suzuki dzire": repositoryImage("/images/cars/slideshow/maruti-dzire-cutout.png"),
-  "toyota innova crysta": repositoryImage("/images/cars/slideshow/toyota-innova-cutout.png"),
-  "tata nexon": repositoryImage("/images/cars/slideshow/tata-nexon-cutout.png"),
-};
+const studioModelKeys = [
+  "maruti suzuki swift|petrol", "maruti suzuki baleno|petrol", "maruti suzuki dzire|petrol",
+  "maruti suzuki wagon r|cng", "maruti suzuki ertiga|petrol", "maruti suzuki brezza|petrol",
+  "maruti suzuki grand vitara|hybrid", "maruti suzuki alto 800|petrol", "hyundai santro|petrol",
+  "hyundai grand i10 nios|cng", "hyundai i20|petrol", "hyundai creta|diesel",
+  "hyundai creta|petrol", "hyundai venue|petrol", "hyundai aura|cng", "hyundai exter|cng",
+  "tata tiago|petrol", "tata tiago|cng", "tata tiago ev|ev", "tata tigor|cng",
+  "tata punch|petrol", "tata punch ev|ev", "tata altroz|diesel", "tata nexon|petrol",
+  "tata nexon ev|ev", "tata harrier|diesel", "tata safari|diesel", "tata nano|petrol",
+  "mahindra thar|diesel", "mahindra scorpio classic|diesel", "mahindra scorpio n|petrol",
+  "mahindra xuv700|diesel", "mahindra xuv700|petrol", "mahindra xuv500|diesel",
+  "mahindra bolero|diesel", "mahindra xuv 3xo|petrol", "mahindra be 6|ev",
+  "toyota innova crysta|diesel", "toyota innova hycross|hybrid", "toyota fortuner|diesel",
+  "toyota glanza|petrol", "honda city|petrol", "honda city e:hev|hybrid", "hyundai eon|petrol",
+  "tata sierra|petrol", "tata sierra|diesel", "mahindra xev 9s|ev", "mahindra xuv 7xo|petrol",
+  "mahindra xuv 7xo|diesel", "maruti suzuki e vitara|ev",
+];
+const studioFrames = new Map(studioModelKeys.map((key, index) => {
+  const sheet = Math.floor(index / 9) + 1;
+  const cell = index % 9;
+  const column = cell % 3;
+  const row = Math.floor(cell / 3);
+  return [key, {
+    image: repositoryImage(`/images/cars/studio/fleet-studio-${String(sheet).padStart(2, "0")}.png`),
+    position: `${column * 50}% ${row * 50}%`,
+  }] as const;
+}));
 
 // Curated editorial slideshow; the live catalog below is loaded from the fleet API.
 const vehicles: Vehicle[] = [
@@ -126,15 +150,15 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
   const [saved, setSaved] = useState(false);
   return (
     <article className="vehicle-card">
-      <div className="vehicle-visual" style={{ backgroundColor: vehicle.accent }}>
+      <div className={`vehicle-visual ${vehicle.studioImage ? "vehicle-visual-studio" : ""}`} style={vehicle.studioImage ? undefined : { backgroundColor: vehicle.accent }}>
         {vehicle.tag ? <span className="vehicle-tag">{vehicle.tag}</span> : null}
         <button className={`save-button ${saved ? "is-saved" : ""}`} type="button" aria-label={saved ? `Remove ${vehicle.name} from saved cars` : `Save ${vehicle.name}`} aria-pressed={saved} onClick={() => setSaved((current) => !current)}><HeartIcon filled={saved} /></button>
-        <Image src={vehicle.image} alt={`${vehicle.name} rental car${vehicle.imageIsIllustrative ? " (illustrative photo)" : ""}`} fill unoptimized={vehicle.image.startsWith("http")} sizes="(max-width: 700px) 90vw, (max-width: 1100px) 45vw, 30vw" className="vehicle-image" />
+        {vehicle.studioImage ? <div className="vehicle-image vehicle-image-studio" role="img" aria-label={`${vehicle.name}, AI-generated illustrative studio render`} style={{ backgroundImage: `url("${vehicle.studioImage}")`, backgroundPosition: vehicle.studioPosition }} /> : <Image src={vehicle.image} alt={`${vehicle.name} rental car${vehicle.imageIsIllustrative ? " (illustrative photo)" : ""}`} fill unoptimized={vehicle.image.startsWith("http")} sizes="(max-width: 700px) 90vw, (max-width: 1100px) 45vw, 30vw" className="vehicle-image" />}
       </div>
       <div className="vehicle-info">
         <div className="vehicle-name-row"><div><span className="vehicle-category">{vehicle.category}</span><h3>{vehicle.name}</h3></div></div>
         <p className="vehicle-meta">{vehicle.seats} seats{vehicle.fuelType ? <> <span>·</span> {vehicle.fuelType}</> : null}{vehicle.modelYear ? <> <span>·</span> {vehicle.modelYear}</> : null} <span>·</span> {vehicle.location}</p>
-        {vehicle.imageCredit && vehicle.imageSourceUrl ? <span className="photo-credit">Photo: <a href={vehicle.imageSourceUrl} target="_blank" rel="noreferrer">{vehicle.imageCredit} · {vehicle.imageLicense}</a>{vehicle.imageAttributionUrl ? <> · <a href={vehicle.imageAttributionUrl} target="_blank" rel="noreferrer">license</a></> : null}{vehicle.imageIsIllustrative ? " · representative" : ""}</span> : null}
+        {vehicle.studioImage ? <span className="photo-credit">AI-generated studio render · illustrative</span> : vehicle.imageCredit && vehicle.imageSourceUrl ? <span className="photo-credit">Photo: <a href={vehicle.imageSourceUrl} target="_blank" rel="noreferrer">{vehicle.imageCredit} · {vehicle.imageLicense}</a>{vehicle.imageAttributionUrl ? <> · <a href={vehicle.imageAttributionUrl} target="_blank" rel="noreferrer">license</a></> : null}{vehicle.imageIsIllustrative ? " · representative" : ""}</span> : null}
         <div className="vehicle-bottom"><p><strong>₹{vehicle.price.toLocaleString("en-IN")}</strong><span> / day</span></p><a className="text-link" href={`/customer/login?car=${vehicle.id}`}>View car <ArrowIcon /></a></div>
       </div>
     </article>
@@ -162,8 +186,8 @@ export default function LandingPage() {
             const seats = Number.parseInt(car.capacity, 10) || 4;
             const name = car.name.toLowerCase();
             const category: VehicleCategory = /bmw|mercedes|audi|innova|premium/.test(name) ? "Premium" : /swift|hatch|alto|compact/.test(name) ? "Compact" : /sedan|amaze|dzire|city|verna/.test(name) ? "Sedan" : "SUV";
-            const modelPhoto = modelPhotoOverrides[name];
-            return { id: car.id, name: car.name, category, location: car.city || "Kerala", seats, price: Number.parseInt(car.rent, 10) || 0, image: modelPhoto ?? car.image ?? preview?.image ?? "", fuelType: car.fuel_type, modelYear: car.model_year, imageCredit: modelPhoto ? "Rove Mobility project visual" : car.image_credit, imageLicense: modelPhoto ? "Project image" : car.image_license, imageSourceUrl: modelPhoto ? "https://github.com/akhilmadhuklkl/Online-Car-Rental-System-Project/tree/main/frontend/public/images/cars/slideshow" : car.image_source_url, imageAttributionUrl: modelPhoto ? undefined : car.image_attribution_url, imageIsIllustrative: modelPhoto ? true : car.image_is_illustrative, showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: car.is_demo ? "Sample listing" : seats >= 7 ? `${seats} seats` : undefined };
+            const studio = studioFrames.get(`${name}|${(car.fuel_type ?? "").toLowerCase()}`);
+            return { id: car.id, name: car.name, category, location: car.city || "Kerala", seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image ?? preview?.image ?? "", studioImage: studio?.image, studioPosition: studio?.position, fuelType: car.fuel_type, modelYear: car.model_year, imageCredit: car.image_credit, imageLicense: car.image_license, imageSourceUrl: car.image_source_url, imageAttributionUrl: car.image_attribution_url, imageIsIllustrative: studio ? true : car.image_is_illustrative, showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: car.is_demo ? "Sample listing" : seats >= 7 ? `${seats} seats` : undefined };
           }));
           setCatalogLoaded(true);
         })

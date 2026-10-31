@@ -115,6 +115,11 @@ main { overflow: hidden; }
 .category-tabs { display: flex; align-items: center; gap: 28px; overflow-x: auto; }
 .category-tab { flex: 0 0 auto; border: 0; border-bottom: 2px solid transparent; background: transparent; padding: 0 0 14px; color: #83887f; font-size: 11px; cursor: pointer; }
 .category-tab.active { border-color: #455c41; color: #283c30; font-weight: 700; }
+.fuel-filter-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
+.fuel-filter { border: 1px solid #dfe0d8; border-radius: 999px; background: transparent; padding: 8px 13px; color: #6c746a; font-size: 10px; cursor: pointer; }
+.fuel-filter.active { border-color: #455c41; background: #455c41; color: #fff; }
+.fuel-filter-count { margin-left: 6px; font-size: 9px; opacity: .72; }
+.vehicle-loading { min-height: 230px; display: grid; place-items: center; border: 1px solid #e8e8e1; color: #83887f; font-size: 13px; }
 .fleet-search { width: 205px; height: 34px; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; border: 1px solid #dfe0d8; border-radius: 4px; padding: 0 9px; color: #80867d; }
 .fleet-search > span { font-size: 19px; }
 .fleet-search input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; font-size: 10px; color: var(--ink); }
@@ -137,7 +142,8 @@ main { overflow: hidden; }
 .rating span { color: #a88d55; }
 .vehicle-meta { margin: 13px 0 17px; color: #7d827a; font-size: 10px; }
 .vehicle-meta span { padding: 0 4px; color: #b4b7ad; }
-.photo-credit { display: block; margin: -8px 0 12px; color: #747d71; font-size: 9px; line-height: 1.4; text-decoration: underline; text-underline-offset: 2px; }
+.photo-credit { display: block; margin: -8px 0 12px; color: #747d71; font-size: 9px; line-height: 1.4; }
+.photo-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .vehicle-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 13px; border-top: 1px solid #ededeb; }
 .vehicle-bottom p { margin: 0; color: #848980; font-size: 9px; }
 .vehicle-bottom strong { color: #273a2e; font-size: 16px; }
@@ -347,6 +353,7 @@ body { background: #fff; color: #111; font-family: Arial, Helvetica, sans-serif;
 .field-icon, .empty-state > span { color: #111; }
 .empty-state { background: #f3f3f1; }
 .vehicle-image { filter: grayscale(.08); }
+.fuel-filter-count { color: #a8b0a6; }
 .save-button svg { stroke: #222; }
 .vehicle-category { color: #777; }
 .vehicle-bottom strong { color: #111; }
@@ -502,6 +509,9 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .fleet-search input::placeholder { color: #9ba399; }
 .fleet-search kbd { color: #9ba399; }
 .vehicle-card { background: #111512; border-color: #303831; }
+.fuel-filter { border-color: #353d37; color: #bbc4b8; }
+.fuel-filter.active { border-color: #c6d2c1; background: #c6d2c1; color: #131814; }
+.vehicle-loading { border-color: #303831; color: #aab4a6; }
 .vehicle-card:hover { box-shadow: 0 18px 42px #0009; }
 .vehicle-visual { background-color: #e4e6e3 !important; }
 .vehicle-tag { background: #b8ff36; color: #10130e; }
@@ -553,6 +563,8 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .showcase-visual::after { background: linear-gradient(0deg, #0a0c0b00 74%, #0a0c0b44 100%); }
   .fleet-heading h2, .intro-copy h2, .steps-heading h2 { color: #f3f5f1; }
   .category-tab.active { color: #d3ff8c; }
+  .fuel-filter-tabs { flex-wrap: nowrap; overflow-x: auto; padding: 2px 0 8px; margin-right: -18px; }
+  .fuel-filter { flex: 0 0 auto; }
 }
 
 /* Dealer workspace */

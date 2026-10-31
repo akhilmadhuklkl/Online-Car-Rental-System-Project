@@ -79,6 +79,7 @@ def _car_data(car):
         "image_credit": car.image_credit,
         "image_license": car.image_license,
         "image_source_url": car.image_source_url,
+        "image_attribution_url": car.image_attribution_url,
         "image_is_illustrative": car.image_is_illustrative,
     }
 

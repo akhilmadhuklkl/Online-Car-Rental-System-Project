@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type VehicleCategory = "SUV" | "Sedan" | "Compact" | "Premium";
+type FuelFilter = "All fuels" | "Petrol" | "Diesel" | "CNG" | "EV" | "Hybrid";
 type Vehicle = {
   id: number;
   name: string;
@@ -18,24 +19,33 @@ type Vehicle = {
   imageCredit?: string;
   imageLicense?: string;
   imageSourceUrl?: string;
+  imageAttributionUrl?: string;
   imageIsIllustrative?: boolean;
   showcaseImage?: string;
   accent: string;
   tag?: string;
 };
 
-// Synthetic portfolio listings shown until a dealer adds live inventory.
+const repositoryImage = (path: string) => `https://raw.githubusercontent.com/akhilmadhuklkl/Online-Car-Rental-System-Project/main/frontend/public${path}`;
+const modelPhotoOverrides: Record<string, string> = {
+  "maruti suzuki dzire": repositoryImage("/images/cars/slideshow/maruti-dzire-cutout.png"),
+  "toyota innova crysta": repositoryImage("/images/cars/slideshow/toyota-innova-cutout.png"),
+  "tata nexon": repositoryImage("/images/cars/slideshow/tata-nexon-cutout.png"),
+};
+
+// Curated editorial slideshow; the live catalog below is loaded from the fleet API.
 const vehicles: Vehicle[] = [
-  { id: 901, name: "MG Astor", category: "SUV", location: "Kozhikode", seats: 5, price: 2500, image: "/images/cars/mg-astor.jpg", showcaseImage: "/images/cars/slideshow/mg-astor-cutout.png", accent: "#f4e8dc", tag: "Portfolio demo" },
-  { id: 902, name: "Toyota Innova Crysta", category: "Premium", location: "Trivandrum", seats: 7, price: 3200, image: "/images/cars/toyota-innova.jpg", showcaseImage: "/images/cars/slideshow/toyota-innova-cutout.png", accent: "#e9ece6", tag: "7 seats · demo" },
-  { id: 903, name: "Tata Nexon", category: "SUV", location: "Ernakulam", seats: 5, price: 1800, image: "/images/cars/tata-nexon.jpg", showcaseImage: "/images/cars/slideshow/tata-nexon-cutout.png", accent: "#e7e9e1", tag: "Portfolio demo" },
-  { id: 904, name: "Honda Amaze", category: "Sedan", location: "Palakkad", seats: 4, price: 1400, image: "/images/cars/honda-amaze.jpg", accent: "#e8ece9", tag: "Portfolio demo" },
-  { id: 905, name: "Maruti Swift Dzire", category: "Sedan", location: "Alappuzha", seats: 5, price: 1500, image: "/images/cars/maruti-dzire.jpg", showcaseImage: "/images/cars/slideshow/maruti-dzire-cutout.png", accent: "#ece9df" },
-  { id: 906, name: "Mahindra Scorpio", category: "SUV", location: "Kannur", seats: 7, price: 2800, image: "/images/cars/mahindra-scorpio.jpg", accent: "#e4e7e5", tag: "7 seats · demo" },
+  { id: 901, name: "MG Astor", category: "SUV", location: "Kozhikode", seats: 5, price: 2500, image: repositoryImage("/images/cars/mg-astor.jpg"), showcaseImage: repositoryImage("/images/cars/slideshow/mg-astor-cutout.png"), accent: "#f4e8dc", tag: "Portfolio demo" },
+  { id: 902, name: "Toyota Innova Crysta", category: "Premium", location: "Trivandrum", seats: 7, price: 3200, image: repositoryImage("/images/cars/toyota-innova.jpg"), showcaseImage: repositoryImage("/images/cars/slideshow/toyota-innova-cutout.png"), accent: "#e9ece6", tag: "7 seats · demo" },
+  { id: 903, name: "Tata Nexon", category: "SUV", location: "Ernakulam", seats: 5, price: 1800, image: repositoryImage("/images/cars/tata-nexon.jpg"), showcaseImage: repositoryImage("/images/cars/slideshow/tata-nexon-cutout.png"), accent: "#e7e9e1", tag: "Portfolio demo" },
+  { id: 904, name: "Honda Amaze", category: "Sedan", location: "Palakkad", seats: 4, price: 1400, image: repositoryImage("/images/cars/honda-amaze.jpg"), accent: "#e8ece9", tag: "Portfolio demo" },
+  { id: 905, name: "Maruti Swift Dzire", category: "Sedan", location: "Alappuzha", seats: 5, price: 1500, image: repositoryImage("/images/cars/maruti-dzire.jpg"), showcaseImage: repositoryImage("/images/cars/slideshow/maruti-dzire-cutout.png"), accent: "#ece9df" },
+  { id: 906, name: "Mahindra Scorpio", category: "SUV", location: "Kannur", seats: 7, price: 2800, image: repositoryImage("/images/cars/mahindra-scorpio.jpg"), accent: "#e4e7e5", tag: "7 seats · demo" },
 ];
 
 const categories = ["All cars", "SUV", "Sedan", "Compact", "Premium"] as const;
 type CategoryFilter = (typeof categories)[number];
+const fuelFilters: FuelFilter[] = ["All fuels", "Petrol", "Diesel", "CNG", "EV", "Hybrid"];
 
 const featureSlides = [
   { carId: 901, firstLine: "The road is", secondLine: "yours.", eyebrow: "THE WEEKEND EDIT", copy: "Set out from Kozhikode in the MG Astor and leave room for a few unexpected turns." },
@@ -94,7 +104,7 @@ function CarShowcase() {
       </div>
       <div className="showcase-visual" key={vehicle.id}>
         <span className="showcase-index">0{activeSlide + 1}<i />0{featureSlides.length}</span>
-        <Image src={vehicle.showcaseImage ?? vehicle.image} alt={`${vehicle.name}, featured rental car`} fill priority={activeSlide === 0} sizes="(max-width: 700px) 100vw, 62vw" className={`showcase-car showcase-car-${vehicle.id}`} />
+        <Image src={vehicle.showcaseImage ?? vehicle.image} alt={`${vehicle.name}, featured rental car`} fill priority={activeSlide === 0} unoptimized sizes="(max-width: 700px) 100vw, 62vw" className={`showcase-car showcase-car-${vehicle.id}`} />
         {vehicle.imageCredit && vehicle.imageSourceUrl ? <a className="showcase-photo-credit" href={vehicle.imageSourceUrl} target="_blank" rel="noreferrer">Photo: {vehicle.imageCredit} · {vehicle.imageLicense}{vehicle.imageIsIllustrative ? " · representative" : ""}</a> : null}
         <span className="showcase-vertical" aria-hidden="true">ROVE MOBILITY · KERALA</span>
       </div>
@@ -124,7 +134,7 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
       <div className="vehicle-info">
         <div className="vehicle-name-row"><div><span className="vehicle-category">{vehicle.category}</span><h3>{vehicle.name}</h3></div></div>
         <p className="vehicle-meta">{vehicle.seats} seats{vehicle.fuelType ? <> <span>·</span> {vehicle.fuelType}</> : null}{vehicle.modelYear ? <> <span>·</span> {vehicle.modelYear}</> : null} <span>·</span> {vehicle.location}</p>
-        {vehicle.imageCredit && vehicle.imageSourceUrl ? <a className="photo-credit" href={vehicle.imageSourceUrl} target="_blank" rel="noreferrer">Photo: {vehicle.imageCredit} · {vehicle.imageLicense}{vehicle.imageIsIllustrative ? " · representative" : ""}</a> : null}
+        {vehicle.imageCredit && vehicle.imageSourceUrl ? <span className="photo-credit">Photo: <a href={vehicle.imageSourceUrl} target="_blank" rel="noreferrer">{vehicle.imageCredit} · {vehicle.imageLicense}</a>{vehicle.imageAttributionUrl ? <> · <a href={vehicle.imageAttributionUrl} target="_blank" rel="noreferrer">license</a></> : null}{vehicle.imageIsIllustrative ? " · representative" : ""}</span> : null}
         <div className="vehicle-bottom"><p><strong>₹{vehicle.price.toLocaleString("en-IN")}</strong><span> / day</span></p><a className="text-link" href={`/customer/login?car=${vehicle.id}`}>View car <ArrowIcon /></a></div>
       </div>
     </article>
@@ -132,8 +142,10 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
 }
 
 export default function LandingPage() {
-  const [catalog, setCatalog] = useState<Vehicle[]>(vehicles);
+  const [catalog, setCatalog] = useState<Vehicle[]>([]);
+  const [catalogLoaded, setCatalogLoaded] = useState(false);
   const [category, setCategory] = useState<CategoryFilter>("All cars");
+  const [fuelFilter, setFuelFilter] = useState<FuelFilter>("All fuels");
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("");
   const [showAll, setShowAll] = useState(false);
@@ -142,29 +154,43 @@ export default function LandingPage() {
     const loadFleet = () => {
       void fetch("/api/backend-proxy/api/cars", { cache: "no-store" })
         .then((response) => response.ok ? response.json() : Promise.reject(new Error("Fleet unavailable")))
-        .then((result: { cars: Array<{ id: number; name: string; city: string; capacity: string; rent: string; image: string; fuel_type?: string; model_year?: number | null; is_demo?: boolean; image_credit?: string; image_license?: string; image_source_url?: string; image_is_illustrative?: boolean }> }) => {
-          if (!active || !Array.isArray(result.cars) || result.cars.length === 0) return;
+        .then((result: { cars: Array<{ id: number; name: string; city: string; capacity: string; rent: string; image: string; fuel_type?: string; model_year?: number | null; is_demo?: boolean; image_credit?: string; image_license?: string; image_source_url?: string; image_attribution_url?: string; image_is_illustrative?: boolean }> }) => {
+          if (!active) return;
+          if (!Array.isArray(result.cars)) { setCatalog([]); setCatalogLoaded(true); return; }
           setCatalog(result.cars.map((car) => {
             const preview = vehicles.find((item) => item.id === car.id);
             const seats = Number.parseInt(car.capacity, 10) || 4;
             const name = car.name.toLowerCase();
             const category: VehicleCategory = /bmw|mercedes|audi|innova|premium/.test(name) ? "Premium" : /swift|hatch|alto|compact/.test(name) ? "Compact" : /sedan|amaze|dzire|city|verna/.test(name) ? "Sedan" : "SUV";
-            return { id: car.id, name: car.name, category, location: car.city || "Kerala", seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image || preview?.image || "/images/cars/mg-astor.jpg", fuelType: car.fuel_type, modelYear: car.model_year, imageCredit: car.image_credit, imageLicense: car.image_license, imageSourceUrl: car.image_source_url, imageIsIllustrative: car.image_is_illustrative, showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: car.is_demo ? "Sample listing" : seats >= 7 ? `${seats} seats` : undefined };
+            const modelPhoto = modelPhotoOverrides[name];
+            return { id: car.id, name: car.name, category, location: car.city || "Kerala", seats, price: Number.parseInt(car.rent, 10) || 0, image: modelPhoto ?? car.image ?? preview?.image ?? "", fuelType: car.fuel_type, modelYear: car.model_year, imageCredit: modelPhoto ? "Rove Mobility project visual" : car.image_credit, imageLicense: modelPhoto ? "Project image" : car.image_license, imageSourceUrl: modelPhoto ? "https://github.com/akhilmadhuklkl/Online-Car-Rental-System-Project/tree/main/frontend/public/images/cars/slideshow" : car.image_source_url, imageAttributionUrl: modelPhoto ? undefined : car.image_attribution_url, imageIsIllustrative: modelPhoto ? true : car.image_is_illustrative, showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: car.is_demo ? "Sample listing" : seats >= 7 ? `${seats} seats` : undefined };
           }));
+          setCatalogLoaded(true);
         })
-        .catch(() => undefined);
+        .catch(() => { if (active) { setCatalog([]); setCatalogLoaded(true); } });
     };
     loadFleet();
     const interval = window.setInterval(loadFleet, 20000);
     return () => { active = false; window.clearInterval(interval); };
   }, []);
 
-  const matchingVehicles = useMemo(() => catalog.filter((vehicle) => {
+  const matchingVehicles = useMemo(() => {
+    const filtered = catalog.filter((vehicle) => {
     const matchesCategory = category === "All cars" || vehicle.category === category;
+    const matchesFuel = fuelFilter === "All fuels" || vehicle.fuelType?.toLowerCase() === fuelFilter.toLowerCase();
     const searchable = `${vehicle.name} ${vehicle.category} ${vehicle.location}`.toLowerCase();
-    return matchesCategory && searchable.includes(query.trim().toLowerCase()) && (!location.trim() || vehicle.location.toLowerCase().includes(location.trim().toLowerCase()));
-  }), [catalog, category, location, query]);
-  const shownVehicles = showAll ? matchingVehicles : matchingVehicles.slice(0, 3);
+    return matchesCategory && matchesFuel && searchable.includes(query.trim().toLowerCase()) && (!location.trim() || vehicle.location.toLowerCase().includes(location.trim().toLowerCase()));
+    });
+    const unique = [...new Map(filtered.map((vehicle) => [`${vehicle.name.toLowerCase()}:${vehicle.fuelType?.toLowerCase() ?? "unknown"}:${vehicle.modelYear ?? ""}`, vehicle])).values()];
+    const fuelOrder = ["Petrol", "Diesel", "CNG", "EV", "Hybrid"];
+    const groups = fuelOrder.map((fuel) => unique.filter((vehicle) => vehicle.fuelType?.toLowerCase() === fuel.toLowerCase()));
+    const diversified: Vehicle[] = [];
+    for (let index = 0; groups.some((group) => index < group.length); index += 1) {
+      for (const group of groups) if (group[index]) diversified.push(group[index]);
+    }
+    return diversified;
+  }, [catalog, category, fuelFilter, location, query]);
+  const shownVehicles = showAll ? matchingVehicles : matchingVehicles.slice(0, 12);
 
   function searchFleet(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -195,14 +221,15 @@ export default function LandingPage() {
       <section className="intro-section" id="how-it-works">
         <div className="intro-copy"><p className="eyebrow"><span className="eyebrow-line" /> A LITTLE MORE FREEDOM</p><h2>Good trips start<br />with <em>great drives.</em></h2></div>
         <p className="intro-description">Skip the counter queues and the one-size-fits-all. Find the right car for your kind of trip, from people who know their cars best.</p>
-        <div className="intro-stat"><strong>{catalog.length}</strong><span>cars to explore<br />in the current fleet</span></div>
+        <div className="intro-stat"><strong>{catalogLoaded ? catalog.length : "—"}</strong><span>cars to explore<br />in the current fleet</span></div>
       </section>
 
       <section className="fleet-section" id="fleet">
         <div className="fleet-heading"><div><p className="eyebrow"><span className="eyebrow-line" /> THE GOOD GARAGE</p><h2>Find your <em>kind</em> of ride.</h2></div><a className="text-link view-all-link" href="#fleet" onClick={(event) => { event.preventDefault(); setShowAll(true); }}>See the whole fleet <ArrowIcon /></a></div>
         <div className="fleet-toolbar"><div className="category-tabs" role="group" aria-label="Filter by car type">{categories.map((item) => <button className={`category-tab ${category === item ? "active" : ""}`} type="button" key={item} aria-pressed={category === item} onClick={() => { setCategory(item); setShowAll(false); }}>{item}</button>)}</div><label className="fleet-search"><span aria-hidden="true">⌕</span><input aria-label="Search cars by name, type or city" placeholder="Search the fleet" value={query} onChange={(event) => setQuery(event.target.value)} /><kbd>⌘ K</kbd></label></div>
-        {shownVehicles.length > 0 ? <div className="vehicle-grid">{shownVehicles.map((vehicle) => <VehicleCard key={vehicle.id} vehicle={vehicle} />)}</div> : <div className="empty-state"><span>⌕</span><h3>No rides found just yet</h3><p>Try another city or clear your filters to see the full fleet.</p><button className="text-link" type="button" onClick={() => { setQuery(""); setLocation(""); setCategory("All cars"); }}>Clear filters <ArrowIcon /></button></div>}
-        {matchingVehicles.length > 3 && !showAll ? <button className="button button-outline load-more" type="button" onClick={() => setShowAll(true)}>Explore all {matchingVehicles.length} cars <ArrowIcon /></button> : null}
+        <div className="fuel-filter-tabs" role="group" aria-label="Filter by fuel type">{fuelFilters.map((item) => { const count = item === "All fuels" ? new Set(catalog.map((car) => `${car.name}:${car.fuelType}`)).size : new Set(catalog.filter((car) => car.fuelType?.toLowerCase() === item.toLowerCase()).map((car) => `${car.name}:${car.fuelType}`)).size; return <button className={`fuel-filter ${fuelFilter === item ? "active" : ""}`} type="button" key={item} aria-pressed={fuelFilter === item} onClick={() => { setFuelFilter(item); setShowAll(false); }}>{item}<span className="fuel-filter-count">{count}</span></button>; })}</div>
+        {!catalogLoaded ? <div className="vehicle-loading" role="status">Loading the demo fleet…</div> : shownVehicles.length > 0 ? <div className="vehicle-grid">{shownVehicles.map((vehicle) => <VehicleCard key={vehicle.id} vehicle={vehicle} />)}</div> : <div className="empty-state"><span>⌕</span><h3>No rides found just yet</h3><p>Try another city or clear your filters to see the full fleet.</p><button className="text-link" type="button" onClick={() => { setQuery(""); setLocation(""); setCategory("All cars"); setFuelFilter("All fuels"); setShowAll(false); }}>Clear filters <ArrowIcon /></button></div>}
+        {matchingVehicles.length > shownVehicles.length && !showAll ? <button className="button button-outline load-more" type="button" onClick={() => setShowAll(true)}>Explore all {matchingVehicles.length} cars <ArrowIcon /></button> : null}
       </section>
 
       <section className="steps-section"><div className="steps-heading"><p className="eyebrow"><span className="eyebrow-line" /> THE EASY PART</p><h2>Three steps to <em>out there.</em></h2></div><div className="steps-grid"><article className="step-card"><span className="step-number">01</span><div className="step-symbol">⌕</div><h3>Find your fit</h3><p>Pick a car that feels right for the road and the people coming along.</p></article><article className="step-card"><span className="step-number">02</span><div className="step-symbol">↗</div><h3>Make it yours</h3><p>Share a few trip details. We’ll help you make sure everything’s in place.</p></article><article className="step-card"><span className="step-number">03</span><div className="step-symbol">✳</div><h3>Go make a day of it</h3><p>Meet your host, get the keys and take the scenic route for once.</p></article></div></section>

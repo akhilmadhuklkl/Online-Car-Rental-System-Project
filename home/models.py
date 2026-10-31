@@ -25,6 +25,7 @@ class Car(models.Model):
     image_credit = models.CharField(max_length=200, blank=True)
     image_license = models.CharField(max_length=60, blank=True)
     image_source_url = models.URLField(blank=True)
+    image_attribution_url = models.URLField(blank=True)
     image_is_illustrative = models.BooleanField(default=False)
     car_dealer = models.ForeignKey(CarDealer, on_delete=models.PROTECT)
     capacity = models.CharField(max_length=2)

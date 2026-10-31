@@ -30,7 +30,7 @@
       "Hatchback",
       5,
       2000,
-      "hatch"
+      "baleno"
     ],
     [
       "maruti-dzire-2024-petrol",
@@ -50,7 +50,7 @@
       "Hatchback",
       5,
       1500,
-      "hatch"
+      "wagonr"
     ],
     [
       "maruti-ertiga-2023-petrol",
@@ -70,7 +70,7 @@
       "SUV",
       5,
       2500,
-      "suv"
+      "brezza"
     ],
     [
       "maruti-grand-vitara-2024-hybrid",
@@ -80,7 +80,7 @@
       "SUV",
       5,
       3200,
-      "suv"
+      "grand-vitara"
     ],
     [
       "maruti-alto800-2018-petrol",
@@ -100,7 +100,7 @@
       "Hatchback",
       5,
       1250,
-      "hatch"
+      "santro"
     ],
     [
       "hyundai-grand-i10-2022-cng",
@@ -200,7 +200,7 @@
       "Hatchback",
       5,
       2100,
-      "ev"
+      "tiago-ev"
     ],
     [
       "tata-tigor-2022-cng",
@@ -330,7 +330,7 @@
       "SUV",
       7,
       4200,
-      "xuv700"
+      "xuv700-specific"
     ],
     [
       "mahindra-xuv700-2024-petrol",
@@ -340,7 +340,7 @@
       "SUV",
       7,
       4100,
-      "xuv700"
+      "xuv700-specific"
     ],
     [
       "mahindra-xuv500-2019-diesel",
@@ -453,9 +453,9 @@
       "hatch"
     ],
     [
-      "tata-sierra-2026-petrol",
+      "tata-sierra-demo-petrol",
       "Tata Sierra",
-      2026,
+      2025,
       "Petrol",
       "SUV",
       5,
@@ -463,9 +463,9 @@
       "suv"
     ],
     [
-      "tata-sierra-2026-diesel",
+      "tata-sierra-demo-diesel",
       "Tata Sierra",
-      2026,
+      2025,
       "Diesel",
       "SUV",
       5,
@@ -473,9 +473,9 @@
       "suv"
     ],
     [
-      "mahindra-xev-9s-2026-ev",
+      "mahindra-xev-9s-demo-ev",
       "Mahindra XEV 9S",
-      2026,
+      2025,
       "EV",
       "SUV",
       7,
@@ -483,9 +483,9 @@
       "ev"
     ],
     [
-      "mahindra-xuv-7xo-2026-petrol",
+      "mahindra-xuv-7xo-demo-petrol",
       "Mahindra XUV 7XO",
-      2026,
+      2025,
       "Petrol",
       "SUV",
       7,
@@ -493,9 +493,9 @@
       "xuv700"
     ],
     [
-      "mahindra-xuv-7xo-2026-diesel",
+      "mahindra-xuv-7xo-demo-diesel",
       "Mahindra XUV 7XO",
-      2026,
+      2025,
       "Diesel",
       "SUV",
       7,
@@ -503,9 +503,9 @@
       "xuv700"
     ],
     [
-      "maruti-e-vitara-2026-ev",
+      "maruti-e-vitara-demo-ev",
       "Maruti Suzuki e Vitara",
-      2026,
+      2025,
       "EV",
       "SUV",
       5,
@@ -520,7 +520,9 @@
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Swift_2093.JPG",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/swift.jpg"
+      "asset_path": "/images/cars/fleet/swift.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Maruti_Suzuki_Swift_2093.JPG/1280px-Maruti_Suzuki_Swift_2093.JPG",
+      "attribution_url": "https://creativecommons.org/licenses/by/3.0"
     },
     "dzire": {
       "filename": "Maruti Suzuki Swift 2093.JPG",
@@ -528,7 +530,9 @@
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Swift_2093.JPG",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/swift.jpg"
+      "asset_path": "/images/cars/fleet/swift.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Maruti_Suzuki_Swift_2093.JPG/1280px-Maruti_Suzuki_Swift_2093.JPG",
+      "attribution_url": "https://creativecommons.org/licenses/by/3.0"
     },
     "ertiga": {
       "filename": "Maruti Suzuki Ertiga(1).jpg",
@@ -536,7 +540,9 @@
       "license": "CC0 1.0",
       "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Ertiga(1).jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/ertiga.jpg"
+      "asset_path": "/images/cars/fleet/ertiga.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Maruti_Suzuki_Ertiga(1).jpg/1280px-Maruti_Suzuki_Ertiga(1).jpg",
+      "attribution_url": "https://creativecommons.org/publicdomain/zero/1.0/"
     },
     "creta": {
       "filename": "Hyundai Creta 1.5 Design 2024.jpg",
@@ -544,7 +550,9 @@
       "license": "CC BY-SA 4.0",
       "page": "https://commons.wikimedia.org/wiki/File:Hyundai_Creta_1.5_Design_2024.jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/creta.jpg"
+      "asset_path": "/images/cars/fleet/creta.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Hyundai_Creta_1.5_Design_2024.jpg/1280px-Hyundai_Creta_1.5_Design_2024.jpg",
+      "attribution_url": "https://creativecommons.org/licenses/by-sa/4.0"
     },
     "venue": {
       "filename": "Hyundai Venue Washington DC Metro Area, USA (1).jpg",
@@ -552,7 +560,9 @@
       "license": "CC BY 4.0",
       "page": "https://commons.wikimedia.org/wiki/File:Hyundai_Venue_Washington_DC_Metro_Area,_USA_(1).jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/venue.jpg"
+      "asset_path": "/images/cars/fleet/venue.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Hyundai_Venue_Washington_DC_Metro_Area,_USA_(1).jpg/1280px-Hyundai_Venue_Washington_DC_Metro_Area,_USA_(1).jpg",
+      "attribution_url": "https://creativecommons.org/licenses/by-sa/4.0"
     },
     "tiago": {
       "filename": "Tata tiago.jpg",
@@ -560,7 +570,9 @@
       "license": "CC BY-SA 4.0",
       "page": "https://commons.wikimedia.org/wiki/File:Tata_tiago.jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/tiago.jpg"
+      "asset_path": "/images/cars/fleet/tiago.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Tata_tiago.jpg/1280px-Tata_tiago.jpg",
+      "attribution_url": "https://creativecommons.org/licenses/by-sa/4.0"
     },
     "punch": {
       "filename": "2021 Tata Punch Creative (India) front view 01.png",
@@ -568,7 +580,9 @@
       "license": "CC BY 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:2021_Tata_Punch_Creative_(India)_front_view_01.png",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/punch.png"
+      "asset_path": "/images/cars/fleet/punch.png",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/2021_Tata_Punch_Creative_(India)_front_view_01.png/1280px-2021_Tata_Punch_Creative_(India)_front_view_01.png",
+      "attribution_url": "https://creativecommons.org/licenses/by/3.0"
     },
     "nexon": {
       "filename": "Tata Nexon Blue Dual Tone.jpg",
@@ -576,7 +590,9 @@
       "license": "Public domain",
       "page": "https://commons.wikimedia.org/wiki/File:Tata_Nexon_Blue_Dual_Tone.jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/nexon.jpg"
+      "asset_path": "/images/cars/fleet/nexon.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Tata_Nexon_Blue_Dual_Tone.jpg/1280px-Tata_Nexon_Blue_Dual_Tone.jpg",
+      "attribution_url": "https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=Tata%20Nexon%20Blue%20Dual%20Tone.jpg"
     },
     "ev": {
       "filename": "2020 Tata Nexon EV (India) front view.png",
@@ -584,7 +600,9 @@
       "license": "CC BY 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:2020_Tata_Nexon_EV_(India)_front_view.png",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/nexon-ev.png"
+      "asset_path": "/images/cars/fleet/nexon-ev.png",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/2020_Tata_Nexon_EV_(India)_front_view.png/1280px-2020_Tata_Nexon_EV_(India)_front_view.png",
+      "attribution_url": "https://creativecommons.org/licenses/by/3.0"
     },
     "thar": {
       "filename": "Mahindra Thar in dark red.jpg",
@@ -592,7 +610,9 @@
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:Mahindra_Thar_in_dark_red.jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/thar.jpg"
+      "asset_path": "/images/cars/fleet/thar.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Mahindra_Thar_in_dark_red.jpg/1280px-Mahindra_Thar_in_dark_red.jpg",
+      "attribution_url": "https://creativecommons.org/licenses/by/3.0"
     },
     "xuv700": {
       "filename": "2023 Mahindra XUV700 AX7L front.jpg",
@@ -600,7 +620,9 @@
       "license": "CC BY-SA 4.0",
       "page": "https://commons.wikimedia.org/wiki/File:2023_Mahindra_XUV700_AX7L_front.jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/xuv700.jpg"
+      "asset_path": "/images/cars/fleet/xuv700.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/2023_Mahindra_XUV700_AX7L_front.jpg/1280px-2023_Mahindra_XUV700_AX7L_front.jpg",
+      "attribution_url": "https://creativecommons.org/licenses/by-sa/4.0"
     },
     "seltos": {
       "filename": "Kia Seltos X-line.jpg",
@@ -608,7 +630,9 @@
       "license": "CC0 1.0",
       "page": "https://commons.wikimedia.org/wiki/File:Kia_Seltos_X-line.jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/seltos.jpg"
+      "asset_path": "/images/cars/fleet/seltos.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Kia_Seltos_X-line.jpg/1280px-Kia_Seltos_X-line.jpg",
+      "attribution_url": "https://creativecommons.org/publicdomain/zero/1.0/"
     },
     "city": {
       "filename": "HondaCityIndiaAsia.jpg",
@@ -616,7 +640,9 @@
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:HondaCityIndiaAsia.jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/city.jpg"
+      "asset_path": "/images/cars/fleet/city.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/HondaCityIndiaAsia.jpg/1280px-HondaCityIndiaAsia.jpg",
+      "attribution_url": "https://creativecommons.org/licenses/by/3.0"
     },
     "hatch": {
       "filename": "Maruti Suzuki Swift 2093.JPG",
@@ -624,7 +650,9 @@
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Swift_2093.JPG",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/swift.jpg"
+      "asset_path": "/images/cars/fleet/swift.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Maruti_Suzuki_Swift_2093.JPG/1280px-Maruti_Suzuki_Swift_2093.JPG",
+      "attribution_url": "https://creativecommons.org/licenses/by/3.0"
     },
     "sedan": {
       "filename": "HondaCityIndiaAsia.jpg",
@@ -632,7 +660,9 @@
       "license": "CC BY-SA 3.0",
       "page": "https://commons.wikimedia.org/wiki/File:HondaCityIndiaAsia.jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/city.jpg"
+      "asset_path": "/images/cars/fleet/city.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/HondaCityIndiaAsia.jpg/1280px-HondaCityIndiaAsia.jpg",
+      "attribution_url": "https://creativecommons.org/licenses/by/3.0"
     },
     "suv": {
       "filename": "2023 Mahindra XUV700 AX7L front.jpg",
@@ -640,7 +670,9 @@
       "license": "CC BY-SA 4.0",
       "page": "https://commons.wikimedia.org/wiki/File:2023_Mahindra_XUV700_AX7L_front.jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/xuv700.jpg"
+      "asset_path": "/images/cars/fleet/xuv700.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/2023_Mahindra_XUV700_AX7L_front.jpg/1280px-2023_Mahindra_XUV700_AX7L_front.jpg",
+      "attribution_url": "https://creativecommons.org/licenses/by-sa/4.0"
     },
     "mpv": {
       "filename": "Maruti Suzuki Ertiga(1).jpg",
@@ -648,7 +680,79 @@
       "license": "CC0 1.0",
       "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Ertiga(1).jpg",
       "illustrative": true,
-      "asset_path": "/images/cars/fleet/ertiga.jpg"
+      "asset_path": "/images/cars/fleet/ertiga.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Maruti_Suzuki_Ertiga(1).jpg/1280px-Maruti_Suzuki_Ertiga(1).jpg",
+      "attribution_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+    },
+    "baleno": {
+      "filename": "2022 Maruti Suzuki Baleno Alpha (India) front view.jpg",
+      "author": "Milind Kwatra",
+      "license": "CC BY 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2022_Maruti_Suzuki_Baleno_Alpha_(India)_front_view.jpg",
+      "attribution_url": "https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=2022%20Maruti%20Suzuki%20Baleno%20Alpha%20(India)%20front%20view.jpg",
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/baleno.jpg",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/2022_Maruti_Suzuki_Baleno_Alpha_(India)_front_view.jpg"
+    },
+    "wagonr": {
+      "filename": "2020 Maruti Suzuki Wagon R VXi (O) (India) front view.png",
+      "author": "Riding Hub",
+      "license": "CC BY 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2020_Maruti_Suzuki_Wagon_R_VXi_(O)_(India)_front_view.png",
+      "attribution_url": "https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=2020%20Maruti%20Suzuki%20Wagon%20R%20VXi%20(O)%20(India)%20front%20view.png",
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/wagonr.png",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/2020_Maruti_Suzuki_Wagon_R_VXi_(O)_(India)_front_view.png"
+    },
+    "grand-vitara": {
+      "filename": "2022 Maruti Suzuki Grand Vitara Alpha Smart Hybrid (India) front view.png",
+      "author": "Explorer Rider",
+      "license": "CC BY 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2022_Maruti_Suzuki_Grand_Vitara_Alpha_Smart_Hybrid_(India)_front_view.png",
+      "attribution_url": "https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=2022%20Maruti%20Suzuki%20Grand%20Vitara%20Alpha%20Smart%20Hybrid%20(India)%20front%20view.png",
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/grand-vitara.png",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/2022_Maruti_Suzuki_Grand_Vitara_Alpha_Smart_Hybrid_(India)_front_view.png"
+    },
+    "brezza": {
+      "filename": "2022 Maruti Suzuki Brezza ZXi+ (India) front view 01.png",
+      "author": "DriveSpark",
+      "license": "CC BY 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2022_Maruti_Suzuki_Brezza_ZXi+_(India)_front_view_01.png",
+      "attribution_url": "https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=2022%20Maruti%20Suzuki%20Brezza%20ZXi+%20(India)%20front%20view%2001.png",
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/brezza.png",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/2022_Maruti_Suzuki_Brezza_ZXi+_(India)_front_view_01.png"
+    },
+    "santro": {
+      "filename": "2018 Hyundai Santro (India, front view).png",
+      "author": "Cars Planet",
+      "license": "CC BY 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2018_Hyundai_Santro_(India,_front_view).png",
+      "attribution_url": "https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=2018%20Hyundai%20Santro%20(India,%20front%20view).png",
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/santro.png",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/2018_Hyundai_Santro_(India,_front_view).png"
+    },
+    "tiago-ev": {
+      "filename": "2022 Tata Tiago EV IB XZ+ Tech LR front view.png",
+      "author": "DriveSpark",
+      "license": "CC BY 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2022_Tata_Tiago_EV_IB_XZ+_Tech_LR_front_view.png",
+      "attribution_url": "https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=2022%20Tata%20Tiago%20EV%20IB%20XZ+%20Tech%20LR%20front%20view.png",
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/tiago-ev.png",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/2022_Tata_Tiago_EV_IB_XZ+_Tech_LR_front_view.png"
+    },
+    "xuv700-specific": {
+      "filename": "2021 Mahindra XUV700 2.2 AX7 (India) front view.png",
+      "author": "DriveSpark",
+      "license": "CC BY 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2021_Mahindra_XUV700_2.2_AX7_(India)_front_view.png",
+      "attribution_url": "https://commons.wikimedia.org/wiki/Special:MediaSearch?type=image&search=2021%20Mahindra%20XUV700%202.2%20AX7%20(India)%20front%20view.png",
+      "illustrative": true,
+      "asset_path": "/images/cars/fleet/xuv700-specific.png",
+      "remote_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/2021_Mahindra_XUV700_2.2_AX7_(India)_front_view.png"
     }
   }
 }

@@ -20,12 +20,21 @@ class CarDealer(models.Model):
 
 class Car(models.Model):
     name = models.CharField(max_length=50)
-    image = models.ImageField(upload_to="")
+    image = models.ImageField(upload_to="", blank=True)
+    image_url = models.URLField(blank=True)
+    image_credit = models.CharField(max_length=200, blank=True)
+    image_license = models.CharField(max_length=60, blank=True)
+    image_source_url = models.URLField(blank=True)
+    image_is_illustrative = models.BooleanField(default=False)
     car_dealer = models.ForeignKey(CarDealer, on_delete=models.PROTECT)
     capacity = models.CharField(max_length=2)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True)
     is_available = models.BooleanField(default=True)
     rent = models.CharField(max_length=10, blank=True)
+    fuel_type = models.CharField(max_length=20, blank=True)
+    model_year = models.PositiveSmallIntegerField(null=True, blank=True)
+    is_demo = models.BooleanField(default=False)
+    portfolio_seed_key = models.CharField(max_length=150, null=True, blank=True, unique=True, editable=False)
 
     def __str__(self):
         return self.name

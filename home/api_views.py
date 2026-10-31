@@ -56,10 +56,13 @@ def _json_body(request):
 
 
 def _car_data(car):
-    try:
-        image = car.image.url
-    except (ValueError, AttributeError):
-        image = ""
+    if car.image_url:
+        image = car.image_url
+    else:
+        try:
+            image = car.image.url
+        except (ValueError, AttributeError):
+            image = ""
     if image.startswith("/"):
         image = "/api/backend-proxy" + image
     return {
@@ -70,6 +73,13 @@ def _car_data(car):
         "rent": car.rent,
         "is_available": car.is_available,
         "image": image,
+        "fuel_type": car.fuel_type,
+        "model_year": car.model_year,
+        "is_demo": car.is_demo,
+        "image_credit": car.image_credit,
+        "image_license": car.image_license,
+        "image_source_url": car.image_source_url,
+        "image_is_illustrative": car.image_is_illustrative,
     }
 
 

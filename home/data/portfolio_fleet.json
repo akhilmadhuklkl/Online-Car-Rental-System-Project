@@ -1,0 +1,637 @@
+{
+  "cities": [
+    "Kochi",
+    "Thiruvananthapuram",
+    "Kozhikode",
+    "Bengaluru",
+    "Chennai",
+    "Hyderabad",
+    "Mumbai",
+    "Pune",
+    "Delhi",
+    "Jaipur"
+  ],
+  "models": [
+    [
+      "maruti-swift-2024-petrol",
+      "Maruti Suzuki Swift",
+      2024,
+      "Petrol",
+      "Hatchback",
+      5,
+      1800,
+      "swift"
+    ],
+    [
+      "maruti-baleno-2023-petrol",
+      "Maruti Suzuki Baleno",
+      2023,
+      "Petrol",
+      "Hatchback",
+      5,
+      2000,
+      "hatch"
+    ],
+    [
+      "maruti-dzire-2024-petrol",
+      "Maruti Suzuki Dzire",
+      2024,
+      "Petrol",
+      "Sedan",
+      5,
+      1900,
+      "dzire"
+    ],
+    [
+      "maruti-wagonr-2021-cng",
+      "Maruti Suzuki Wagon R",
+      2021,
+      "CNG",
+      "Hatchback",
+      5,
+      1500,
+      "hatch"
+    ],
+    [
+      "maruti-ertiga-2023-petrol",
+      "Maruti Suzuki Ertiga",
+      2023,
+      "Petrol",
+      "MPV",
+      7,
+      2800,
+      "ertiga"
+    ],
+    [
+      "maruti-brezza-2024-petrol",
+      "Maruti Suzuki Brezza",
+      2024,
+      "Petrol",
+      "SUV",
+      5,
+      2500,
+      "suv"
+    ],
+    [
+      "maruti-grand-vitara-2024-hybrid",
+      "Maruti Suzuki Grand Vitara",
+      2024,
+      "Hybrid",
+      "SUV",
+      5,
+      3200,
+      "suv"
+    ],
+    [
+      "maruti-alto800-2018-petrol",
+      "Maruti Suzuki Alto 800",
+      2018,
+      "Petrol",
+      "Hatchback",
+      5,
+      1100,
+      "hatch"
+    ],
+    [
+      "hyundai-santro-2019-petrol",
+      "Hyundai Santro",
+      2019,
+      "Petrol",
+      "Hatchback",
+      5,
+      1250,
+      "hatch"
+    ],
+    [
+      "hyundai-grand-i10-2022-cng",
+      "Hyundai Grand i10 Nios",
+      2022,
+      "CNG",
+      "Hatchback",
+      5,
+      1550,
+      "hatch"
+    ],
+    [
+      "hyundai-i20-2024-petrol",
+      "Hyundai i20",
+      2024,
+      "Petrol",
+      "Hatchback",
+      5,
+      2200,
+      "hatch"
+    ],
+    [
+      "hyundai-creta-2023-diesel",
+      "Hyundai Creta",
+      2023,
+      "Diesel",
+      "SUV",
+      5,
+      3100,
+      "creta"
+    ],
+    [
+      "hyundai-creta-2024-petrol",
+      "Hyundai Creta",
+      2024,
+      "Petrol",
+      "SUV",
+      5,
+      3000,
+      "creta"
+    ],
+    [
+      "hyundai-venue-2024-petrol",
+      "Hyundai Venue",
+      2024,
+      "Petrol",
+      "SUV",
+      5,
+      2500,
+      "venue"
+    ],
+    [
+      "hyundai-aura-2023-cng",
+      "Hyundai Aura",
+      2023,
+      "CNG",
+      "Sedan",
+      5,
+      1750,
+      "sedan"
+    ],
+    [
+      "hyundai-exter-2024-cng",
+      "Hyundai Exter",
+      2024,
+      "CNG",
+      "SUV",
+      5,
+      1900,
+      "suv"
+    ],
+    [
+      "tata-tiago-2024-petrol",
+      "Tata Tiago",
+      2024,
+      "Petrol",
+      "Hatchback",
+      5,
+      1500,
+      "tiago"
+    ],
+    [
+      "tata-tiago-2023-cng",
+      "Tata Tiago",
+      2023,
+      "CNG",
+      "Hatchback",
+      5,
+      1550,
+      "tiago"
+    ],
+    [
+      "tata-tiago-ev-2024",
+      "Tata Tiago EV",
+      2024,
+      "EV",
+      "Hatchback",
+      5,
+      2100,
+      "ev"
+    ],
+    [
+      "tata-tigor-2022-cng",
+      "Tata Tigor",
+      2022,
+      "CNG",
+      "Sedan",
+      5,
+      1600,
+      "sedan"
+    ],
+    [
+      "tata-punch-2024-petrol",
+      "Tata Punch",
+      2024,
+      "Petrol",
+      "SUV",
+      5,
+      1900,
+      "punch"
+    ],
+    [
+      "tata-punch-ev-2024",
+      "Tata Punch EV",
+      2024,
+      "EV",
+      "SUV",
+      5,
+      2400,
+      "ev"
+    ],
+    [
+      "tata-altroz-2024-diesel",
+      "Tata Altroz",
+      2024,
+      "Diesel",
+      "Hatchback",
+      5,
+      1900,
+      "hatch"
+    ],
+    [
+      "tata-nexon-2024-petrol",
+      "Tata Nexon",
+      2024,
+      "Petrol",
+      "SUV",
+      5,
+      2500,
+      "nexon"
+    ],
+    [
+      "tata-nexon-ev-2023",
+      "Tata Nexon EV",
+      2023,
+      "EV",
+      "SUV",
+      5,
+      2900,
+      "ev"
+    ],
+    [
+      "tata-harrier-2023-diesel",
+      "Tata Harrier",
+      2023,
+      "Diesel",
+      "SUV",
+      5,
+      3400,
+      "suv"
+    ],
+    [
+      "tata-safari-2022-diesel",
+      "Tata Safari",
+      2022,
+      "Diesel",
+      "SUV",
+      7,
+      3900,
+      "suv"
+    ],
+    [
+      "tata-nano-2015-petrol",
+      "Tata Nano",
+      2015,
+      "Petrol",
+      "Hatchback",
+      4,
+      900,
+      "hatch"
+    ],
+    [
+      "mahindra-thar-2023-diesel",
+      "Mahindra Thar",
+      2023,
+      "Diesel",
+      "SUV",
+      4,
+      3900,
+      "thar"
+    ],
+    [
+      "mahindra-scorpio-classic-2023-diesel",
+      "Mahindra Scorpio Classic",
+      2023,
+      "Diesel",
+      "SUV",
+      7,
+      3400,
+      "suv"
+    ],
+    [
+      "mahindra-scorpio-n-2024-petrol",
+      "Mahindra Scorpio N",
+      2024,
+      "Petrol",
+      "SUV",
+      7,
+      3900,
+      "suv"
+    ],
+    [
+      "mahindra-xuv700-2024-diesel",
+      "Mahindra XUV700",
+      2024,
+      "Diesel",
+      "SUV",
+      7,
+      4200,
+      "xuv700"
+    ],
+    [
+      "mahindra-xuv700-2024-petrol",
+      "Mahindra XUV700",
+      2024,
+      "Petrol",
+      "SUV",
+      7,
+      4100,
+      "xuv700"
+    ],
+    [
+      "mahindra-xuv500-2019-diesel",
+      "Mahindra XUV500",
+      2019,
+      "Diesel",
+      "SUV",
+      7,
+      2600,
+      "suv"
+    ],
+    [
+      "mahindra-bolero-2022-diesel",
+      "Mahindra Bolero",
+      2022,
+      "Diesel",
+      "SUV",
+      7,
+      2300,
+      "suv"
+    ],
+    [
+      "mahindra-xuv3xo-2024-petrol",
+      "Mahindra XUV 3XO",
+      2024,
+      "Petrol",
+      "SUV",
+      5,
+      2500,
+      "suv"
+    ],
+    [
+      "mahindra-be6-2025-ev",
+      "Mahindra BE 6",
+      2025,
+      "EV",
+      "SUV",
+      5,
+      3600,
+      "ev"
+    ],
+    [
+      "toyota-innova-crysta-2022-diesel",
+      "Toyota Innova Crysta",
+      2022,
+      "Diesel",
+      "MPV",
+      7,
+      3900,
+      "mpv"
+    ],
+    [
+      "toyota-innova-hycross-2024-hybrid",
+      "Toyota Innova Hycross",
+      2024,
+      "Hybrid",
+      "MPV",
+      7,
+      4400,
+      "mpv"
+    ],
+    [
+      "toyota-fortuner-2023-diesel",
+      "Toyota Fortuner",
+      2023,
+      "Diesel",
+      "SUV",
+      7,
+      6500,
+      "suv"
+    ],
+    [
+      "toyota-glanza-2023-petrol",
+      "Toyota Glanza",
+      2023,
+      "Petrol",
+      "Hatchback",
+      5,
+      1900,
+      "hatch"
+    ],
+    [
+      "honda-city-2023-petrol",
+      "Honda City",
+      2023,
+      "Petrol",
+      "Sedan",
+      5,
+      2700,
+      "city"
+    ],
+    [
+      "honda-city-ehev-2023-hybrid",
+      "Honda City e:HEV",
+      2023,
+      "Hybrid",
+      "Sedan",
+      5,
+      3500,
+      "city"
+    ],
+    [
+      "hyundai-eon-2016-petrol",
+      "Hyundai Eon",
+      2016,
+      "Petrol",
+      "Hatchback",
+      5,
+      1000,
+      "hatch"
+    ],
+    [
+      "tata-sierra-2026-petrol",
+      "Tata Sierra",
+      2026,
+      "Petrol",
+      "SUV",
+      5,
+      3300,
+      "suv"
+    ],
+    [
+      "tata-sierra-2026-diesel",
+      "Tata Sierra",
+      2026,
+      "Diesel",
+      "SUV",
+      5,
+      3500,
+      "suv"
+    ],
+    [
+      "mahindra-xev-9s-2026-ev",
+      "Mahindra XEV 9S",
+      2026,
+      "EV",
+      "SUV",
+      7,
+      4800,
+      "ev"
+    ],
+    [
+      "mahindra-xuv-7xo-2026-petrol",
+      "Mahindra XUV 7XO",
+      2026,
+      "Petrol",
+      "SUV",
+      7,
+      4300,
+      "xuv700"
+    ],
+    [
+      "mahindra-xuv-7xo-2026-diesel",
+      "Mahindra XUV 7XO",
+      2026,
+      "Diesel",
+      "SUV",
+      7,
+      4500,
+      "xuv700"
+    ],
+    [
+      "maruti-e-vitara-2026-ev",
+      "Maruti Suzuki e Vitara",
+      2026,
+      "EV",
+      "SUV",
+      5,
+      3200,
+      "ev"
+    ]
+  ],
+  "images": {
+    "swift": {
+      "filename": "Maruti Suzuki Swift 2093.JPG",
+      "author": "Premnath Kudva",
+      "license": "CC BY-SA 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Swift_2093.JPG",
+      "illustrative": true
+    },
+    "dzire": {
+      "filename": "Maruti Suzuki Swift 2093.JPG",
+      "author": "Premnath Kudva",
+      "license": "CC BY-SA 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Swift_2093.JPG",
+      "illustrative": true
+    },
+    "ertiga": {
+      "filename": "Maruti Suzuki Ertiga(1).jpg",
+      "author": "Akashpbrahmavar",
+      "license": "CC0 1.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Ertiga(1).jpg",
+      "illustrative": true
+    },
+    "creta": {
+      "filename": "Hyundai Creta 1.5 Design 2024.jpg",
+      "author": "RL GNZLZ",
+      "license": "CC BY-SA 4.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Hyundai_Creta_1.5_Design_2024.jpg",
+      "illustrative": true
+    },
+    "venue": {
+      "filename": "Hyundai Venue Washington DC Metro Area, USA (1).jpg",
+      "author": "OWS Photography",
+      "license": "CC BY 4.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Hyundai_Venue_Washington_DC_Metro_Area,_USA_(1).jpg",
+      "illustrative": true
+    },
+    "tiago": {
+      "filename": "Tata tiago.jpg",
+      "author": "Bharadwaj 7645",
+      "license": "CC BY-SA 4.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Tata_tiago.jpg",
+      "illustrative": true
+    },
+    "punch": {
+      "filename": "2021 Tata Punch Creative (India) front view 01.png",
+      "author": "Athira Murali",
+      "license": "CC BY 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2021_Tata_Punch_Creative_(India)_front_view_01.png",
+      "illustrative": true
+    },
+    "nexon": {
+      "filename": "Tata Nexon Blue Dual Tone.jpg",
+      "author": "Keithkberger",
+      "license": "Public domain",
+      "page": "https://commons.wikimedia.org/wiki/File:Tata_Nexon_Blue_Dual_Tone.jpg",
+      "illustrative": true
+    },
+    "ev": {
+      "filename": "2020 Tata Nexon EV (India) front view.png",
+      "author": "DriveSpark",
+      "license": "CC BY 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2020_Tata_Nexon_EV_(India)_front_view.png",
+      "illustrative": true
+    },
+    "thar": {
+      "filename": "Mahindra Thar in dark red.jpg",
+      "author": "Arjun Mohan",
+      "license": "CC BY-SA 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Mahindra_Thar_in_dark_red.jpg",
+      "illustrative": true
+    },
+    "xuv700": {
+      "filename": "2023 Mahindra XUV700 AX7L front.jpg",
+      "author": "LuvsMG481",
+      "license": "CC BY-SA 4.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2023_Mahindra_XUV700_AX7L_front.jpg",
+      "illustrative": true
+    },
+    "seltos": {
+      "filename": "Kia Seltos X-line.jpg",
+      "author": "Gokul Kalloor",
+      "license": "CC0 1.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Kia_Seltos_X-line.jpg",
+      "illustrative": true
+    },
+    "city": {
+      "filename": "HondaCityIndiaAsia.jpg",
+      "author": "KuwarOnline",
+      "license": "CC BY-SA 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:HondaCityIndiaAsia.jpg",
+      "illustrative": true
+    },
+    "hatch": {
+      "filename": "Maruti Suzuki Swift 2093.JPG",
+      "author": "Premnath Kudva",
+      "license": "CC BY-SA 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Swift_2093.JPG",
+      "illustrative": true
+    },
+    "sedan": {
+      "filename": "HondaCityIndiaAsia.jpg",
+      "author": "KuwarOnline",
+      "license": "CC BY-SA 3.0",
+      "page": "https://commons.wikimedia.org/wiki/File:HondaCityIndiaAsia.jpg",
+      "illustrative": true
+    },
+    "suv": {
+      "filename": "2023 Mahindra XUV700 AX7L front.jpg",
+      "author": "LuvsMG481",
+      "license": "CC BY-SA 4.0",
+      "page": "https://commons.wikimedia.org/wiki/File:2023_Mahindra_XUV700_AX7L_front.jpg",
+      "illustrative": true
+    },
+    "mpv": {
+      "filename": "Maruti Suzuki Ertiga(1).jpg",
+      "author": "Akashpbrahmavar",
+      "license": "CC0 1.0",
+      "page": "https://commons.wikimedia.org/wiki/File:Maruti_Suzuki_Ertiga(1).jpg",
+      "illustrative": true
+    }
+  }
+}

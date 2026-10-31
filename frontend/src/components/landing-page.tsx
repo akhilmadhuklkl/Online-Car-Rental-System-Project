@@ -13,6 +13,12 @@ type Vehicle = {
   seats: number;
   price: number;
   image: string;
+  fuelType?: string;
+  modelYear?: number | null;
+  imageCredit?: string;
+  imageLicense?: string;
+  imageSourceUrl?: string;
+  imageIsIllustrative?: boolean;
   showcaseImage?: string;
   accent: string;
   tag?: string;
@@ -109,11 +115,12 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
       <div className="vehicle-visual" style={{ backgroundColor: vehicle.accent }}>
         {vehicle.tag ? <span className="vehicle-tag">{vehicle.tag}</span> : null}
         <button className={`save-button ${saved ? "is-saved" : ""}`} type="button" aria-label={saved ? `Remove ${vehicle.name} from saved cars` : `Save ${vehicle.name}`} aria-pressed={saved} onClick={() => setSaved((current) => !current)}><HeartIcon filled={saved} /></button>
-        <Image src={vehicle.image} alt={`${vehicle.name} rental car`} fill sizes="(max-width: 700px) 90vw, (max-width: 1100px) 45vw, 30vw" className="vehicle-image" />
+        <Image src={vehicle.image} alt={`${vehicle.name} rental car${vehicle.imageIsIllustrative ? " (illustrative photo)" : ""}`} fill unoptimized={vehicle.image.startsWith("http")} sizes="(max-width: 700px) 90vw, (max-width: 1100px) 45vw, 30vw" className="vehicle-image" />
       </div>
       <div className="vehicle-info">
         <div className="vehicle-name-row"><div><span className="vehicle-category">{vehicle.category}</span><h3>{vehicle.name}</h3></div></div>
-        <p className="vehicle-meta">{vehicle.seats} seats <span>·</span> {vehicle.location}</p>
+        <p className="vehicle-meta">{vehicle.seats} seats{vehicle.fuelType ? <> <span>·</span> {vehicle.fuelType}</> : null}{vehicle.modelYear ? <> <span>·</span> {vehicle.modelYear}</> : null} <span>·</span> {vehicle.location}</p>
+        {vehicle.imageCredit && vehicle.imageSourceUrl ? <a className="photo-credit" href={vehicle.imageSourceUrl} target="_blank" rel="noreferrer">Photo: {vehicle.imageCredit} · {vehicle.imageLicense}{vehicle.imageIsIllustrative ? " · representative" : ""}</a> : null}
         <div className="vehicle-bottom"><p><strong>₹{vehicle.price.toLocaleString("en-IN")}</strong><span> / day</span></p><a className="text-link" href={`/customer/login?car=${vehicle.id}`}>View car <ArrowIcon /></a></div>
       </div>
     </article>
@@ -131,14 +138,14 @@ export default function LandingPage() {
     const loadFleet = () => {
       void fetch("/api/backend-proxy/api/cars", { cache: "no-store" })
         .then((response) => response.ok ? response.json() : Promise.reject(new Error("Fleet unavailable")))
-        .then((result: { cars: Array<{ id: number; name: string; city: string; capacity: string; rent: string; image: string }> }) => {
+        .then((result: { cars: Array<{ id: number; name: string; city: string; capacity: string; rent: string; image: string; fuel_type?: string; model_year?: number | null; is_demo?: boolean; image_credit?: string; image_license?: string; image_source_url?: string; image_is_illustrative?: boolean }> }) => {
           if (!active || !Array.isArray(result.cars) || result.cars.length === 0) return;
           setCatalog(result.cars.map((car) => {
             const preview = vehicles.find((item) => item.id === car.id);
             const seats = Number.parseInt(car.capacity, 10) || 4;
             const name = car.name.toLowerCase();
             const category: VehicleCategory = /bmw|mercedes|audi|innova|premium/.test(name) ? "Premium" : /swift|hatch|alto|compact/.test(name) ? "Compact" : /sedan|amaze|dzire|city|verna/.test(name) ? "Sedan" : "SUV";
-            return { id: car.id, name: car.name, category, location: car.city || "Kerala", seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image || preview?.image || "/images/cars/mg-astor.jpg", showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: seats >= 7 ? `${seats} seats` : undefined };
+            return { id: car.id, name: car.name, category, location: car.city || "Kerala", seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image || preview?.image || "/images/cars/mg-astor.jpg", fuelType: car.fuel_type, modelYear: car.model_year, imageCredit: car.image_credit, imageLicense: car.image_license, imageSourceUrl: car.image_source_url, imageIsIllustrative: car.image_is_illustrative, showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: car.is_demo ? "Sample listing" : seats >= 7 ? `${seats} seats` : undefined };
           }));
         })
         .catch(() => undefined);

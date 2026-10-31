@@ -137,6 +137,7 @@ main { overflow: hidden; }
 .rating span { color: #a88d55; }
 .vehicle-meta { margin: 13px 0 17px; color: #7d827a; font-size: 10px; }
 .vehicle-meta span { padding: 0 4px; color: #b4b7ad; }
+.photo-credit { display: block; margin: -8px 0 12px; color: #747d71; font-size: 9px; line-height: 1.4; text-decoration: underline; text-underline-offset: 2px; }
 .vehicle-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 13px; border-top: 1px solid #ededeb; }
 .vehicle-bottom p { margin: 0; color: #848980; font-size: 9px; }
 .vehicle-bottom strong { color: #273a2e; font-size: 16px; }
@@ -509,6 +510,7 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .vehicle-name-row h3 { color: #f4f6f2; }
 .vehicle-meta { color: #abb3a9; }
 .vehicle-meta span { color: #606a60; }
+.photo-credit { color: #aab4a6; }
 .vehicle-bottom { border-color: #303831; }
 .vehicle-bottom p { color: #a8b0a6; }
 .vehicle-bottom strong { color: #c5ff68; }

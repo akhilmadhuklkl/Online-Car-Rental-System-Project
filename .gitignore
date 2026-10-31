@@ -8,6 +8,8 @@ venv/
 .env
 .env.*
 !.env.example
+db.sqlite3
+staticfiles/
 
 # Local development output
 *.log

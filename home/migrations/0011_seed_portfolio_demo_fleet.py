@@ -62,7 +62,6 @@ def seed_portfolio_fleet(apps, schema_editor):
                     image_credit=image["author"],
                     image_license=image["license"],
                     image_source_url=image["page"],
-                    image_attribution_url=image["attribution_url"],
                     image_is_illustrative=image["illustrative"],
                     car_dealer_id=dealer.pk,
                     capacity=str(seats),

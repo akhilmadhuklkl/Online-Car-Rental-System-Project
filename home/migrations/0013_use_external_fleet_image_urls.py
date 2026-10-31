@@ -33,7 +33,6 @@ def use_external_fleet_image_urls(apps, schema_editor):
             image_url=remote_url,
             image_credit=image["author"],
             image_license=image["license"],
-            image_attribution_url=image["attribution_url"],
             image_is_illustrative=image["illustrative"],
         )
 
@@ -49,7 +48,6 @@ def use_external_fleet_image_urls(apps, schema_editor):
             image_credit=image["author"],
             image_license=image["license"],
             image_source_url=image["page"],
-            image_attribution_url=image["attribution_url"],
             image_is_illustrative=image["illustrative"],
         )
 
@@ -78,7 +76,6 @@ def restore_special_file_path_urls(apps, schema_editor):
             image_credit=image["author"],
             image_license=image["license"],
             image_source_url=image["page"],
-            image_attribution_url=image["attribution_url"],
             image_is_illustrative=image["illustrative"],
         )
 

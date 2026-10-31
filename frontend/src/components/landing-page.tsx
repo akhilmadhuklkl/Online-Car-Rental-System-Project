@@ -50,11 +50,11 @@ function HeartIcon({ filled }: { filled: boolean }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true" className={filled ? "heart-filled" : ""}><path d="M20.8 8.8c0 4.1-8.8 10-8.8 10s-8.8-5.9-8.8-10a4.6 4.6 0 0 1 8.8-1.7 4.6 4.6 0 0 1 8.8 1.7Z" /></svg>;
 }
 
-function CarShowcase() {
+function CarShowcase({ catalog }: { catalog: Vehicle[] }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [paused, setPaused] = useState(false);
   const slide = featureSlides[activeSlide];
-  const vehicle = vehicles.find((item) => item.id === slide.carId) ?? vehicles[0];
+  const vehicle = catalog.find((item) => item.id === slide.carId) ?? catalog[activeSlide % Math.max(catalog.length, 1)] ?? vehicles[0];
 
   useEffect(() => {
     if (paused || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -90,7 +90,7 @@ function CarShowcase() {
       </div>
       <div className="showcase-controls" aria-label="Featured car controls">
         <div className="showcase-dots" role="group" aria-label="Choose featured car">
-          {featureSlides.map((item, index) => <button key={item.carId} type="button" aria-label={`Show ${vehicles.find((car) => car.id === item.carId)?.name}`} aria-pressed={activeSlide === index} className={activeSlide === index ? "active" : ""} onClick={() => setActiveSlide(index)}><span /></button>)}
+          {featureSlides.map((item, index) => <button key={item.carId} type="button" aria-label={`Show ${catalog.find((car) => car.id === item.carId)?.name ?? catalog[index % Math.max(catalog.length, 1)]?.name ?? "featured car"}`} aria-pressed={activeSlide === index} className={activeSlide === index ? "active" : ""} onClick={() => setActiveSlide(index)}><span /></button>)}
         </div>
         <div className="showcase-arrows">
           <button type="button" aria-label="Previous car" onClick={() => moveSlide(-1)}><span aria-hidden="true">←</span></button>
@@ -121,15 +121,34 @@ function VehicleCard({ vehicle }: { vehicle: Vehicle }) {
 }
 
 export default function LandingPage() {
+  const [catalog, setCatalog] = useState<Vehicle[]>(vehicles);
   const [category, setCategory] = useState<CategoryFilter>("All cars");
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("");
   const [showAll, setShowAll] = useState(false);
-  const matchingVehicles = useMemo(() => vehicles.filter((vehicle) => {
+  useEffect(() => {
+    let active = true;
+    fetch("/api/backend/api/cars/", { cache: "no-store" })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Fleet unavailable")))
+      .then((result: { cars: Array<{ id: number; name: string; city: string; capacity: string; rent: string; image: string }> }) => {
+        if (!active || !Array.isArray(result.cars)) return;
+        setCatalog(result.cars.map((car) => {
+          const preview = vehicles.find((item) => item.id === car.id);
+          const seats = Number.parseInt(car.capacity, 10) || 4;
+          const name = car.name.toLowerCase();
+          const category: VehicleCategory = /bmw|mercedes|audi|innova|premium/.test(name) ? "Premium" : /swift|hatch|alto|compact/.test(name) ? "Compact" : /sedan|amaze|dzire|city|verna/.test(name) ? "Sedan" : "SUV";
+          return { id: car.id, name: car.name, category, location: car.city || "Kerala", seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image || preview?.image || "/images/cars/mg-astor.jpg", showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: seats >= 7 ? `${seats} seats` : undefined };
+        }));
+      })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, []);
+
+  const matchingVehicles = useMemo(() => catalog.filter((vehicle) => {
     const matchesCategory = category === "All cars" || vehicle.category === category;
     const searchable = `${vehicle.name} ${vehicle.category} ${vehicle.location}`.toLowerCase();
     return matchesCategory && searchable.includes(query.trim().toLowerCase()) && (!location.trim() || vehicle.location.toLowerCase().includes(location.trim().toLowerCase()));
-  }), [category, location, query]);
+  }), [catalog, category, location, query]);
   const shownVehicles = showAll ? matchingVehicles : matchingVehicles.slice(0, 3);
 
   function searchFleet(event: FormEvent<HTMLFormElement>) {
@@ -146,7 +165,7 @@ export default function LandingPage() {
         <div className="header-actions"><a className="header-login" href="/customer/login">Log in</a><a className="button button-dark button-small" href="/customer/signup">Get started <ArrowIcon /></a></div>
       </header>
 
-      <CarShowcase />
+      <CarShowcase catalog={catalog} />
 
       <section className="search-wrap" aria-label="Search for a rental car">
         <form className="search-panel" onSubmit={searchFleet}>
@@ -161,7 +180,7 @@ export default function LandingPage() {
       <section className="intro-section" id="how-it-works">
         <div className="intro-copy"><p className="eyebrow"><span className="eyebrow-line" /> A LITTLE MORE FREEDOM</p><h2>Good trips start<br />with <em>great drives.</em></h2></div>
         <p className="intro-description">Skip the counter queues and the one-size-fits-all. Find the right car for your kind of trip, from people who know their cars best.</p>
-        <div className="intro-stat"><strong>12</strong><span>cars to explore<br />in the current fleet</span></div>
+        <div className="intro-stat"><strong>{catalog.length}</strong><span>cars to explore<br />in the current fleet</span></div>
       </section>
 
       <section className="fleet-section" id="fleet">

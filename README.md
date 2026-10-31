@@ -21,7 +21,7 @@ cd frontend
 npm run dev -- --webpack
 ```
 
-Open `http://localhost:3000`. The dealer portal supports vehicle listing, editing, photo replacement, availability, booking status, and recorded earnings. Available dealer vehicles are reflected in the public customer fleet. Set `DJANGO_API_URL` in the frontend environment when Django runs on a different host or port. Set `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS` for the deployment's hostnames.
+Open `http://localhost:3000`. Customers can create an account, book an available car, and review upcoming and completed rentals. Dealers can list and edit vehicles, replace photos, manage availability, view bookings, complete rentals, and see recorded earnings. Both sides use the same Django records, so dealer inventory changes update the customer fleet and newly confirmed bookings appear in the dealer workspace. Set `DJANGO_API_URL` in the frontend environment when Django runs on a different host or port. Set `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS` for the deployment's hostnames.
 
 
 ![127 0 0 1_8000_ (1)](https://user-images.githubusercontent.com/26377100/187922324-4c9168c9-8294-4ea1-a1c7-1f00280507d5.jpg)

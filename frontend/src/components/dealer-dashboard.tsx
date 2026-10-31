@@ -10,14 +10,14 @@ type Rental = { id: number; car: string; car_id: number; customer: string; days:
 type DashboardData = { cars: Car[]; orders: Rental[]; earnings: number; city: string };
 
 async function csrfToken() {
-  const response = await fetch("/api/backend/api/csrf/", { credentials: "same-origin" });
+  const response = await fetch("/api/backend-proxy/api/csrf", { credentials: "same-origin" });
   if (!response.ok) throw new Error("Could not connect to the account service.");
   return (await response.json()).csrfToken as string;
 }
 
 async function apiRequest(path: string, init: RequestInit = {}) {
   const token = await csrfToken();
-  const response = await fetch(`/api/backend${path}`, {
+  const response = await fetch(`/api/backend-proxy${path}`, {
     ...init,
     credentials: "same-origin",
     headers: { "X-CSRFToken": token, ...init.headers },
@@ -47,15 +47,15 @@ function CarForm({ car, onClose, onSaved }: { car?: Car; onClose: () => void; on
         if (image instanceof File && image.size > 0) {
           const photo = new FormData();
           photo.append("image", image);
-          await apiRequest(`/api/dealer/cars/${car.id}/photo/`, { method: "POST", body: photo });
+          await apiRequest(`/api/dealer/cars/${car.id}/photo`, { method: "POST", body: photo });
         }
-        await apiRequest(`/api/dealer/cars/${car.id}/`, {
+        await apiRequest(`/api/dealer/cars/${car.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name: form.get("name"), city: form.get("city"), capacity: form.get("capacity"), rent: form.get("rent") }),
         });
       } else {
-        await apiRequest("/api/dealer/cars/", { method: "POST", body: form });
+        await apiRequest("/api/dealer/cars", { method: "POST", body: form });
       }
       onSaved();
       onClose();
@@ -96,29 +96,35 @@ export default function DealerDashboard() {
   const [busyId, setBusyId] = useState<number | null>(null);
 
   const refresh = useCallback(async () => {
-    const sessionResponse = await fetch("/api/backend/api/dealer/session/", { credentials: "same-origin", cache: "no-store" });
+    const sessionResponse = await fetch("/api/backend-proxy/api/dealer/session", { credentials: "same-origin", cache: "no-store" });
     if (!sessionResponse.ok) {
       router.replace("/dealer/login");
       return;
     }
     const session = await sessionResponse.json();
     setDealerName(session.dealer.name);
-    const response = await fetch("/api/backend/api/dealer/dashboard/", { credentials: "same-origin", cache: "no-store" });
+    const response = await fetch("/api/backend-proxy/api/dealer/dashboard", { credentials: "same-origin", cache: "no-store" });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error ?? "Could not load your dealer workspace.");
     setData(result);
   }, [router]);
 
   useEffect(() => {
-    const task = window.setTimeout(() => {
+    const load = () => {
       void refresh().catch((cause) => setError(cause instanceof Error ? cause.message : "Unable to load the dealer workspace.")).finally(() => setLoading(false));
+    };
+    const task = window.setTimeout(() => {
+      load();
     }, 0);
-    return () => window.clearTimeout(task);
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === "visible") load();
+    }, 20000);
+    return () => { window.clearTimeout(task); window.clearInterval(interval); };
   }, [refresh]);
 
   async function logout() {
     try {
-      await apiRequest("/api/dealer/logout/", { method: "POST" });
+      await apiRequest("/api/dealer/logout", { method: "POST" });
     } finally {
       router.replace("/dealer/login");
     }
@@ -127,7 +133,7 @@ export default function DealerDashboard() {
   async function toggleAvailability(car: Car) {
     setBusyId(car.id); setNotice("");
     try {
-      await apiRequest(`/api/dealer/cars/${car.id}/`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ is_available: !car.is_available }) });
+      await apiRequest(`/api/dealer/cars/${car.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ is_available: !car.is_available }) });
       await refresh();
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not update availability."); }
     finally { setBusyId(null); }
@@ -137,7 +143,7 @@ export default function DealerDashboard() {
     if (!window.confirm(`Remove ${car.name} from your fleet?`)) return;
     setBusyId(car.id); setNotice("");
     try {
-      await apiRequest(`/api/dealer/cars/${car.id}/`, { method: "DELETE" });
+      await apiRequest(`/api/dealer/cars/${car.id}`, { method: "DELETE" });
       setNotice(`${car.name} was removed from your fleet.`);
       await refresh();
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not remove this vehicle."); }
@@ -147,7 +153,7 @@ export default function DealerDashboard() {
   async function completeRental(rental: Rental) {
     setBusyId(rental.id); setNotice("");
     try {
-      await apiRequest(`/api/dealer/orders/${rental.id}/complete/`, { method: "POST" });
+      await apiRequest(`/api/dealer/orders/${rental.id}/complete`, { method: "POST" });
       setNotice(`Rental #${rental.id} is complete. ${rental.car} is available again.`);
       await refresh();
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not complete this rental."); }

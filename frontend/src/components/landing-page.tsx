@@ -128,20 +128,24 @@ export default function LandingPage() {
   const [showAll, setShowAll] = useState(false);
   useEffect(() => {
     let active = true;
-    fetch("/api/backend/api/cars/", { cache: "no-store" })
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Fleet unavailable")))
-      .then((result: { cars: Array<{ id: number; name: string; city: string; capacity: string; rent: string; image: string }> }) => {
-        if (!active || !Array.isArray(result.cars)) return;
-        setCatalog(result.cars.map((car) => {
-          const preview = vehicles.find((item) => item.id === car.id);
-          const seats = Number.parseInt(car.capacity, 10) || 4;
-          const name = car.name.toLowerCase();
-          const category: VehicleCategory = /bmw|mercedes|audi|innova|premium/.test(name) ? "Premium" : /swift|hatch|alto|compact/.test(name) ? "Compact" : /sedan|amaze|dzire|city|verna/.test(name) ? "Sedan" : "SUV";
-          return { id: car.id, name: car.name, category, location: car.city || "Kerala", seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image || preview?.image || "/images/cars/mg-astor.jpg", showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: seats >= 7 ? `${seats} seats` : undefined };
-        }));
-      })
-      .catch(() => undefined);
-    return () => { active = false; };
+    const loadFleet = () => {
+      void fetch("/api/backend-proxy/api/cars", { cache: "no-store" })
+        .then((response) => response.ok ? response.json() : Promise.reject(new Error("Fleet unavailable")))
+        .then((result: { cars: Array<{ id: number; name: string; city: string; capacity: string; rent: string; image: string }> }) => {
+          if (!active || !Array.isArray(result.cars)) return;
+          setCatalog(result.cars.map((car) => {
+            const preview = vehicles.find((item) => item.id === car.id);
+            const seats = Number.parseInt(car.capacity, 10) || 4;
+            const name = car.name.toLowerCase();
+            const category: VehicleCategory = /bmw|mercedes|audi|innova|premium/.test(name) ? "Premium" : /swift|hatch|alto|compact/.test(name) ? "Compact" : /sedan|amaze|dzire|city|verna/.test(name) ? "Sedan" : "SUV";
+            return { id: car.id, name: car.name, category, location: car.city || "Kerala", seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image || preview?.image || "/images/cars/mg-astor.jpg", showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: seats >= 7 ? `${seats} seats` : undefined };
+          }));
+        })
+        .catch(() => undefined);
+    };
+    loadFleet();
+    const interval = window.setInterval(loadFleet, 20000);
+    return () => { active = false; window.clearInterval(interval); };
   }, []);
 
   const matchingVehicles = useMemo(() => catalog.filter((vehicle) => {

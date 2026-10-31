@@ -17,28 +17,32 @@ export default function AuthScreen({ audience, mode }: AuthScreenProps) {
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!isHost || signup) {
-      setMessage("This preview is not connected to account services yet. Your details were not submitted.");
-      return;
-    }
-
     void signIn(new FormData(event.currentTarget));
   }
 
   async function signIn(form: FormData) {
-    setMessage("Signing in…");
+    setMessage(signup ? "Creating your account…" : "Signing in…");
     try {
-      const csrfResponse = await fetch("/api/backend/api/csrf/", { credentials: "same-origin" });
+      const csrfResponse = await fetch("/api/backend-proxy/api/csrf", { credentials: "same-origin" });
       const csrf = await csrfResponse.json();
-      const response = await fetch("/api/backend/api/dealer/login/", {
+      const path = isHost ? "dealer/login" : signup ? "customer/signup" : "customer/login";
+      const payload = signup
+        ? { name: form.get("name"), email: form.get("email"), password: form.get("password"), phone: form.get("phone"), city: form.get("city") }
+        : { identity: form.get("email"), password: form.get("password") };
+      const response = await fetch(`/api/backend-proxy/api/${path}`, {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrf.csrfToken },
-        body: JSON.stringify({ identity: form.get("email"), password: form.get("password") }),
+        body: JSON.stringify(payload),
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error ?? "Unable to sign in. Please try again.");
-      router.push("/dealer/dashboard");
+      if (!response.ok) throw new Error(result.error ?? "Unable to continue. Please try again.");
+      if (isHost) {
+        router.push("/dealer/dashboard");
+      } else {
+        const selectedCar = new URLSearchParams(window.location.search).get("car");
+        router.push(`/customer/bookings${selectedCar ? `?car=${encodeURIComponent(selectedCar)}` : ""}`);
+      }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Unable to reach the sign-in service. Try again.");
     }
@@ -52,10 +56,11 @@ export default function AuthScreen({ audience, mode }: AuthScreenProps) {
         <h1>{signup ? "A little more " : "Good to see "}<em>{signup ? "freedom." : "you."}</em></h1>
         <p className="auth-intro">{isHost ? (signup ? "Dealer accounts are created by the Rove owner. Contact them to request access." : "Sign in to manage your vehicles, bookings and earnings.") : signup ? "Create an account to get ready for the road ahead." : "Sign in to pick up where your journey left off."}</p>
         {isHost && signup ? null : <form className="auth-form" onSubmit={submit}>
-          {signup ? <label>Full name<input name="name" autoComplete="name" required placeholder="Your name" /></label> : null}
-          <label>{isHost ? "Email or username" : "Email address"}<input name="email" type={isHost ? "text" : "email"} autoComplete="username" required placeholder={isHost ? "Your dealer login" : "you@example.com"} /></label>
+          {signup ? <label>Full name<input name="name" autoComplete="name" required maxLength={150} placeholder="Your name" /></label> : null}
+          <label>{isHost ? "Email or username" : "Email address"}<input name="email" type={isHost ? "text" : "email"} autoComplete={signup ? "email" : "username"} required placeholder={isHost ? "Your dealer login" : "you@example.com"} /></label>
+          {signup && !isHost ? <><label>Phone number<input name="phone" type="tel" inputMode="numeric" autoComplete="tel-national" pattern="[0-9]{10}" maxLength={10} minLength={10} required placeholder="10-digit mobile number" /></label><label>City<input name="city" autoComplete="address-level2" required maxLength={50} placeholder="Your city" /></label></> : null}
           <label>Password<input name="password" type="password" autoComplete={signup ? "new-password" : "current-password"} required minLength={8} placeholder="At least 8 characters" /></label>
-          <button className="button button-dark" type="submit">{signup ? "Create account" : "Log in"}</button>
+          <button className="button button-dark" type="submit">{isHost ? "Dealer sign in" : signup ? "Create account" : "Log in"}</button>
         </form>}
         {message ? <p className="auth-message" role="status">{message}</p> : null}
         {isHost ? <p className="auth-switch">Dealer access is managed by the Rove owner.</p> : <p className="auth-switch">{signup ? "Already have an account?" : "New to Rove?"} <a href={`/customer/${signup ? "login" : "signup"}`}>{signup ? "Log in" : "Create an account"}</a></p>}

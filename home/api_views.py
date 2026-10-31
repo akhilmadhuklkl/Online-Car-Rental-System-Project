@@ -3,14 +3,18 @@ from decimal import Decimal, InvalidOperation
 from functools import wraps
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.utils.html import strip_tags
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
-from .models import Car, CarDealer, Location, Order
+from .models import Car, CarDealer, Customer, Location, Order
 
 
 def _dealer_for(request):
@@ -31,6 +35,18 @@ def _dealer_required(view):
     return wrapped
 
 
+def _customer_required(view):
+    @wraps(view)
+    def wrapped(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Sign in with a customer account to continue."}, status=401)
+        customer = Customer.objects.select_related("user", "location").filter(user=request.user, type="Customer").first()
+        if customer is None:
+            return JsonResponse({"error": "A customer account is required."}, status=403)
+        return view(request, customer, *args, **kwargs)
+    return wrapped
+
+
 def _json_body(request):
     try:
         data = json.loads(request.body or "{}")
@@ -45,7 +61,7 @@ def _car_data(car):
     except (ValueError, AttributeError):
         image = ""
     if image.startswith("/"):
-        image = "/api/backend" + image
+        image = "/api/backend-proxy" + image
     return {
         "id": car.pk,
         "name": car.name,
@@ -67,6 +83,121 @@ def csrf_token(request):
 def public_cars(request):
     cars = Car.objects.filter(is_available=True).select_related("location").order_by("id")
     return JsonResponse({"cars": [_car_data(car) for car in cars]})
+
+
+@require_POST
+def customer_signup_api(request):
+    data = _json_body(request)
+    if data is None:
+        return JsonResponse({"error": "Enter valid account details."}, status=400)
+    name = str(data.get("name", "")).strip()
+    email = str(data.get("email", "")).strip().lower()
+    phone = "".join(char for char in str(data.get("phone", "")) if char.isdigit())
+    city = strip_tags(str(data.get("city", ""))).strip()
+    password = str(data.get("password", ""))
+    if not name or len(name) > 150 or not city or len(city) > 50:
+        return JsonResponse({"error": "Enter your name and a city (up to 50 characters)."}, status=400)
+    try:
+        validate_email(email)
+    except ValidationError:
+        return JsonResponse({"error": "Enter a valid email address."}, status=400)
+    if len(email) > 150:
+        return JsonResponse({"error": "Email address must be 150 characters or fewer."}, status=400)
+    if len(phone) != 10:
+        return JsonResponse({"error": "Enter a 10-digit phone number."}, status=400)
+    if User.objects.filter(email__iexact=email).exists() or User.objects.filter(username__iexact=email).exists():
+        return JsonResponse({"error": "An account with that email already exists. Sign in instead."}, status=409)
+    first_name, _, last_name = name.partition(" ")
+    user = User(username=email, email=email, first_name=first_name, last_name=last_name)
+    try:
+        validate_password(password, user)
+    except ValidationError as error:
+        return JsonResponse({"error": " ".join(error.messages)}, status=400)
+    with transaction.atomic():
+        user.set_password(password)
+        user.save()
+        location, _ = Location.objects.get_or_create(city__iexact=city, defaults={"city": city})
+        Customer.objects.create(user=user, phone=phone, location=location, type="Customer")
+    login(request, user)
+    return JsonResponse({"ok": True}, status=201)
+
+
+@require_POST
+def customer_login_api(request):
+    data = _json_body(request)
+    if data is None:
+        return JsonResponse({"error": "Enter a valid email and password."}, status=400)
+    identity = str(data.get("identity", "")).strip()
+    password = str(data.get("password", ""))
+    if not identity or not password:
+        return JsonResponse({"error": "Enter your email or username and password."}, status=400)
+    username = identity
+    if "@" in identity:
+        user = User.objects.filter(email__iexact=identity).first()
+        username = user.username if user else identity
+    user = authenticate(request, username=username, password=password)
+    if user is None or not Customer.objects.filter(user=user, type="Customer").exists():
+        return JsonResponse({"error": "Those customer sign-in details were not recognized."}, status=401)
+    login(request, user)
+    return JsonResponse({"ok": True})
+
+
+@require_POST
+def customer_logout_api(request):
+    logout(request)
+    return JsonResponse({"ok": True})
+
+
+@require_GET
+def customer_session_api(request):
+    customer = Customer.objects.select_related("user").filter(user=request.user, type="Customer").first() if request.user.is_authenticated else None
+    if customer is None:
+        return JsonResponse({"authenticated": False}, status=401)
+    return JsonResponse({"authenticated": True, "customer": {"name": customer.user.get_full_name() or customer.user.username, "email": customer.user.email}})
+
+
+@_customer_required
+@require_http_methods(["GET", "POST"])
+def customer_bookings_api(request, customer):
+    if request.method == "GET":
+        orders = Order.objects.filter(user=customer.user).select_related("car", "car_dealer").order_by("-id")
+        return JsonResponse({"bookings": [{
+            "id": order.pk,
+            "car": order.car.name,
+            "city": order.car.location.city if order.car.location else "",
+            "days": order.days,
+            "rent": order.rent,
+            "is_complete": order.is_complete,
+            "image": _car_data(order.car)["image"],
+        } for order in orders]})
+
+    data = _json_body(request)
+    if data is None:
+        return JsonResponse({"error": "Enter valid booking details."}, status=400)
+    try:
+        car_id = int(data.get("car_id"))
+        days = int(data.get("days"))
+    except (TypeError, ValueError):
+        return JsonResponse({"error": "Choose a car and enter the number of rental days."}, status=400)
+    if not 1 <= days <= 365:
+        return JsonResponse({"error": "Rental duration must be between 1 and 365 days."}, status=400)
+    with transaction.atomic():
+        car = Car.objects.select_for_update().select_related("car_dealer", "location").filter(pk=car_id, is_available=True).first()
+        if car is None:
+            return JsonResponse({"error": "This car is no longer available. Refresh the fleet and choose another."}, status=409)
+        try:
+            daily_rent = int(car.rent)
+        except (TypeError, ValueError):
+            return JsonResponse({"error": "The listed price for this car is not valid yet."}, status=409)
+        total = daily_rent * days
+        if daily_rent <= 0 or total > 9_999_999_999 or car.car_dealer.earnings + total > 2_147_483_647:
+            return JsonResponse({"error": "This booking total exceeds the supported amount. Contact the car dealer."}, status=400)
+        order = Order.objects.create(user=customer.user, car_dealer=car.car_dealer, car=car, rent=str(total), days=str(days))
+        car.is_available = False
+        car.save(update_fields=["is_available"])
+        car.car_dealer.earnings += total
+        car.car_dealer.save(update_fields=["earnings"])
+    return JsonResponse({"ok": True, "booking": {"id": order.pk, "car": car.name, "days": order.days, "rent": order.rent}}, status=201)
 
 
 @require_POST

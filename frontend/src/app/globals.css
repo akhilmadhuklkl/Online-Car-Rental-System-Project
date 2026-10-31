@@ -699,3 +699,93 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .dealer-vehicle-info { align-items: center; flex-direction: row; }
   .dealer-vehicle-actions .dealer-remove { flex-basis: auto; border-top: 0; }
 }
+
+/* Customer account and booking review */
+.customer-account { min-height: 100vh; background: #090b0a; color: #f2f4f0; }
+.customer-account-header { position: relative; padding-inline: clamp(20px, 7vw, 105px); background: #0c0f0d; border-bottom: 1px solid #282f29; }
+.customer-account-header nav { display: flex; align-items: center; gap: 25px; color: #d5dbd3; font-size: 11px; }
+.customer-account-header nav button { padding: 8px 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.customer-account-header nav a:hover, .customer-account-header nav button:hover { color: #c8ff73; }
+.customer-account-hero { padding: 59px clamp(20px, 9vw, 138px) 52px; border-bottom: 1px solid #29302b; background: radial-gradient(ellipse at 82% 40%, #1b211b, #090b0a 64%); }
+.customer-account-hero .dealer-kicker { margin-bottom: 15px; }
+.customer-account-hero h1 { margin: 0; font-size: clamp(36px, 6vw, 64px); letter-spacing: -.07em; }
+.customer-account-hero h1 em { color: #c7ff75; font-family: Georgia, serif; font-weight: 400; }
+.customer-account-hero > p:last-child { margin: 12px 0 0; color: #aab2a9; font-size: 12px; }
+.customer-account-content { width: min(1030px, calc(100% - 40px)); margin: 0 auto; padding: 38px 0 80px; }
+.customer-booking-panel { padding: 24px; border: 1px solid #343d35; background: linear-gradient(130deg, #131814, #0d100e); }
+.customer-panel-heading, .customer-orders-heading { display: flex; justify-content: space-between; align-items: end; gap: 15px; }
+.customer-panel-heading .dealer-kicker, .customer-orders-heading .dealer-kicker { margin-bottom: 7px; }
+.customer-panel-heading h2, .customer-orders-heading h2, .customer-past-section h2 { margin: 0; font-size: 21px; letter-spacing: -.04em; }
+.customer-panel-heading > span { color: #c8ff73; font-family: Georgia, serif; font-size: 13px; font-style: italic; }
+.customer-panel-heading > span i { padding: 0 5px; color: #7f8a7f; font-style: normal; }
+.customer-booking-form { display: grid; grid-template-columns: minmax(180px, 1fr) 130px minmax(115px, .65fr) auto; align-items: end; gap: 12px; margin-top: 23px; }
+.customer-booking-form label { display: grid; gap: 7px; color: #c4ccc2; font-size: 10px; font-weight: 600; }
+.customer-booking-form input, .customer-booking-form select { width: 100%; min-width: 0; height: 43px; padding: 0 10px; border: 1px solid #3b453c; border-radius: 2px; background: #090c0a; color: #f0f3ef; font-size: 11px; color-scheme: dark; }
+.customer-booking-form input:focus-visible, .customer-booking-form select:focus-visible { outline: 2px solid #b8ff36; outline-offset: 2px; }
+.customer-estimate { min-height: 43px; display: grid; align-content: center; gap: 3px; }
+.customer-estimate span { color: #9ea79e; font-size: 9px; }
+.customer-estimate strong { color: #d0ff84; font-size: 15px; }
+.customer-booking-form > button { min-height: 43px; gap: 14px; white-space: nowrap; }
+.customer-selected-car { display: flex; align-items: center; gap: 12px; margin-top: 17px; padding-top: 13px; border-top: 1px solid #2b332c; }
+.customer-selected-car > div { position: relative; width: 84px; height: 51px; overflow: hidden; border: 1px solid #303831; background: #171c18; }
+.customer-selected-car img { object-fit: contain; padding: 3px; }
+.customer-selected-car p { display: grid; gap: 5px; margin: 0; }
+.customer-selected-car strong { font-size: 11px; }
+.customer-selected-car p span { color: #a2aca1; font-size: 9px; }
+.customer-no-cars { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-top: 18px; color: #aab3aa; font-size: 11px; }
+.customer-no-cars .text-link { flex: 0 0 auto; }
+.customer-orders-section { margin-top: 51px; }
+.customer-orders-heading { margin-bottom: 19px; }
+.customer-orders-heading h2 { display: flex; align-items: center; gap: 9px; }
+.customer-orders-heading h2 span { display: grid; place-items: center; min-width: 21px; height: 21px; border: 1px solid #434d43; border-radius: 50%; color: #caff79; font-size: 9px; font-weight: 400; }
+.customer-orders-heading > a { color: #bdf668; font-size: 10px; }
+.customer-orders-heading > a span { padding-left: 5px; }
+.customer-order-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.customer-order-card { overflow: hidden; border: 1px solid #303832; background: #111512; }
+.customer-order-photo { position: relative; height: 180px; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at center, #232a23, #111512 75%); }
+.customer-order-photo img { object-fit: contain; padding: 10px; }
+.customer-order-photo > span { position: absolute; left: 13px; bottom: 12px; z-index: 1; color: #d1ff8b; font-size: 8px; letter-spacing: .15em; }
+.customer-order-body { padding: 15px 17px; }
+.customer-order-id { margin: 0 0 7px; color: #929d92; font-size: 8px; letter-spacing: .13em; }
+.customer-order-body h3 { margin: 0; font-size: 16px; letter-spacing: -.025em; }
+.customer-order-body > p:not(.customer-order-id) { margin: 7px 0 13px; color: #abb4aa; font-size: 10px; }
+.customer-order-body > p i { padding: 0 4px; color: #7d887e; font-style: normal; }
+.customer-order-body > div { display: flex; justify-content: space-between; gap: 12px; padding-top: 11px; border-top: 1px solid #2f3731; }
+.customer-order-body > div strong { color: #d0ff84; font-size: 13px; }
+.customer-order-body > div span { color: #9ca69c; font-size: 9px; }
+.customer-empty-orders { padding: 30px 15px; border: 1px dashed #384239; background: #0f130f; text-align: center; }
+.customer-empty-orders > span { color: #c7ff72; }
+.customer-empty-orders h3 { margin: 8px 0 5px; font-size: 14px; }
+.customer-empty-orders p { margin: 0; color: #a2aca2; font-size: 10px; }
+.customer-past-section { margin-top: 43px; }
+.customer-past-section .dealer-kicker { margin-bottom: 7px; }
+.customer-past-list { margin-top: 14px; border-top: 1px solid #343c35; }
+.customer-past-list article { min-height: 52px; display: grid; grid-template-columns: 70px 1fr minmax(120px, auto) 82px; align-items: center; gap: 14px; padding: 8px 12px; border: 1px solid #343c35; border-top: 0; background: #111512; font-size: 10px; }
+.customer-past-list article > span { color: #a2aca2; }
+.customer-past-list article > span:last-child { color: #c7ff75; }
+.customer-account-footer { padding: 0 clamp(20px, 7vw, 105px); }
+.customer-account-footer .footer-bottom { width: 100%; }
+.customer-loading { min-height: 100vh; display: grid; place-content: center; justify-items: center; gap: 13px; background: #090b0a; color: #aab3a9; font-size: 12px; }
+@media (max-width: 800px) {
+  .customer-booking-form { grid-template-columns: 1fr 120px; }
+  .customer-estimate { padding-left: 4px; }
+  .customer-booking-form > button { width: max-content; }
+}
+@media (max-width: 560px) {
+  .customer-account-header { height: 67px; padding-inline: 18px; }
+  .customer-account-header nav { gap: 15px; font-size: 9px; }
+  .customer-account-hero { padding: 41px 20px 36px; }
+  .customer-account-hero h1 { font-size: 38px; }
+  .customer-account-hero > p:last-child { max-width: 300px; line-height: 1.6; }
+  .customer-account-content { width: calc(100% - 28px); padding-top: 24px; }
+  .customer-booking-panel { padding: 16px; }
+  .customer-booking-form { grid-template-columns: 1fr; gap: 12px; }
+  .customer-booking-form > button { width: 100%; }
+  .customer-estimate { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; }
+  .customer-order-grid { grid-template-columns: 1fr; }
+  .customer-order-photo { height: 170px; }
+  .customer-past-list article { grid-template-columns: 43px 1fr auto; gap: 8px; font-size: 9px; }
+  .customer-past-list article > span:nth-child(3) { grid-column: 2; }
+  .customer-past-list article > span:last-child { grid-column: 3; grid-row: 1 / span 2; }
+  .customer-account-footer { padding-inline: 18px; }
+}

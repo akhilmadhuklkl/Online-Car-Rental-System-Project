@@ -16,8 +16,6 @@ def use_external_fleet_image_urls(apps, schema_editor):
     ]
     seeded = Car.objects.filter(portfolio_seed_key__in=seed_keys)
     found_count = seeded.count()
-    if found_count not in {0, len(seed_keys)}:
-        raise RuntimeError(f"Expected either 0 or {len(seed_keys)} portfolio cars, found {found_count}.")
     if not found_count:
         return
 
@@ -46,8 +44,6 @@ def use_external_fleet_image_urls(apps, schema_editor):
         rows = Car.objects.filter(
             portfolio_seed_key__startswith=f"{model[0]}:",
         )
-        if rows.count() != len(catalog["cities"]):
-            raise RuntimeError(f"Expected {len(catalog['cities'])} seeded listings for {model[0]}.")
         rows.update(
             image_url=image["remote_url"],
             image_credit=image["author"],
@@ -59,7 +55,7 @@ def use_external_fleet_image_urls(apps, schema_editor):
 
     external_count = seeded.filter(image_url__startswith="https://upload.wikimedia.org/wikipedia/commons/thumb/").count()
     if external_count != found_count:
-        raise RuntimeError(f"Only {external_count} of {found_count} portfolio car images use external image URLs.")
+        raise RuntimeError(f"Only {external_count} of {found_count} existing portfolio car images use external image URLs.")
 
 
 def restore_special_file_path_urls(apps, schema_editor):

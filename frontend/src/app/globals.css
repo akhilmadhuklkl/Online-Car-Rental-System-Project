@@ -807,3 +807,33 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .customer-past-list article > span:last-child { grid-column: 3; grid-row: 1 / span 2; }
   .customer-account-footer { padding-inline: 18px; }
 }
+
+/* Landing navigation overlays the hero, then settles into a fixed bar. */
+.landing-header {
+  position: fixed;
+  z-index: 20;
+  inset: 0 0 auto;
+  height: 82px;
+  background: transparent;
+  border: 0;
+  transition: background .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.landing-header.is-over-hero { background: linear-gradient(180deg, #050605a8, transparent); }
+.landing-header.is-over-hero .brand,
+.landing-header.is-over-hero .desktop-nav,
+.landing-header.is-over-hero .header-login { color: #f3f5f1; }
+.landing-header.is-over-hero .brand-mark { color: #090b0a; background: #b8ff36; }
+.landing-header.is-over-hero .header-login:hover,
+.landing-header.is-over-hero .desktop-nav a:hover { color: #b8ff36; }
+.landing-header.is-pinned {
+  background: #0b0e0cf5;
+  border-bottom: 1px solid #303830;
+  box-shadow: 0 8px 24px #0005;
+  backdrop-filter: blur(14px);
+}
+.landing-header.is-pinned .brand,
+.landing-header.is-pinned .desktop-nav,
+.landing-header.is-pinned .header-login { color: #e2e6e0; }
+@media (max-width: 640px) {
+  .landing-header { height: 68px; padding: 0 19px; }
+}

@@ -173,6 +173,20 @@ export default function LandingPage() {
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("");
   const [showAll, setShowAll] = useState(false);
+  const [headerPinned, setHeaderPinned] = useState(false);
+  useEffect(() => {
+    const updateHeader = () => {
+      const showcase = document.querySelector<HTMLElement>(".showcase");
+      setHeaderPinned(Boolean(showcase && window.scrollY >= showcase.offsetTop + showcase.offsetHeight - 84));
+    };
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+    window.addEventListener("resize", updateHeader);
+    return () => {
+      window.removeEventListener("scroll", updateHeader);
+      window.removeEventListener("resize", updateHeader);
+    };
+  }, []);
   useEffect(() => {
     let active = true;
     const loadFleet = () => {
@@ -223,8 +237,7 @@ export default function LandingPage() {
 
   return (
     <main>
-      <div className="preview-note">ROVE MOBILITY <span className="preview-separator">/</span> KERALA, INDIA <span className="preview-separator">/</span> TAKE THE ROAD THAT FEELS LIKE YOURS</div>
-      <header className="site-header">
+      <header className={`site-header landing-header ${headerPinned ? "is-pinned" : "is-over-hero"}`}>
         <Link href="/" className="brand" aria-label="Rove home"><span className="brand-mark">r</span><span>rove<span className="brand-period">.</span></span></Link>
         <nav className="desktop-nav" aria-label="Main navigation"><a href="#fleet">Explore cars</a><a href="#how-it-works">How it works</a></nav>
         <div className="header-actions"><a className="header-login" href="/customer/login">Log in</a><a className="button button-dark button-small" href="/customer/signup">Get started <ArrowIcon /></a></div>

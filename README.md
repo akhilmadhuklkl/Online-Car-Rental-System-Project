@@ -8,6 +8,12 @@ The Project is created using Python & Django Framework along with HTML, CSS, Jav
 
 The Next.js customer site and dealer workspace share the Django API, authentication session, and SQLite database. Dealer access is available at `/dealer/login`; dealer accounts must be provisioned by the owner in Django admin (`/admin/`) by creating a Django user and its associated `CarDealer` record. There is no public dealer sign-up.
 
+## Portfolio deployment
+
+The Vercel setup uses two projects from this repository: `online-car-rental` builds the Next.js site from `frontend`, and `online-car-rental-api` builds Django from the repository root. Both customer and dealer pages are routes in the Next.js site; Django is the shared API. Production uses Neon Postgres through `NEON_POSTGRES_URL` and runs migrations on production builds. Keep production database and Django secrets in Vercel environment variables.
+
+Set `PORTFOLIO_DEMO=true` with `DJANGO_DEBUG=false` for the read-only portfolio preview. In that mode Django admin is unavailable and all non-read HTTP requests are blocked. The homepage shows synthetic sample cars when the production fleet is empty. Dealer photo uploads require durable object storage before enabling write operations.
+
 Run the backend from the project root:
 
 ```powershell

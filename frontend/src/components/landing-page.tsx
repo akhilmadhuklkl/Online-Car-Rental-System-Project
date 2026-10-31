@@ -18,24 +18,24 @@ type Vehicle = {
   tag?: string;
 };
 
-// A local preview catalog shaped from the cars in the original SQLite project.
+// Synthetic portfolio listings shown until a dealer adds live inventory.
 const vehicles: Vehicle[] = [
-  { id: 15, name: "MG Astor", category: "SUV", location: "Kozhikode", seats: 5, price: 2500, image: "/images/cars/mg-astor.jpg", showcaseImage: "/images/cars/slideshow/mg-astor-cutout.png", accent: "#f4e8dc" },
-  { id: 4, name: "Toyota Innova Crysta", category: "Premium", location: "Trivandrum", seats: 7, price: 500, image: "/images/cars/toyota-innova.jpg", showcaseImage: "/images/cars/slideshow/toyota-innova-cutout.png", accent: "#e9ece6", tag: "7 seats" },
-  { id: 11, name: "Tata Nexon", category: "SUV", location: "Ernakulam", seats: 5, price: 1500, image: "/images/cars/tata-nexon.jpg", showcaseImage: "/images/cars/slideshow/tata-nexon-cutout.png", accent: "#e7e9e1" },
-  { id: 5, name: "Honda Amaze", category: "Sedan", location: "Palakkad", seats: 4, price: 400, image: "/images/cars/honda-amaze.jpg", accent: "#e8ece9" },
-  { id: 7, name: "Maruti Swift Dzire", category: "Sedan", location: "Alappuzha", seats: 5, price: 900, image: "/images/cars/maruti-dzire.jpg", showcaseImage: "/images/cars/slideshow/maruti-dzire-cutout.png", accent: "#ece9df" },
-  { id: 8, name: "Mahindra Scorpio", category: "SUV", location: "Kannur", seats: 7, price: 1000, image: "/images/cars/mahindra-scorpio.jpg", accent: "#e4e7e5" },
+  { id: 901, name: "MG Astor", category: "SUV", location: "Kozhikode", seats: 5, price: 2500, image: "/images/cars/mg-astor.jpg", showcaseImage: "/images/cars/slideshow/mg-astor-cutout.png", accent: "#f4e8dc", tag: "Portfolio demo" },
+  { id: 902, name: "Toyota Innova Crysta", category: "Premium", location: "Trivandrum", seats: 7, price: 3200, image: "/images/cars/toyota-innova.jpg", showcaseImage: "/images/cars/slideshow/toyota-innova-cutout.png", accent: "#e9ece6", tag: "7 seats · demo" },
+  { id: 903, name: "Tata Nexon", category: "SUV", location: "Ernakulam", seats: 5, price: 1800, image: "/images/cars/tata-nexon.jpg", showcaseImage: "/images/cars/slideshow/tata-nexon-cutout.png", accent: "#e7e9e1", tag: "Portfolio demo" },
+  { id: 904, name: "Honda Amaze", category: "Sedan", location: "Palakkad", seats: 4, price: 1400, image: "/images/cars/honda-amaze.jpg", accent: "#e8ece9", tag: "Portfolio demo" },
+  { id: 905, name: "Maruti Swift Dzire", category: "Sedan", location: "Alappuzha", seats: 5, price: 1500, image: "/images/cars/maruti-dzire.jpg", showcaseImage: "/images/cars/slideshow/maruti-dzire-cutout.png", accent: "#ece9df" },
+  { id: 906, name: "Mahindra Scorpio", category: "SUV", location: "Kannur", seats: 7, price: 2800, image: "/images/cars/mahindra-scorpio.jpg", accent: "#e4e7e5", tag: "7 seats · demo" },
 ];
 
 const categories = ["All cars", "SUV", "Sedan", "Compact", "Premium"] as const;
 type CategoryFilter = (typeof categories)[number];
 
 const featureSlides = [
-  { carId: 15, firstLine: "The road is", secondLine: "yours.", eyebrow: "THE WEEKEND EDIT", copy: "Set out from Kozhikode in the MG Astor and leave room for a few unexpected turns." },
-  { carId: 4, firstLine: "Make room for", secondLine: "everyone.", eyebrow: "THE TOGETHER EDIT", copy: "Seven seats, one shared playlist, and a longer way home in the Innova Crysta." },
-  { carId: 11, firstLine: "The good kind of", secondLine: "detour.", eyebrow: "THE OUT-OF-TOWN EDIT", copy: "Take the scenic route out of Ernakulam in the Tata Nexon." },
-  { carId: 7, firstLine: "A little car.", secondLine: "A big day.", eyebrow: "THE CITY ESCAPE EDIT", copy: "Make your own itinerary in the Swift Dzire, starting in Alappuzha." },
+  { carId: 901, firstLine: "The road is", secondLine: "yours.", eyebrow: "THE WEEKEND EDIT", copy: "Set out from Kozhikode in the MG Astor and leave room for a few unexpected turns." },
+  { carId: 902, firstLine: "Make room for", secondLine: "everyone.", eyebrow: "THE TOGETHER EDIT", copy: "Seven seats, one shared playlist, and a longer way home in the Innova Crysta." },
+  { carId: 903, firstLine: "The good kind of", secondLine: "detour.", eyebrow: "THE OUT-OF-TOWN EDIT", copy: "Take the scenic route out of Ernakulam in the Tata Nexon." },
+  { carId: 905, firstLine: "A little car.", secondLine: "A big day.", eyebrow: "THE CITY ESCAPE EDIT", copy: "Make your own itinerary in the Swift Dzire, starting in Alappuzha." },
 ];
 
 function ArrowIcon({ diagonal = false }: { diagonal?: boolean }) {
@@ -132,7 +132,7 @@ export default function LandingPage() {
       void fetch("/api/backend-proxy/api/cars", { cache: "no-store" })
         .then((response) => response.ok ? response.json() : Promise.reject(new Error("Fleet unavailable")))
         .then((result: { cars: Array<{ id: number; name: string; city: string; capacity: string; rent: string; image: string }> }) => {
-          if (!active || !Array.isArray(result.cars)) return;
+          if (!active || !Array.isArray(result.cars) || result.cars.length === 0) return;
           setCatalog(result.cars.map((car) => {
             const preview = vehicles.find((item) => item.id === car.id);
             const seats = Number.parseInt(car.capacity, 10) || 4;

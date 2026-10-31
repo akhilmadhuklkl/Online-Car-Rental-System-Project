@@ -12,6 +12,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 DEBUG = os.environ.get("DJANGO_DEBUG", "true").strip().lower() in {"1", "true", "yes"}
+PORTFOLIO_DEMO = os.environ.get("PORTFOLIO_DEMO", "false").strip().lower() in {"1", "true", "yes"}
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY")
 if not SECRET_KEY:
     if not DEBUG:
@@ -83,7 +84,7 @@ WSGI_APPLICATION = 'CarRental.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("NEON_POSTGRES_URL")
 if DATABASE_URL:
     parsed_database_url = urlparse(DATABASE_URL)
     if parsed_database_url.scheme not in {"postgres", "postgresql"}:
@@ -98,6 +99,7 @@ if DATABASE_URL:
             "HOST": parsed_database_url.hostname,
             "PORT": parsed_database_url.port or "5432",
             "CONN_MAX_AGE": 60,
+            "DISABLE_SERVER_SIDE_CURSORS": True,
             "OPTIONS": {
                 "sslmode": database_options.get("sslmode", ["require"])[0],
             },
@@ -155,3 +157,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'home/media')
 MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
+if PORTFOLIO_DEMO and not DEBUG:
+    # The public portfolio preview has no persistent upload store or live operator.
+    # Keep account creation and write actions disabled until those are provisioned.
+    MIDDLEWARE = ["home.demo_readonly.DemoReadOnlyMiddleware", *MIDDLEWARE]

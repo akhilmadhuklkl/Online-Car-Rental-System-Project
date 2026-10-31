@@ -1,8 +1,8 @@
 async function proxy(request: Request) {
   const incoming = new URL(request.url);
-  const backend = process.env.DJANGO_API_URL ?? "http://127.0.0.1:8001";
+  const backend = process.env.DJANGO_API_URL ?? (process.env.NODE_ENV === "production" ? "" : "http://127.0.0.1:8001");
   const backendPath = incoming.pathname.replace(/^\/api\/backend-proxy/, "") || "/";
-  const target = new URL(`${backendPath}${incoming.search}`, backend);
+  const target = new URL(`${backendPath}${incoming.search}`, backend || incoming.origin);
   const headers = new Headers(request.headers);
   headers.delete("host");
   headers.delete("connection");

@@ -14,6 +14,7 @@ export default function AuthScreen({ audience, mode }: AuthScreenProps) {
   const [message, setMessage] = useState("");
   const isHost = audience === "host";
   const signup = mode === "signup";
+  const portfolioDemo = process.env.NEXT_PUBLIC_PORTFOLIO_DEMO === "true";
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -55,12 +56,13 @@ export default function AuthScreen({ audience, mode }: AuthScreenProps) {
         <p className="eyebrow"><span className="eyebrow-line" /> {isHost ? "ROVE FOR HOSTS" : "YOUR NEXT JOURNEY"}</p>
         <h1>{signup ? "A little more " : "Good to see "}<em>{signup ? "freedom." : "you."}</em></h1>
         <p className="auth-intro">{isHost ? (signup ? "Dealer accounts are created by the Rove owner. Contact them to request access." : "Sign in to manage your vehicles, bookings and earnings.") : signup ? "Create an account to get ready for the road ahead." : "Sign in to pick up where your journey left off."}</p>
+        {portfolioDemo ? <p className="auth-message" role="status">This is a read-only portfolio preview. Account access and bookings are disabled.</p> : null}
         {isHost && signup ? null : <form className="auth-form" onSubmit={submit}>
           {signup ? <label>Full name<input name="name" autoComplete="name" required maxLength={150} placeholder="Your name" /></label> : null}
           <label>{isHost ? "Email or username" : "Email address"}<input name="email" type={isHost ? "text" : "email"} autoComplete={signup ? "email" : "username"} required placeholder={isHost ? "Your dealer login" : "you@example.com"} /></label>
           {signup && !isHost ? <><label>Phone number<input name="phone" type="tel" inputMode="numeric" autoComplete="tel-national" pattern="[0-9]{10}" maxLength={10} minLength={10} required placeholder="10-digit mobile number" /></label><label>City<input name="city" autoComplete="address-level2" required maxLength={50} placeholder="Your city" /></label></> : null}
           <label>Password<input name="password" type="password" autoComplete={signup ? "new-password" : "current-password"} required minLength={8} placeholder="At least 8 characters" /></label>
-          <button className="button button-dark" type="submit">{isHost ? "Dealer sign in" : signup ? "Create account" : "Log in"}</button>
+          <button className="button button-dark" type="submit" disabled={portfolioDemo}>{isHost ? "Dealer sign in" : signup ? "Create account" : "Log in"}</button>
         </form>}
         {message ? <p className="auth-message" role="status">{message}</p> : null}
         {isHost ? <p className="auth-switch">Dealer access is managed by the Rove owner.</p> : <p className="auth-switch">{signup ? "Already have an account?" : "New to Rove?"} <a href={`/customer/${signup ? "login" : "signup"}`}>{signup ? "Log in" : "Create an account"}</a></p>}

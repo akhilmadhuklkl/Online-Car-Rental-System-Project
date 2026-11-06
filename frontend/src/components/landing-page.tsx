@@ -252,6 +252,12 @@ export default function LandingPage() {
     return diversified;
   }, [catalog, category, fuelFilter, location, query]);
   const shownVehicles = showAll ? matchingVehicles : matchingVehicles.slice(0, 12);
+  const fleetMetrics = useMemo(() => [
+    { value: catalog.length, label: "demo car listings" },
+    { value: new Set(catalog.map((car) => `${car.name.toLowerCase()}|${car.fuelType?.toLowerCase() ?? "unknown"}`)).size, label: "car & fuel variants" },
+    { value: new Set(catalog.map((car) => car.fuelType?.toLowerCase()).filter(Boolean)).size, label: "fuel options" },
+    { value: new Set(catalog.map((car) => car.location.trim().toLowerCase()).filter(Boolean)).size, label: "pickup cities" },
+  ], [catalog]);
 
   function searchFleet(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -280,8 +286,11 @@ export default function LandingPage() {
 
       <section className="intro-section" id="how-it-works">
         <div className="intro-copy"><p className="eyebrow"><span className="eyebrow-line" /> A LITTLE MORE FREEDOM</p><h2>Good trips start<br />with <em>great drives.</em></h2></div>
-        <p className="intro-description">Skip the counter queues and the one-size-fits-all. Find the right car for your kind of trip, from people who know their cars best.</p>
-        <div className="intro-stat"><strong>{catalogLoaded ? catalog.length : "—"}</strong><span>cars to explore<br />in the current fleet</span></div>
+        <p className="intro-description">Explore a curated demo fleet across cities, vehicle types, and fuel options. Compare daily rates and find a ride that fits your trip.</p>
+        <div className="intro-stats" aria-label="Demo fleet at a glance">
+          {fleetMetrics.map((metric) => <div className="intro-stat" key={metric.label}><strong>{catalogLoaded && metric.value ? metric.value : "—"}</strong><span>{metric.label}</span></div>)}
+        </div>
+        <p className="intro-footnote">Portfolio demo inventory · Fleet counts update from the live catalog.</p>
       </section>
 
       <section className="fleet-section" id="fleet">

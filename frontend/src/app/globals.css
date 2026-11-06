@@ -97,13 +97,16 @@ main { overflow: hidden; }
 .search-hint > span { color: #80985c; padding-right: 4px; }
 .search-hint button { border: 0; padding: 0; background: none; color: #4d6545; text-decoration: underline; text-underline-offset: 3px; font-size: inherit; cursor: pointer; }
 
-.intro-section { max-width: 1120px; margin: 118px auto 106px; padding: 0 24px; display: grid; grid-template-columns: 1.3fr 1fr .6fr; align-items: end; gap: 48px; }
+.intro-section { max-width: 1120px; margin: 100px auto 96px; padding: 0 24px; display: grid; grid-template-columns: 1.15fr 1fr; align-items: end; gap: 28px 48px; }
 .intro-copy h2, .fleet-heading h2, .steps-heading h2 { font-size: clamp(37px, 4.5vw, 56px); line-height: 1.04; letter-spacing: -.055em; font-weight: 500; margin: 18px 0 0; }
 .intro-copy h2 em, .fleet-heading h2 em, .steps-heading h2 em { color: #647c52; }
 .intro-description { max-width: 330px; color: #717870; font-size: 12px; line-height: 1.8; margin: 0 0 6px; }
-.intro-stat { display: flex; align-items: center; justify-content: flex-end; gap: 13px; color: #72796f; font-size: 10px; line-height: 1.5; }
-.intro-stat strong { color: #314637; font-family: var(--serif); font-size: 48px; font-weight: 400; letter-spacing: -.06em; }
+.intro-stats { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 8px; border-top: 1px solid #333a34; border-bottom: 1px solid #333a34; }
+.intro-stat { display: flex; min-height: 92px; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding: 12px 20px; color: #aab1a9; font-size: 10px; line-height: 1.5; }
+.intro-stat + .intro-stat { border-left: 1px solid #303731; }
+.intro-stat strong { color: #b8ff36; font-family: var(--serif); font-size: 42px; font-weight: 400; letter-spacing: -.06em; line-height: 1; }
 .intro-stat strong span { color: #90a466; font-size: 25px; vertical-align: top; }
+.intro-footnote { grid-column: 1 / -1; margin: -16px 0 0; color: #828b80; font-size: 9px; }
 
 .fleet-section { max-width: 1120px; margin: 0 auto; padding: 0 24px 112px; }
 .fleet-heading { display: flex; justify-content: space-between; align-items: end; gap: 20px; }
@@ -195,8 +198,10 @@ main { overflow: hidden; }
   .search-panel { grid-template-columns: 1.2fr 1fr 1fr auto; padding-left: 17px; }
   .search-field { padding-left: 12px; padding-right: 9px; }
   .search-button { min-width: 125px; gap: 10px; }
-  .intro-section { grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 94px; margin-bottom: 84px; }
-  .intro-stat { grid-column: 2; justify-content: flex-start; }
+  .intro-section { grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 82px; margin-bottom: 75px; }
+  .intro-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .intro-stat { min-height: 82px; padding: 10px 12px; }
+  .intro-stat strong { font-size: 36px; }
   .vehicle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .vehicle-card:nth-child(3) { display: none; }
   .host-banner { grid-template-columns: .8fr 1.2fr; }
@@ -230,13 +235,17 @@ main { overflow: hidden; }
   .field-copy input[type=date] { width: 125px; font-size: 9px; }
   .search-button { grid-column: span 2; width: 100%; min-height: 45px; margin-top: 8px; }
   .search-hint { font-size: 9px; line-height: 1.7; }
-  .intro-section { display: grid; grid-template-columns: 1fr auto; gap: 18px; margin: 78px auto 73px; padding: 0 22px; }
-  .intro-copy { grid-column: span 2; }
+  .intro-section { display: grid; grid-template-columns: 1fr; gap: 18px; margin: 78px auto 73px; padding: 0 22px; }
+  .intro-copy { grid-column: 1; }
   .intro-copy h2, .fleet-heading h2, .steps-heading h2 { font-size: 39px; }
   .intro-description { grid-column: 1; font-size: 11px; }
-  .intro-stat { grid-column: 2; gap: 8px; }
-  .intro-stat strong { font-size: 38px; }
+  .intro-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 5px; }
+  .intro-stat { min-height: 76px; padding: 10px 12px; }
+  .intro-stat:nth-child(3) { border-left: 0; border-top: 1px solid #303731; }
+  .intro-stat:nth-child(4) { border-top: 1px solid #303731; }
+  .intro-stat strong { font-size: 34px; }
   .intro-stat > span { font-size: 8px; }
+  .intro-footnote { margin-top: -8px; font-size: 8px; }
   .fleet-section { padding: 0 18px 75px; }
   .fleet-heading { align-items: start; flex-direction: column; gap: 15px; }
   .fleet-heading h2 { font-size: 38px; }

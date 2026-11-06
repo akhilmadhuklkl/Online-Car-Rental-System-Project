@@ -12,7 +12,7 @@ The Next.js customer site and dealer workspace share the Django API, authenticat
 
 The Vercel setup uses two projects from this repository: `online-car-rental` builds the Next.js site from `frontend`, and `online-car-rental-api` builds Django from the repository root. Both customer and dealer pages are routes in the Next.js site; Django is the shared API. Production uses Neon Postgres through `NEON_POSTGRES_URL` and runs migrations on production builds. Keep production database and Django secrets in Vercel environment variables.
 
-Set `PORTFOLIO_DEMO=true` with `DJANGO_DEBUG=false` for the read-only portfolio preview. In that mode Django admin is unavailable and all non-read HTTP requests are blocked. The homepage shows synthetic sample cars when the production fleet is empty. Dealer photo uploads require durable object storage before enabling write operations.
+Set `PORTFOLIO_DEMO=true` with `DJANGO_DEBUG=false` for the protected portfolio preview. In that mode Django admin is unavailable; customer login, signup, and logout are allowed, while booking writes and all dealer changes remain blocked. Set `NEXT_PUBLIC_CUSTOMER_AUTH_ENABLED=true` on the protected customer frontend project to enable the customer sign-in and signup controls. The homepage shows synthetic sample cars when the production fleet is empty. Dealer photo uploads require durable object storage before enabling write operations.
 
 Run the backend from the project root:
 

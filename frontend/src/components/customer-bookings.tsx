@@ -28,6 +28,7 @@ function rupees(value: string | number) {
 
 export default function CustomerBookings() {
   const router = useRouter();
+  const portfolioReadOnly = process.env.NEXT_PUBLIC_PORTFOLIO_DEMO === "true";
   const [name, setName] = useState("");
   const [cars, setCars] = useState<AvailableCar[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -110,7 +111,7 @@ export default function CustomerBookings() {
       {error ? <p className="dealer-banner dealer-banner-error" role="alert">{error}<button type="button" onClick={() => setError("")}>Dismiss</button></p> : null}
       {notice ? <p className="dealer-banner" role="status">{notice}<button type="button" onClick={() => setNotice("")}>Dismiss</button></p> : null}
       <section className="customer-booking-panel"><div className="customer-panel-heading"><div><p className="dealer-kicker">MAKE A LITTLE PLAN</p><h2>Book your next drive</h2></div><span>01 <i> / </i> NOW</span></div>
-        {cars.length ? <form className="customer-booking-form" onSubmit={book}>
+        {portfolioReadOnly ? <p className="dealer-banner" role="status">Booking creation is disabled in this portfolio preview. Your account and any existing bookings remain available to view.</p> : cars.length ? <form className="customer-booking-form" onSubmit={book}>
           <label>Choose a car<select value={selectedId} onChange={(event) => setSelectedId(event.target.value)} required><option value="">Select from available cars</option>{cars.map((car) => <option value={car.id} key={car.id}>{car.name} · {car.city} · {rupees(car.rent)}/day</option>)}</select></label>
           <label>Rental days<input type="number" min={1} max={365} value={days} onChange={(event) => setDays(event.target.value)} required /></label>
           <div className="customer-estimate"><span>Estimated total</span><strong>{rupees(estimatedTotal)}</strong></div>
@@ -120,7 +121,7 @@ export default function CustomerBookings() {
       </section>
 
       <section className="customer-orders-section"><div className="customer-orders-heading"><div><p className="dealer-kicker">ON THE ROAD</p><h2>Your bookings <span>{current.length}</span></h2></div><Link href="/#fleet">Browse the fleet <span>↗</span></Link></div>
-        {current.length ? <div className="customer-order-grid">{current.map((booking) => <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span>UPCOMING DRIVE</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><p>{booking.city} <i>·</i> {booking.days} day{booking.days === "1" ? "" : "s"}</p><div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>)}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>Choose a car above and turn a free day into a good story.</p></div>}
+        {current.length ? <div className="customer-order-grid">{current.map((booking) => <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span>UPCOMING DRIVE</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><p>{booking.city} <i>·</i> {booking.days} day{booking.days === "1" ? "" : "s"}</p><div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>)}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
       </section>
       {past.length ? <section className="customer-past-section"><p className="dealer-kicker">MILES ALREADY MADE</p><h2>Past drives</h2><div className="customer-past-list">{past.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{booking.days} days · {rupees(booking.rent)}</span><span>Completed</span></article>)}</div></section> : null}
     </section>

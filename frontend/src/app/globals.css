@@ -890,3 +890,41 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .showcase-dots button span { width: 8px; height: 8px; }
   .showcase-dots button.active span { width: 22px; }
 }
+
+.intro-section { margin-bottom: 58px; }
+.steps-section { max-width: 1120px; margin: 0 auto; padding: 0 24px 96px; scroll-margin-top: 92px; }
+.steps-grid { gap: 16px; margin-top: 34px; }
+.step-card {
+  min-height: 294px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 7px;
+  overflow: hidden;
+  padding: 25px 24px;
+  border: 1px solid #343c35;
+  background: #0d100e;
+}
+.step-card::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  content: "";
+  background: linear-gradient(180deg, #080b0a20 0%, #080b0a70 45%, #080b0af2 100%);
+  pointer-events: none;
+}
+.step-card-image { z-index: 0; object-fit: cover; opacity: .34; filter: saturate(.72) brightness(.8); transition: opacity .3s ease, transform .5s ease; }
+.step-card:hover .step-card-image { opacity: .45; transform: scale(1.035); }
+.step-card > :not(.step-card-image) { position: relative; z-index: 2; }
+.step-number { position: absolute !important; top: 22px; left: 24px; }
+.step-symbol { width: 40px; height: 40px; margin: 0 0 5px; border: 1px solid #536148; border-radius: 0; background: #101510bb; color: #b8ff36; }
+.step-card h3 { max-width: 290px; margin: 0; font-family: "Rove Poppins", Arial, sans-serif; font-size: 19px; font-weight: 600; line-height: 1.25; }
+.step-card p { max-width: 290px; margin: 0; color: #c0c6bf; font-size: 11px; line-height: 1.6; }
+@media (max-width: 640px) {
+  .intro-section { margin-bottom: 48px; }
+  .steps-section { padding: 0 20px 78px; }
+  .steps-grid { grid-template-columns: 1fr; gap: 12px; margin-top: 26px; }
+  .step-card { min-height: 260px; padding: 22px; }
+  .step-number { top: 19px; left: 22px; }
+}

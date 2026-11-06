@@ -284,13 +284,22 @@ export default function LandingPage() {
         <p className="search-hint"><span aria-hidden="true">✦</span> Want a little inspiration? <button type="button" onClick={() => { setQuery("SUV"); document.getElementById("fleet")?.scrollIntoView({ behavior: "smooth" }); }}>Browse SUVs</button></p>
       </section>
 
-      <section className="intro-section" id="how-it-works">
+      <section className="intro-section">
         <div className="intro-copy"><p className="eyebrow"><span className="eyebrow-line" /> A LITTLE MORE FREEDOM</p><h2>Good trips start<br />with <em>great drives.</em></h2></div>
         <p className="intro-description">Explore a curated demo fleet across cities, vehicle types, and fuel options. Compare daily rates and find a ride that fits your trip.</p>
         <div className="intro-stats" aria-label="Demo fleet at a glance">
           {fleetMetrics.map((metric) => <div className="intro-stat" key={metric.label}><strong>{catalogLoaded && metric.value ? metric.value : "—"}</strong><span>{metric.label}</span></div>)}
         </div>
         <p className="intro-footnote">Portfolio demo inventory · Fleet counts update from the live catalog.</p>
+      </section>
+
+      <section className="steps-section" id="how-it-works">
+        <div className="steps-heading"><p className="eyebrow"><span className="eyebrow-line" /> THE EASY PART</p><h2>Your next trip, <em>in three steps.</em></h2></div>
+        <div className="steps-grid">
+          <article className="step-card"><Image src="/images/steps/choose-car.png" alt="A customer choosing a car in a showroom" fill sizes="(max-width: 700px) 90vw, 33vw" className="step-card-image" /><span className="step-number">01</span><div className="step-symbol" aria-hidden="true">⌕</div><h3>Choose a car</h3><p>Browse the fleet and pick a car that fits your trip.</p></article>
+          <article className="step-card"><Image src="/images/steps/trip-details.png" alt="A traveler entering trip details into a booking form" fill sizes="(max-width: 700px) 90vw, 33vw" className="step-card-image" /><span className="step-number">02</span><div className="step-symbol" aria-hidden="true">↗</div><h3>Enter your trip details</h3><p>Add your pickup city and dates to see the rental details.</p></article>
+          <article className="step-card"><Image src="/images/steps/confirm-booking.png" alt="A customer and rental host shaking hands beside a car" fill sizes="(max-width: 700px) 90vw, 33vw" className="step-card-image" /><span className="step-number">03</span><div className="step-symbol" aria-hidden="true">✳</div><h3>Review and confirm your booking</h3><p>Check the car, trip dates, and total price before confirming.</p></article>
+        </div>
       </section>
 
       <section className="fleet-section" id="fleet">
@@ -300,8 +309,6 @@ export default function LandingPage() {
         {!catalogLoaded ? <div className="vehicle-loading" role="status">Loading the demo fleet…</div> : shownVehicles.length > 0 ? <div className="vehicle-grid">{shownVehicles.map((vehicle) => <VehicleCard key={vehicle.id} vehicle={vehicle} />)}</div> : <div className="empty-state"><span>⌕</span><h3>No rides found just yet</h3><p>Try another city or clear your filters to see the full fleet.</p><button className="text-link" type="button" onClick={() => { setQuery(""); setLocation(""); setCategory("All cars"); setFuelFilter("All fuels"); setShowAll(false); }}>Clear filters <ArrowIcon /></button></div>}
         {matchingVehicles.length > shownVehicles.length && !showAll ? <button className="button button-outline load-more" type="button" onClick={() => setShowAll(true)}>Explore all {matchingVehicles.length} cars <ArrowIcon /></button> : null}
       </section>
-
-      <section className="steps-section"><div className="steps-heading"><p className="eyebrow"><span className="eyebrow-line" /> THE EASY PART</p><h2>Three steps to <em>out there.</em></h2></div><div className="steps-grid"><article className="step-card"><span className="step-number">01</span><div className="step-symbol">⌕</div><h3>Find your fit</h3><p>Pick a car that feels right for the road and the people coming along.</p></article><article className="step-card"><span className="step-number">02</span><div className="step-symbol">↗</div><h3>Make it yours</h3><p>Share a few trip details. We’ll help you make sure everything’s in place.</p></article><article className="step-card"><span className="step-number">03</span><div className="step-symbol">✳</div><h3>Go make a day of it</h3><p>Meet your host, get the keys and take the scenic route for once.</p></article></div></section>
 
       <footer className="site-footer"><div className="footer-top"><Link href="/" className="brand brand-footer"><span className="brand-mark">r</span><span>rove<span className="brand-period">.</span></span></Link><p>Made for the miles that matter.</p><div className="footer-links"><a href="#fleet">Explore cars</a><a href="/customer/login">Customer login</a></div></div><div className="footer-bottom"><span>© 2026 Rove Mobility. Made for the journey.</span><span>Kerala, India <span aria-hidden="true">✳</span></span></div></footer>
     </main>

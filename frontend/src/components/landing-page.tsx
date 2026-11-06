@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 
 type VehicleCategory = "SUV" | "Sedan" | "Compact" | "Premium";
 type FuelFilter = "All fuels" | "Petrol" | "Diesel" | "CNG" | "EV" | "Hybrid";
@@ -195,7 +195,9 @@ export default function LandingPage() {
   const [fuelFilter, setFuelFilter] = useState<FuelFilter>("All fuels");
   const [query, setQuery] = useState("");
   const [location, setLocation] = useState("");
-  const [showAll, setShowAll] = useState(false);
+  const [fleetOpen, setFleetOpen] = useState(false);
+  const fleetTriggerRef = useRef<HTMLButtonElement>(null);
+  const fleetModalRef = useRef<HTMLElement>(null);
   const [headerPinned, setHeaderPinned] = useState(false);
   useEffect(() => {
     const updateHeader = () => {
@@ -210,6 +212,34 @@ export default function LandingPage() {
       window.removeEventListener("resize", updateHeader);
     };
   }, []);
+  useEffect(() => {
+    if (!fleetOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const trigger = fleetTriggerRef.current;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setFleetOpen(false);
+      if (event.key !== "Tab") return;
+      const focusable = fleetModalRef.current?.querySelectorAll<HTMLElement>("button:not(:disabled), a[href], input:not(:disabled), [tabindex]:not([tabindex='-1'])");
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    fleetModalRef.current?.querySelector<HTMLButtonElement>(".fleet-modal-close")?.focus();
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+      trigger?.focus();
+    };
+  }, [fleetOpen]);
   useEffect(() => {
     let active = true;
     const loadFleet = () => {
@@ -251,7 +281,7 @@ export default function LandingPage() {
     }
     return diversified;
   }, [catalog, category, fuelFilter, location, query]);
-  const shownVehicles = showAll ? matchingVehicles : matchingVehicles.slice(0, 12);
+  const shownVehicles = matchingVehicles.slice(0, 12);
   const fleetMetrics = useMemo(() => [
     { value: catalog.length, label: "demo car listings" },
     { value: new Set(catalog.map((car) => `${car.name.toLowerCase()}|${car.fuelType?.toLowerCase() ?? "unknown"}`)).size, label: "car & fuel variants" },
@@ -303,12 +333,23 @@ export default function LandingPage() {
       </section>
 
       <section className="fleet-section" id="fleet">
-        <div className="fleet-heading"><div><p className="eyebrow"><span className="eyebrow-line" /> THE GOOD GARAGE</p><h2>Find your <em>kind</em> of ride.</h2></div><a className="text-link view-all-link" href="#fleet" onClick={(event) => { event.preventDefault(); setShowAll(true); }}>See the whole fleet <ArrowIcon /></a></div>
-        <div className="fleet-toolbar"><div className="category-tabs" role="group" aria-label="Filter by car type">{categories.map((item) => <button className={`category-tab ${category === item ? "active" : ""}`} type="button" key={item} aria-pressed={category === item} onClick={() => { setCategory(item); setShowAll(false); }}>{item}</button>)}</div><label className="fleet-search"><span aria-hidden="true">⌕</span><input aria-label="Search cars by name, type or city" placeholder="Search the fleet" value={query} onChange={(event) => setQuery(event.target.value)} /><kbd>⌘ K</kbd></label></div>
-        <div className="fuel-filter-tabs" role="group" aria-label="Filter by fuel type">{fuelFilters.map((item) => { const count = item === "All fuels" ? new Set(catalog.map((car) => `${car.name}:${car.fuelType}`)).size : new Set(catalog.filter((car) => car.fuelType?.toLowerCase() === item.toLowerCase()).map((car) => `${car.name}:${car.fuelType}`)).size; return <button className={`fuel-filter ${fuelFilter === item ? "active" : ""}`} type="button" key={item} aria-pressed={fuelFilter === item} onClick={() => { setFuelFilter(item); setShowAll(false); }}>{item}<span className="fuel-filter-count">{count}</span></button>; })}</div>
-        {!catalogLoaded ? <div className="vehicle-loading" role="status">Loading the demo fleet…</div> : shownVehicles.length > 0 ? <div className="vehicle-grid">{shownVehicles.map((vehicle) => <VehicleCard key={vehicle.id} vehicle={vehicle} />)}</div> : <div className="empty-state"><span>⌕</span><h3>No rides found just yet</h3><p>Try another city or clear your filters to see the full fleet.</p><button className="text-link" type="button" onClick={() => { setQuery(""); setLocation(""); setCategory("All cars"); setFuelFilter("All fuels"); setShowAll(false); }}>Clear filters <ArrowIcon /></button></div>}
-        {matchingVehicles.length > shownVehicles.length && !showAll ? <button className="button button-outline load-more" type="button" onClick={() => setShowAll(true)}>Explore all {matchingVehicles.length} cars <ArrowIcon /></button> : null}
+        <div className="fleet-heading"><div><p className="eyebrow"><span className="eyebrow-line" /> THE GOOD GARAGE</p><h2>Find your <em>kind</em> of ride.</h2></div><button ref={fleetTriggerRef} className="text-link view-all-link" type="button" aria-haspopup="dialog" aria-expanded={fleetOpen} onClick={() => setFleetOpen(true)}>See the whole fleet <ArrowIcon /></button></div>
+        <div className="fleet-toolbar"><div className="category-tabs" role="group" aria-label="Filter by car type">{categories.map((item) => <button className={`category-tab ${category === item ? "active" : ""}`} type="button" key={item} aria-pressed={category === item} onClick={() => setCategory(item)}>{item}</button>)}</div><label className="fleet-search"><span aria-hidden="true">⌕</span><input aria-label="Search cars by name, type or city" placeholder="Search the fleet" value={query} onChange={(event) => setQuery(event.target.value)} /><kbd>⌘ K</kbd></label></div>
+        <div className="fuel-filter-tabs" role="group" aria-label="Filter by fuel type">{fuelFilters.map((item) => { const count = item === "All fuels" ? new Set(catalog.map((car) => `${car.name}:${car.fuelType}`)).size : new Set(catalog.filter((car) => car.fuelType?.toLowerCase() === item.toLowerCase()).map((car) => `${car.name}:${car.fuelType}`)).size; return <button className={`fuel-filter ${fuelFilter === item ? "active" : ""}`} type="button" key={item} aria-pressed={fuelFilter === item} onClick={() => setFuelFilter(item)}>{item}<span className="fuel-filter-count">{count}</span></button>; })}</div>
+        {!catalogLoaded ? <div className="vehicle-loading" role="status">Loading the demo fleet…</div> : shownVehicles.length > 0 ? <div className="vehicle-grid">{shownVehicles.map((vehicle) => <VehicleCard key={vehicle.id} vehicle={vehicle} />)}</div> : <div className="empty-state"><span>⌕</span><h3>No rides found just yet</h3><p>Try another city or clear your filters to see the full fleet.</p><button className="text-link" type="button" onClick={() => { setQuery(""); setLocation(""); setCategory("All cars"); setFuelFilter("All fuels"); }}>Clear filters <ArrowIcon /></button></div>}
+        {matchingVehicles.length > shownVehicles.length ? <button className="button button-outline load-more" type="button" onClick={() => setFleetOpen(true)}>Explore all {matchingVehicles.length} cars <ArrowIcon /></button> : null}
       </section>
+
+      {fleetOpen ? <div className="fleet-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setFleetOpen(false); }}>
+        <section ref={fleetModalRef} className="fleet-modal" role="dialog" aria-modal="true" aria-labelledby="fleet-modal-title" tabIndex={-1}>
+          <header className="fleet-modal-heading"><div><p className="eyebrow"><span className="eyebrow-line" /> THE GOOD GARAGE</p><h2 id="fleet-modal-title">Find your <em>kind</em> of ride.</h2><p>{matchingVehicles.length} cars to explore</p></div><button className="fleet-modal-close" type="button" aria-label="Close fleet" onClick={() => setFleetOpen(false)}>×</button></header>
+          <div className="fleet-modal-content">
+            <div className="fleet-modal-toolbar"><div className="category-tabs" role="group" aria-label="Filter by car type">{categories.map((item) => <button className={`category-tab ${category === item ? "active" : ""}`} type="button" key={item} aria-pressed={category === item} onClick={() => setCategory(item)}>{item}</button>)}</div><label className="fleet-search"><span aria-hidden="true">⌕</span><input aria-label="Search cars by name, type or city" placeholder="Search the fleet" value={query} onChange={(event) => setQuery(event.target.value)} /><kbd>⌘ K</kbd></label></div>
+            <div className="fuel-filter-tabs" role="group" aria-label="Filter by fuel type">{fuelFilters.map((item) => { const count = item === "All fuels" ? new Set(catalog.map((car) => `${car.name}:${car.fuelType}`)).size : new Set(catalog.filter((car) => car.fuelType?.toLowerCase() === item.toLowerCase()).map((car) => `${car.name}:${car.fuelType}`)).size; return <button className={`fuel-filter ${fuelFilter === item ? "active" : ""}`} type="button" key={item} aria-pressed={fuelFilter === item} onClick={() => setFuelFilter(item)}>{item}<span className="fuel-filter-count">{count}</span></button>; })}</div>
+            {!catalogLoaded ? <div className="vehicle-loading" role="status">Loading the demo fleet…</div> : matchingVehicles.length ? <div className="vehicle-grid fleet-modal-grid">{matchingVehicles.map((vehicle) => <VehicleCard key={vehicle.id} vehicle={vehicle} />)}</div> : <div className="empty-state"><span>⌕</span><h3>No rides found just yet</h3><p>Try another city or clear your filters to see the full fleet.</p><button className="text-link" type="button" onClick={() => { setQuery(""); setLocation(""); setCategory("All cars"); setFuelFilter("All fuels"); }}>Clear filters <ArrowIcon /></button></div>}
+          </div>
+        </section>
+      </div> : null}
 
       <footer className="site-footer"><div className="footer-top"><Link href="/" className="brand brand-footer"><span className="brand-mark">r</span><span>rove<span className="brand-period">.</span></span></Link><p>Made for the miles that matter.</p><div className="footer-links"><a href="#fleet">Explore cars</a><a href="/customer/login">Customer login</a></div></div><div className="footer-bottom"><span>© 2026 Rove Mobility. Made for the journey.</span><span>Kerala, India <span aria-hidden="true">✳</span></span></div></footer>
     </main>

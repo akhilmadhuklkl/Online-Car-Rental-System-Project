@@ -55,4 +55,6 @@ class Order(models.Model):
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
     rent = models.CharField(max_length=10)
     days = models.CharField(max_length=3)
+    pickup_date = models.DateField(null=True, blank=True)
+    return_date = models.DateField(null=True, blank=True)
     is_complete = models.BooleanField(default=False)

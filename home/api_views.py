@@ -1,4 +1,5 @@
 import json
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from functools import wraps
 
@@ -11,6 +12,7 @@ from django.middleware.csrf import get_token
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.utils.html import strip_tags
+from django.utils import timezone
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
@@ -177,6 +179,8 @@ def customer_bookings_api(request, customer):
             "car": order.car.name,
             "city": order.car.location.city if order.car.location else "",
             "days": order.days,
+            "pickup_date": order.pickup_date.isoformat() if order.pickup_date else None,
+            "return_date": order.return_date.isoformat() if order.return_date else None,
             "rent": order.rent,
             "is_complete": order.is_complete,
             "image": _car_data(order.car)["image"],
@@ -187,9 +191,24 @@ def customer_bookings_api(request, customer):
         return JsonResponse({"error": "Enter valid booking details."}, status=400)
     try:
         car_id = int(data.get("car_id"))
-        days = int(data.get("days"))
     except (TypeError, ValueError):
-        return JsonResponse({"error": "Choose a car and enter the number of rental days."}, status=400)
+        return JsonResponse({"error": "Choose a car to continue."}, status=400)
+    pickup_text = data.get("pickup_date")
+    return_text = data.get("return_date")
+    if not isinstance(pickup_text, str) or not isinstance(return_text, str):
+        return JsonResponse({"error": "Choose both a pickup date and a return date."}, status=400)
+    try:
+        pickup_date = date.fromisoformat(pickup_text)
+        return_date = date.fromisoformat(return_text)
+    except ValueError:
+        return JsonResponse({"error": "Enter valid pickup and return dates."}, status=400)
+    if pickup_date.isoformat() != pickup_text or return_date.isoformat() != return_text:
+        return JsonResponse({"error": "Enter pickup and return dates in YYYY-MM-DD format."}, status=400)
+    if pickup_date < timezone.localdate():
+        return JsonResponse({"error": "Pickup date cannot be in the past."}, status=400)
+    if return_date <= pickup_date:
+        return JsonResponse({"error": "Return date must be after the pickup date."}, status=400)
+    days = (return_date - pickup_date).days
     if not 1 <= days <= 365:
         return JsonResponse({"error": "Rental duration must be between 1 and 365 days."}, status=400)
     with transaction.atomic():
@@ -203,12 +222,27 @@ def customer_bookings_api(request, customer):
         total = daily_rent * days
         if daily_rent <= 0 or total > 9_999_999_999 or car.car_dealer.earnings + total > 2_147_483_647:
             return JsonResponse({"error": "This booking total exceeds the supported amount. Contact the car dealer."}, status=400)
-        order = Order.objects.create(user=customer.user, car_dealer=car.car_dealer, car=car, rent=str(total), days=str(days))
+        order = Order.objects.create(
+            user=customer.user,
+            car_dealer=car.car_dealer,
+            car=car,
+            rent=str(total),
+            days=str(days),
+            pickup_date=pickup_date,
+            return_date=return_date,
+        )
         car.is_available = False
         car.save(update_fields=["is_available"])
         car.car_dealer.earnings += total
         car.car_dealer.save(update_fields=["earnings"])
-    return JsonResponse({"ok": True, "booking": {"id": order.pk, "car": car.name, "days": order.days, "rent": order.rent}}, status=201)
+    return JsonResponse({"ok": True, "booking": {
+        "id": order.pk,
+        "car": car.name,
+        "days": order.days,
+        "pickup_date": pickup_date.isoformat(),
+        "return_date": return_date.isoformat(),
+        "rent": order.rent,
+    }}, status=201)
 
 
 @require_POST
@@ -269,6 +303,8 @@ def dealer_dashboard(request, dealer):
             "car_id": order.car_id,
             "customer": order.user.get_full_name() or order.user.username,
             "days": order.days,
+            "pickup_date": order.pickup_date.isoformat() if order.pickup_date else None,
+            "return_date": order.return_date.isoformat() if order.return_date else None,
             "rent": order.rent,
             "is_complete": order.is_complete,
         } for order in orders],

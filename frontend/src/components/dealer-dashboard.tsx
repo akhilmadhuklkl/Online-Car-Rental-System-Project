@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 
 type Car = { id: number; name: string; city: string; capacity: string; rent: string; is_available: boolean; image: string };
-type Rental = { id: number; car: string; car_id: number; customer: string; days: string; rent: string; is_complete: boolean };
+type Rental = { id: number; car: string; car_id: number; customer: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean };
 type DashboardData = { cars: Car[]; orders: Rental[]; earnings: number; city: string };
 
 async function csrfToken() {
@@ -30,6 +30,12 @@ async function apiRequest(path: string, init: RequestInit = {}) {
 function money(value: string | number) {
   const amount = Number(value);
   return `₹${Number.isFinite(amount) ? amount.toLocaleString("en-IN") : "0"}`;
+}
+
+function rentalDates(rental: Rental) {
+  if (!rental.pickup_date || !rental.return_date) return `${rental.days} days`;
+  const format = (value: string) => new Date(`${value}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+  return `${format(rental.pickup_date)} → ${format(rental.return_date)} · ${rental.days} days`;
 }
 
 function CarForm({ car, onClose, onSaved }: { car?: Car; onClose: () => void; onSaved: () => void }) {
@@ -197,7 +203,7 @@ export default function DealerDashboard() {
 
       <section className="dealer-section dealer-bookings-section" id="bookings">
         <div className="dealer-section-heading"><div><p className="dealer-kicker">RENTAL ACTIVITY</p><h2>Bookings <span>{activeRentals.length} active</span></h2></div></div>
-        {rentals.length ? <div className="dealer-booking-list">{rentals.map((rental) => <article className="dealer-booking-row" key={rental.id}><div className="dealer-booking-id">#{String(rental.id).padStart(4, "0")}</div><div className="dealer-booking-main"><strong>{rental.car}</strong><span>{rental.customer} <i>·</i> {rental.days} days</span></div><strong className="dealer-booking-price">{money(rental.rent)}</strong><span className={`dealer-booking-status ${rental.is_complete ? "complete" : "active"}`}>{rental.is_complete ? "Complete" : "In progress"}</span>{rental.is_complete ? null : <button className="dealer-secondary" disabled={busyId === rental.id} onClick={() => void completeRental(rental)} type="button">{busyId === rental.id ? "Saving…" : "Mark complete"}</button>}</article>)}</div> : <div className="dealer-bookings-empty">No bookings yet. New rentals for your listed vehicles will appear here.</div>}
+        {rentals.length ? <div className="dealer-booking-list">{rentals.map((rental) => <article className="dealer-booking-row" key={rental.id}><div className="dealer-booking-id">#{String(rental.id).padStart(4, "0")}</div><div className="dealer-booking-main"><strong>{rental.car}</strong><span>{rental.customer} <i>·</i> {rentalDates(rental)}</span></div><strong className="dealer-booking-price">{money(rental.rent)}</strong><span className={`dealer-booking-status ${rental.is_complete ? "complete" : "active"}`}>{rental.is_complete ? "Complete" : "In progress"}</span>{rental.is_complete ? null : <button className="dealer-secondary" disabled={busyId === rental.id} onClick={() => void completeRental(rental)} type="button">{busyId === rental.id ? "Saving…" : "Mark complete"}</button>}</article>)}</div> : <div className="dealer-bookings-empty">No bookings yet. New rentals for your listed vehicles will appear here.</div>}
       </section>
       <footer className="dealer-footer"><span>Rove dealer space</span><span>Inventory changes sync to the customer fleet</span><button type="button" onClick={() => void refresh()}>↻ Refresh data</button></footer>
     </section>

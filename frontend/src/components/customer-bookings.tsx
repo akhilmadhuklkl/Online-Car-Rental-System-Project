@@ -6,7 +6,30 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 
 type AvailableCar = { id: number; name: string; city: string; capacity: string; rent: string; image: string };
-type Booking = { id: number; car: string; city: string; days: string; rent: string; is_complete: boolean; image: string };
+type Booking = { id: number; car: string; city: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean; image: string };
+
+function localDateISO(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function shiftDate(value: string, days: number) {
+  const date = new Date(`${value}T00:00:00`);
+  date.setDate(date.getDate() + days);
+  return localDateISO(date);
+}
+
+function rentalDaysBetween(pickup: string, returned: string) {
+  if (!pickup || !returned) return 0;
+  return Math.round((Date.parse(`${returned}T00:00:00Z`) - Date.parse(`${pickup}T00:00:00Z`)) / 86_400_000);
+}
+
+function displayDate(value?: string | null) {
+  if (!value) return "Dates not recorded";
+  return new Date(`${value}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
 
 const demoRentalTerms = [
   ["Daily distance", "250 km per rental day"],
@@ -41,7 +64,9 @@ export default function CustomerBookings() {
   const [cars, setCars] = useState<AvailableCar[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedId, setSelectedId] = useState("");
-  const [days, setDays] = useState("1");
+  const [pickupDate, setPickupDate] = useState("");
+  const [returnDate, setReturnDate] = useState("");
+  const [today, setToday] = useState("");
   const [reviewing, setReviewing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -70,6 +95,7 @@ export default function CustomerBookings() {
   }, [router]);
 
   useEffect(() => {
+    setToday(localDateISO());
     const load = () => {
       void refresh().catch((cause) => setError(cause instanceof Error ? cause.message : "Unable to load your bookings.")).finally(() => setLoading(false));
     };
@@ -83,21 +109,24 @@ export default function CustomerBookings() {
   }, [refresh]);
 
   const selectedCar = cars.find((car) => String(car.id) === selectedId);
-  const estimatedTotal = selectedCar ? (Number(selectedCar.rent) || 0) * (Number(days) || 0) : 0;
+  const days = rentalDaysBetween(pickupDate, returnDate);
+  const estimatedTotal = selectedCar && days > 0 ? (Number(selectedCar.rent) || 0) * days : 0;
+  const minimumReturnDate = pickupDate ? shiftDate(pickupDate, 1) : shiftDate(today, 1);
 
   async function book(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selectedId) { setError("Choose an available car to continue."); return; }
+    if (days < 1 || days > 365) { setError("Choose a return date 1 to 365 days after pickup."); return; }
     if (!reviewing) { setReviewing(true); setError(""); return; }
     setSubmitting(true); setError(""); setNotice("");
     try {
       const result = await request("/api/customer/bookings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ car_id: selectedId, days }),
+        body: JSON.stringify({ car_id: selectedId, pickup_date: pickupDate, return_date: returnDate }),
       });
-      setNotice(`${result.booking.car} is booked for ${result.booking.days} day${result.booking.days === "1" ? "" : "s"}. Total: ${rupees(result.booking.rent)}.`);
-      setSelectedId(""); setDays("1"); setReviewing(false);
+      setNotice(`${result.booking.car} is booked from ${displayDate(result.booking.pickup_date)} to ${displayDate(result.booking.return_date)}. Total: ${rupees(result.booking.rent)}.`);
+      setSelectedId(""); setPickupDate(""); setReturnDate(""); setReviewing(false);
       await refresh();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "We could not place this booking.");
@@ -125,12 +154,13 @@ export default function CustomerBookings() {
         {cars.length ? <form className="customer-booking-form" onSubmit={book}>
           {!reviewing ? <>
             <label>Choose a car<select value={selectedId} onChange={(event) => { setSelectedId(event.target.value); setReviewing(false); }} required><option value="">Select from available cars</option>{cars.map((car) => <option value={car.id} key={car.id}>{car.name} · {car.city} · {rupees(car.rent)}/day</option>)}</select></label>
-            <label>Rental days<input type="number" min={1} max={365} value={days} onChange={(event) => { setDays(event.target.value); setReviewing(false); }} required /></label>
-            <div className="customer-estimate"><span>Estimated rental total</span><strong>{rupees(estimatedTotal)}</strong></div>
-            <button className="button button-dark" type="submit" disabled={submitting || !selectedId}>Review booking <span aria-hidden="true">→</span></button>
+            <label>Pick-up date<input type="date" value={pickupDate} min={today} onChange={(event) => { const value = event.target.value; setPickupDate(value); if (!returnDate || returnDate <= value) setReturnDate(value ? shiftDate(value, 1) : ""); setReviewing(false); }} required /></label>
+            <label>Return date<input type="date" value={returnDate} min={minimumReturnDate} max={pickupDate ? shiftDate(pickupDate, 365) : undefined} onChange={(event) => { setReturnDate(event.target.value); setReviewing(false); }} required /></label>
+            <div className="customer-estimate"><span>{days > 0 ? `Estimated · ${days} day${days === 1 ? "" : "s"}` : "Estimated rental total"}</span><strong>{rupees(estimatedTotal)}</strong></div>
+            <button className="button button-dark" type="submit" disabled={submitting || !selectedId || days < 1 || days > 365}>Review booking <span aria-hidden="true">→</span></button>
           </> : <div className="customer-booking-review">
             <div className="customer-review-heading"><div><p className="dealer-kicker">HUMAN REVIEW</p><h3>Check your rental details</h3></div><strong>{rupees(estimatedTotal)}</strong></div>
-            {selectedCar ? <dl className="customer-review-summary"><div><dt>Car</dt><dd>{selectedCar.name}</dd></div><div><dt>Pickup city</dt><dd>{selectedCar.city}</dd></div><div><dt>Seats</dt><dd>{selectedCar.capacity}</dd></div><div><dt>Duration</dt><dd>{days} day{days === "1" ? "" : "s"}</dd></div><div><dt>Daily rate</dt><dd>{rupees(selectedCar.rent)} / day</dd></div><div><dt>Estimated rental total</dt><dd>{rupees(estimatedTotal)}</dd></div></dl> : null}
+            {selectedCar ? <dl className="customer-review-summary"><div><dt>Car</dt><dd>{selectedCar.name}</dd></div><div><dt>Pickup city</dt><dd>{selectedCar.city}</dd></div><div><dt>Seats</dt><dd>{selectedCar.capacity}</dd></div><div><dt>Pick-up date</dt><dd>{displayDate(pickupDate)}</dd></div><div><dt>Return date</dt><dd>{displayDate(returnDate)}</dd></div><div><dt>Duration</dt><dd>{days} day{days === 1 ? "" : "s"}</dd></div><div><dt>Daily rate</dt><dd>{rupees(selectedCar.rent)} / day</dd></div><div><dt>Estimated rental total</dt><dd>{rupees(estimatedTotal)}</dd></div></dl> : null}
             <RentalTerms />
             <div className="customer-review-actions"><button className="button button-outline" type="button" onClick={() => setReviewing(false)} disabled={submitting}>Edit details</button><button className="button button-dark" type="submit" disabled={submitting || portfolioReadOnly}>{portfolioReadOnly ? "Booking disabled in preview" : submitting ? "Confirming…" : "Confirm booking"}<span aria-hidden="true">→</span></button></div>
           </div>}
@@ -139,9 +169,9 @@ export default function CustomerBookings() {
       </section>
 
       <section className="customer-orders-section"><div className="customer-orders-heading"><div><p className="dealer-kicker">ON THE ROAD</p><h2>Your bookings <span>{current.length}</span></h2></div><Link href="/#fleet">Browse the fleet <span>↗</span></Link></div>
-        {current.length ? <div className="customer-order-grid">{current.map((booking) => <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span>UPCOMING DRIVE</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><p>{booking.city} <i>·</i> {booking.days} day{booking.days === "1" ? "" : "s"}</p><div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>)}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
+        {current.length ? <div className="customer-order-grid">{current.map((booking) => <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span>UPCOMING DRIVE</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><p>{booking.city} <i>·</i> {displayDate(booking.pickup_date)} → {displayDate(booking.return_date)} <i>·</i> {booking.days} day{booking.days === "1" ? "" : "s"}</p><div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>)}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
       </section>
-      {past.length ? <section className="customer-past-section"><p className="dealer-kicker">MILES ALREADY MADE</p><h2>Past drives</h2><div className="customer-past-list">{past.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{booking.days} days · {rupees(booking.rent)}</span><span>Completed</span></article>)}</div></section> : null}
+      {past.length ? <section className="customer-past-section"><p className="dealer-kicker">MILES ALREADY MADE</p><h2>Past drives</h2><div className="customer-past-list">{past.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{displayDate(booking.pickup_date)} → {displayDate(booking.return_date)} · {booking.days} days · {rupees(booking.rent)}</span><span>Completed</span></article>)}</div></section> : null}
     </section>
     <footer className="site-footer customer-account-footer"><div className="footer-bottom"><span>© 2026 Rove Mobility</span><span>Good journeys begin here.</span></div></footer>
   </main>;

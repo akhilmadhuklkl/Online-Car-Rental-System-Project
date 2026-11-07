@@ -672,6 +672,8 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .dealer-booking-status.dates_unavailable { color: #a0aaa0; }
 .dealer-booking-status.complete { color: #a0aaa0; }
 .dealer-booking-row > .dealer-secondary { white-space: nowrap; }
+.dealer-return-due-action { border-color: #8b6738; color: #ffd08c; }
+.dealer-booking-action-hint { color: #939c92; font-size: 8px; line-height: 1.5; }
 .dealer-footer { min-height: 45px; display: flex; align-items: center; gap: 20px; padding-top: 13px; border-top: 1px solid #2e352f; color: #909a90; font-size: 9px; }
 .dealer-footer > span:nth-child(2) { margin-left: auto; }
 .dealer-footer button { border: 0; background: transparent; color: #cad2c8; font-size: 9px; cursor: pointer; }

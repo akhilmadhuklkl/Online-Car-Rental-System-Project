@@ -430,6 +430,11 @@ def complete_dealer_order(request, dealer, order_id):
             return JsonResponse({"error": "Rental not found in your bookings."}, status=404)
         if order.is_complete:
             return JsonResponse({"error": "This rental has already been marked complete."}, status=409)
+        status = _booking_status(order)
+        if status == "upcoming":
+            return JsonResponse({"error": "This rental has not started yet. It can be marked complete after the pickup date."}, status=409)
+        if status == "dates_unavailable":
+            return JsonResponse({"error": "This older booking has no recorded rental dates. Review the booking details before completing it."}, status=409)
         order.is_complete = True
         order.save(update_fields=["is_complete"])
         order.car.is_available = True

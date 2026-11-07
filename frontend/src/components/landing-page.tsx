@@ -24,6 +24,7 @@ type Vehicle = {
   showcaseImage?: string;
   studioImage?: string;
   studioPosition?: string;
+  studioHue?: number;
   accent: string;
   tag?: string;
 };
@@ -56,6 +57,18 @@ const studioFrames = new Map(studioModelKeys.map((key, index) => {
     position: `${column * 50}% ${row * 50}%`,
   }] as const;
 }));
+const cityPaintHues: Record<string, number> = {
+  kochi: 0,
+  thiruvananthapuram: 55,
+  kozhikode: 125,
+  bengaluru: 200,
+  chennai: 245,
+  hyderabad: 300,
+  mumbai: 35,
+  pune: 150,
+  delhi: 215,
+  jaipur: 325,
+};
 
 // Curated editorial slideshow; the live catalog below is loaded from the fleet API.
 const featuredCars = [
@@ -176,7 +189,7 @@ function VehicleCard({ vehicle, showListingId = false }: { vehicle: Vehicle; sho
       <div className={`vehicle-visual ${vehicle.studioImage ? "vehicle-visual-studio" : ""}`} style={vehicle.studioImage ? undefined : { backgroundColor: vehicle.accent }}>
         {vehicle.tag ? <span className="vehicle-tag">{showListingId && vehicle.tag === "Sample listing" ? `SAMPLE #${vehicle.id}` : vehicle.tag}</span> : null}
         <button className={`save-button ${saved ? "is-saved" : ""}`} type="button" aria-label={saved ? `Remove ${vehicle.name} from saved cars` : `Save ${vehicle.name}`} aria-pressed={saved} onClick={() => setSaved((current) => !current)}><HeartIcon filled={saved} /></button>
-        {vehicle.studioImage ? <div className="vehicle-image vehicle-image-studio" role="img" aria-label={`${vehicle.name}, AI-generated illustrative studio render`} style={{ backgroundImage: `url("${vehicle.studioImage}")`, backgroundPosition: vehicle.studioPosition }} /> : <Image src={vehicle.image} alt={`${vehicle.name} rental car${vehicle.imageIsIllustrative ? " (illustrative photo)" : ""}`} fill unoptimized={vehicle.image.startsWith("http")} sizes="(max-width: 700px) 90vw, (max-width: 1100px) 45vw, 30vw" className="vehicle-image" />}
+        {vehicle.studioImage ? <div className="vehicle-image vehicle-image-studio" role="img" aria-label={`${vehicle.name}, AI-generated illustrative studio render in ${vehicle.location}`} style={{ backgroundImage: `url("${vehicle.studioImage}")`, backgroundPosition: vehicle.studioPosition, filter: vehicle.studioHue ? `hue-rotate(${vehicle.studioHue}deg) saturate(1.15)` : undefined }} /> : <Image src={vehicle.image} alt={`${vehicle.name} rental car${vehicle.imageIsIllustrative ? " (illustrative photo)" : ""}`} fill unoptimized={vehicle.image.startsWith("http")} sizes="(max-width: 700px) 90vw, (max-width: 1100px) 45vw, 30vw" className="vehicle-image" />}
       </div>
       <div className="vehicle-info">
         <div className="vehicle-name-row"><div><span className="vehicle-category">{vehicle.category}</span><h3>{vehicle.name}</h3></div></div>
@@ -255,7 +268,8 @@ export default function LandingPage() {
             const name = car.name.toLowerCase();
             const category: VehicleCategory = /bmw|mercedes|audi|innova|premium/.test(name) ? "Premium" : /swift|hatch|alto|compact/.test(name) ? "Compact" : /sedan|amaze|dzire|city|verna/.test(name) ? "Sedan" : "SUV";
             const studio = studioFrames.get(`${name}|${(car.fuel_type ?? "").toLowerCase()}`);
-            return { id: car.id, name: car.name, category, location: car.city || "Kerala", seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image ?? preview?.image ?? "", studioImage: studio?.image, studioPosition: studio?.position, fuelType: car.fuel_type, modelYear: car.model_year, imageCredit: car.image_credit, imageLicense: car.image_license, imageSourceUrl: car.image_source_url, imageAttributionUrl: car.image_attribution_url, imageIsIllustrative: studio ? true : car.image_is_illustrative, showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: car.is_demo ? "Sample listing" : seats >= 7 ? `${seats} seats` : undefined };
+            const city = car.city || "Kerala";
+            return { id: car.id, name: car.name, category, location: city, seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image ?? preview?.image ?? "", studioImage: studio?.image, studioPosition: studio?.position, studioHue: cityPaintHues[city.trim().toLowerCase()] ?? 0, fuelType: car.fuel_type, modelYear: car.model_year, imageCredit: car.image_credit, imageLicense: car.image_license, imageSourceUrl: car.image_source_url, imageAttributionUrl: car.image_attribution_url, imageIsIllustrative: studio ? true : car.image_is_illustrative, showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: car.is_demo ? "Sample listing" : seats >= 7 ? `${seats} seats` : undefined };
           }));
           setCatalogLoaded(true);
         })

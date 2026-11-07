@@ -118,6 +118,22 @@ const categories = ["All cars", "SUV", "Sedan", "Compact", "Premium"] as const;
 type CategoryFilter = (typeof categories)[number];
 const fuelFilters: FuelFilter[] = ["All fuels", "Petrol", "Diesel", "CNG", "EV", "Hybrid"];
 
+function getVehicleCategory(name: string): VehicleCategory {
+  const normalizedName = name.trim().toLowerCase();
+  const compactModels = [
+    "maruti suzuki swift", "maruti suzuki baleno", "maruti suzuki wagon r", "maruti suzuki alto 800",
+    "hyundai santro", "hyundai grand i10 nios", "hyundai i20", "hyundai eon", "tata tiago",
+    "tata altroz", "tata nano", "toyota glanza",
+  ];
+  const sedanModels = ["maruti suzuki dzire", "hyundai aura", "tata tigor", "honda city"];
+  const premiumModels = ["toyota innova", "toyota fortuner", "maruti suzuki ertiga"];
+
+  if (compactModels.some((model) => normalizedName.includes(model))) return "Compact";
+  if (sedanModels.some((model) => normalizedName.includes(model))) return "Sedan";
+  if (/\b(bmw|mercedes|audi)\b/.test(normalizedName) || premiumModels.some((model) => normalizedName.includes(model))) return "Premium";
+  return "SUV";
+}
+
 const featureSlides = [
   { carId: 901, firstLine: "Make room for", secondLine: "everyone.", eyebrow: "THE TOGETHER EDIT", copy: "Seven seats, one shared playlist, and a longer way home in the Innova Crysta." },
   { carId: 902, firstLine: "A little car.", secondLine: "A big day.", eyebrow: "THE CITY ESCAPE EDIT", copy: "Make your own itinerary in the Dzire, starting in Alappuzha." },
@@ -275,7 +291,7 @@ export default function LandingPage() {
             const preview = vehicles.find((item) => item.id === car.id);
             const seats = Number.parseInt(car.capacity, 10) || 4;
             const name = car.name.toLowerCase();
-            const category: VehicleCategory = /bmw|mercedes|audi|innova|premium/.test(name) ? "Premium" : /swift|hatch|alto|compact/.test(name) ? "Compact" : /sedan|amaze|dzire|city|verna/.test(name) ? "Sedan" : "SUV";
+            const category = getVehicleCategory(car.name);
             const studio = studioFrames.get(`${name}|${(car.fuel_type ?? "").toLowerCase()}`);
             const city = car.city || "Kerala";
             return { id: car.id, name: car.name, category, location: city, seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image ?? preview?.image ?? "", studioImage: studio?.image, studioPosition: studio?.position, studioHue: cityPaintHues[city.trim().toLowerCase()] ?? 0, fuelType: car.fuel_type, modelYear: car.model_year, imageCredit: car.image_credit, imageLicense: car.image_license, imageSourceUrl: car.image_source_url, imageAttributionUrl: car.image_attribution_url, imageIsIllustrative: studio ? true : car.image_is_illustrative, showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: car.is_demo ? "Sample listing" : seats >= 7 ? `${seats} seats` : undefined };

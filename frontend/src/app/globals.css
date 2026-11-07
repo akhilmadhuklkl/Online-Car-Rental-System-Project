@@ -916,6 +916,38 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .customer-cancel-confirm-button { border: 1px solid #795b4c; background: #784a3b; color: #fff1e9; }
 .customer-cancel-confirm button:disabled { opacity: .55; cursor: wait; }
 .customer-cancelled-section .customer-past-list article > span:last-child { color: #d19b9b; }
+.customer-reschedule-trigger { min-height: 30px; padding: 0 9px; border: 1px solid #506044; background: transparent; color: #caff79; font-size: 9px; cursor: pointer; }
+.customer-reschedule-trigger:hover { border-color: #b8ff36; color: #e3ffc2; }
+.customer-reschedule-state { flex: 1 0 100%; color: #b8c2b4; font-size: 9px; }
+.customer-reschedule-state.pending { color: #e1c884; }
+.customer-reschedule-state.approved { color: #b8ff72; }
+.customer-reschedule-state.declined { color: #e0a59a; }
+.customer-order-body > .customer-reschedule-pending { display: grid; gap: 6px; padding: 10px; border: 1px solid #655a3b; background: #19170f; }
+.customer-reschedule-pending strong { color: #e9d08a; font-size: 10px; }
+.customer-reschedule-pending span { color: #e2e9df; font-size: 10px; }
+.customer-reschedule-pending small { color: #b0b8aa; font-size: 8px; line-height: 1.5; }
+.customer-order-body > .customer-reschedule-form { display: grid; gap: 10px; padding: 12px; border: 1px solid #424c40; background: #0e130f; }
+.customer-reschedule-form > p { margin: 0; color: #c2cbc0; font-size: 9px; line-height: 1.6; }
+.customer-reschedule-form > div:first-of-type { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+.customer-reschedule-form label { display: grid; gap: 5px; color: #aab5a8; font-size: 9px; }
+.customer-reschedule-form input { min-width: 0; width: 100%; min-height: 36px; padding: 0 8px; border: 1px solid #384237; background: #080b09; color: #e8eee5; color-scheme: dark; font: inherit; }
+.customer-reschedule-form > strong { color: #d2ff9e; font-size: 11px; }
+.customer-reschedule-form > small { color: #8e9a8c; font-size: 8px; }
+.customer-reschedule-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.customer-reschedule-actions button { min-height: 34px; padding: 0 10px; font-size: 9px; cursor: pointer; }
+.customer-reschedule-send { border: 1px solid #a7ee42; background: #b8ff36; color: #10150b; font-weight: 700; }
+.customer-reschedule-send:disabled { opacity: .5; cursor: not-allowed; }
+.dealer-attention-item.reschedule .dealer-attention-tag { color: #caff79; }
+.dealer-reschedule-review { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin: 4px 0 12px; padding: 12px; border: 1px solid #526243; background: #111810; }
+.dealer-reschedule-review > div:first-child { display: grid; gap: 6px; }
+.dealer-reschedule-review .dealer-kicker { margin: 0; }
+.dealer-reschedule-review strong { color: #eef4eb; font-size: 11px; }
+.dealer-reschedule-review small { color: #a3afa0; font-size: 9px; line-height: 1.5; }
+.dealer-reschedule-review > div:last-child { display: flex; flex-wrap: wrap; gap: 8px; }
+.dealer-reschedule-review button { min-height: 34px; padding-inline: 12px; }
+.dealer-reschedule-outcome { margin: 4px 0 12px; color: #b6c1b1; font-size: 9px; }
+.dealer-reschedule-outcome.approved { color: #b8ff72; }
+.dealer-reschedule-outcome.declined { color: #e0a59a; }
 .customer-empty-orders { padding: 30px 15px; border: 1px dashed #384239; background: #0f130f; text-align: center; }
 .customer-empty-orders > span { color: #c7ff72; }
 .customer-empty-orders h3 { margin: 8px 0 5px; font-size: 14px; }

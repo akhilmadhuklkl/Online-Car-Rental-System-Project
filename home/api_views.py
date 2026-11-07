@@ -200,6 +200,10 @@ def customer_bookings_api(request, customer):
             "is_complete": order.is_complete,
             "is_cancelled": order.is_cancelled,
             "status": _booking_status(order),
+            "requested_pickup_date": order.requested_pickup_date.isoformat() if order.requested_pickup_date else None,
+            "requested_return_date": order.requested_return_date.isoformat() if order.requested_return_date else None,
+            "reschedule_status": order.reschedule_status,
+            "requested_rent": str(int(order.daily_rate) * ((order.requested_return_date - order.requested_pickup_date).days)) if order.daily_rate.isdigit() and order.requested_pickup_date and order.requested_return_date else None,
             "image": _car_data(order.car)["image"],
         } for order in orders]})
 
@@ -245,6 +249,7 @@ def customer_bookings_api(request, customer):
             car=car,
             rent=str(total),
             days=str(days),
+            daily_rate=str(daily_rent),
             pickup_date=pickup_date,
             return_date=return_date,
         )
@@ -264,6 +269,94 @@ def customer_bookings_api(request, customer):
 
 @_customer_required
 @require_POST
+def request_booking_reschedule(request, customer, order_id):
+    data = _json_body(request)
+    if data is None:
+        return JsonResponse({"error": "Enter a valid date-change request."}, status=400)
+    pickup_text = data.get("pickup_date")
+    return_text = data.get("return_date")
+    if not isinstance(pickup_text, str) or not isinstance(return_text, str):
+        return JsonResponse({"error": "Choose both a new pick-up date and return date."}, status=400)
+    try:
+        pickup_date = date.fromisoformat(pickup_text)
+        return_date = date.fromisoformat(return_text)
+    except ValueError:
+        return JsonResponse({"error": "Enter valid pick-up and return dates."}, status=400)
+    if pickup_date.isoformat() != pickup_text or return_date.isoformat() != return_text:
+        return JsonResponse({"error": "Enter dates in YYYY-MM-DD format."}, status=400)
+    if pickup_date < timezone.localdate():
+        return JsonResponse({"error": "The new pick-up date cannot be in the past."}, status=400)
+    if return_date <= pickup_date:
+        return JsonResponse({"error": "The new return date must be after pick-up."}, status=400)
+    days = (return_date - pickup_date).days
+    if not 1 <= days <= 365:
+        return JsonResponse({"error": "Rental duration must be between 1 and 365 days."}, status=400)
+
+    with transaction.atomic():
+        order = Order.objects.select_for_update().filter(pk=order_id, user=customer.user).first()
+        if order is None:
+            return JsonResponse({"error": "Booking not found in your account."}, status=404)
+        if _booking_status(order) != "upcoming":
+            return JsonResponse({"error": "Date changes can only be requested before the current pick-up date."}, status=409)
+        if order.reschedule_status == "pending":
+            return JsonResponse({"error": "Your date-change request is already waiting for dealer review."}, status=409)
+        try:
+            daily_rate = int(order.daily_rate)
+            new_total = daily_rate * days
+        except (TypeError, ValueError):
+            return JsonResponse({"error": "This older booking has no saved daily rate, so a date change cannot be priced safely."}, status=409)
+        if daily_rate <= 0 or new_total > 9_999_999_999:
+            return JsonResponse({"error": "The proposed rental total exceeds the supported amount."}, status=400)
+        order.requested_pickup_date = pickup_date
+        order.requested_return_date = return_date
+        order.reschedule_status = "pending"
+        order.save(update_fields=["requested_pickup_date", "requested_return_date", "reschedule_status"])
+    return JsonResponse({"ok": True, "status": "pending", "requested_rent": str(new_total)})
+
+
+@_dealer_required
+@require_POST
+def decide_booking_reschedule(request, dealer, order_id, decision):
+    if decision not in {"approve", "decline"}:
+        return JsonResponse({"error": "Choose approve or decline for this request."}, status=400)
+    with transaction.atomic():
+        order = Order.objects.select_for_update().filter(pk=order_id, car_dealer=dealer).first()
+        if order is None:
+            return JsonResponse({"error": "Rental not found in your bookings."}, status=404)
+        if order.reschedule_status != "pending" or not order.requested_pickup_date or not order.requested_return_date:
+            return JsonResponse({"error": "There is no pending date-change request for this rental."}, status=409)
+        if _booking_status(order) != "upcoming":
+            return JsonResponse({"error": "This booking is no longer eligible for a date change."}, status=409)
+        if decision == "approve":
+            days = (order.requested_return_date - order.requested_pickup_date).days
+            if order.requested_pickup_date < timezone.localdate() or not 1 <= days <= 365:
+                return JsonResponse({"error": "The requested dates are no longer valid. Ask the customer to submit new dates."}, status=409)
+            try:
+                daily_rate = int(order.daily_rate)
+                new_total = daily_rate * days
+                previous_total = int(order.rent)
+            except (TypeError, ValueError):
+                return JsonResponse({"error": "This booking's rate data is invalid, so the change cannot be approved safely."}, status=409)
+            dealer_locked = CarDealer.objects.select_for_update().get(pk=dealer.pk)
+            earnings = dealer_locked.earnings + new_total - previous_total
+            if new_total > 9_999_999_999 or earnings < 0 or earnings > 2_147_483_647:
+                return JsonResponse({"error": "The revised rental total exceeds the supported amount."}, status=409)
+            order.pickup_date = order.requested_pickup_date
+            order.return_date = order.requested_return_date
+            order.days = str(days)
+            order.rent = str(new_total)
+            order.reschedule_status = "approved"
+            dealer_locked.earnings = earnings
+            dealer_locked.save(update_fields=["earnings"])
+            order.save(update_fields=["pickup_date", "return_date", "days", "rent", "reschedule_status"])
+        else:
+            order.reschedule_status = "declined"
+            order.save(update_fields=["reschedule_status"])
+    return JsonResponse({"ok": True, "status": order.reschedule_status})
+
+
+@_customer_required
+@require_POST
 def cancel_customer_booking(request, customer, order_id):
     with transaction.atomic():
         order = Order.objects.select_for_update().filter(pk=order_id, user=customer.user).first()
@@ -278,7 +371,10 @@ def cancel_customer_booking(request, customer, order_id):
             return JsonResponse({"error": "Bookings can only be cancelled before the pickup date."}, status=409)
 
         order.is_cancelled = True
-        order.save(update_fields=["is_cancelled"])
+        order.reschedule_status = ""
+        order.requested_pickup_date = None
+        order.requested_return_date = None
+        order.save(update_fields=["is_cancelled", "reschedule_status", "requested_pickup_date", "requested_return_date"])
         car = Car.objects.select_for_update().get(pk=order.car_id)
         car.is_available = True
         car.save(update_fields=["is_available"])
@@ -357,6 +453,10 @@ def dealer_dashboard(request, dealer):
             "is_complete": order.is_complete,
             "is_cancelled": order.is_cancelled,
             "status": _booking_status(order),
+            "requested_pickup_date": order.requested_pickup_date.isoformat() if order.requested_pickup_date else None,
+            "requested_return_date": order.requested_return_date.isoformat() if order.requested_return_date else None,
+            "reschedule_status": order.reschedule_status,
+            "requested_rent": str(int(order.daily_rate) * ((order.requested_return_date - order.requested_pickup_date).days)) if order.daily_rate.isdigit() and order.requested_pickup_date and order.requested_return_date else None,
         } for order in orders],
         "earnings": dealer.earnings,
         "city": dealer.location.city,
@@ -466,6 +566,8 @@ def complete_dealer_order(request, dealer, order_id):
         if order.is_complete:
             return JsonResponse({"error": "This rental has already been marked complete."}, status=409)
         status = _booking_status(order)
+        if order.reschedule_status == "pending":
+            return JsonResponse({"error": "Review or decline the pending date-change request before completing this rental."}, status=409)
         if status == "upcoming":
             return JsonResponse({"error": "This rental has not started yet. It can be marked complete after the pickup date."}, status=409)
         if status == "dates_unavailable":

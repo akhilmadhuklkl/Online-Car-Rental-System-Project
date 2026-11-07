@@ -50,6 +50,12 @@ class Customer(models.Model):
         return str(self.user)
 
 class Order(models.Model):
+    RESCHEDULE_STATUSES = [
+        ("", "No request"),
+        ("pending", "Pending dealer review"),
+        ("approved", "Approved"),
+        ("declined", "Declined"),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     car_dealer = models.ForeignKey(CarDealer, on_delete=models.CASCADE)
     car = models.ForeignKey(Car, on_delete=models.CASCADE)
@@ -59,3 +65,7 @@ class Order(models.Model):
     return_date = models.DateField(null=True, blank=True)
     is_complete = models.BooleanField(default=False)
     is_cancelled = models.BooleanField(default=False)
+    daily_rate = models.CharField(max_length=10, blank=True)
+    requested_pickup_date = models.DateField(null=True, blank=True)
+    requested_return_date = models.DateField(null=True, blank=True)
+    reschedule_status = models.CharField(max_length=10, choices=RESCHEDULE_STATUSES, blank=True, default="")

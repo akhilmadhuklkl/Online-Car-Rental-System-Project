@@ -10,6 +10,7 @@ urlpatterns = [
     path("api/customer/logout", api_views.customer_logout_api, name="api_customer_logout"),
     path("api/customer/session", api_views.customer_session_api, name="api_customer_session"),
     path("api/customer/bookings", api_views.customer_bookings_api, name="api_customer_bookings"),
+    path("api/customer/bookings/<int:order_id>/cancel", api_views.cancel_customer_booking, name="api_cancel_customer_booking"),
     path("api/dealer/login", api_views.dealer_login, name="api_dealer_login"),
     path("api/dealer/logout", api_views.dealer_logout, name="api_dealer_logout"),
     path("api/dealer/session", api_views.dealer_session, name="api_dealer_session"),

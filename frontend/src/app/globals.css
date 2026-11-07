@@ -718,6 +718,7 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .dealer-booking-status.return_due { color: #ffc36b; }
 .dealer-booking-status.dates_unavailable { color: #a0aaa0; }
 .dealer-booking-status.complete { color: #a0aaa0; }
+.dealer-booking-status.cancelled { color: #d19b9b; }
 .dealer-booking-row > .dealer-secondary { white-space: nowrap; }
 .dealer-return-due-action { border-color: #8b6738; color: #ffd08c; }
 .dealer-booking-action-hint { color: #939c92; font-size: 8px; line-height: 1.5; }
@@ -750,6 +751,8 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .dealer-workspace { padding-inline: 25px; }
   .dealer-vehicle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dealer-booking-row { grid-template-columns: 52px minmax(105px, 1fr) minmax(65px, .35fr) 78px auto; gap: 10px; }
+  .dealer-bookings-section > .dealer-section-heading { align-items: flex-start; flex-wrap: wrap; }
+  .dealer-booking-tools { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
 }
 @media (max-width: 740px) {
   .dealer-app { display: block; padding-bottom: 62px; }
@@ -901,6 +904,18 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .customer-order-body > div:not(.customer-order-trip-meta) { display: flex; justify-content: space-between; gap: 12px; padding-top: 11px; border-top: 1px solid #2f3731; }
 .customer-order-body > div:not(.customer-order-trip-meta) strong { color: #d0ff84; font-size: 13px; }
 .customer-order-body > div:not(.customer-order-trip-meta) span { color: #9ca69c; font-size: 9px; }
+.customer-order-body > .customer-order-actions { flex-wrap: wrap; align-items: center; }
+.customer-order-actions .customer-cancel-unavailable { flex: 1 0 100%; }
+.customer-cancel-trigger { min-height: 30px; padding: 0 9px; border: 1px solid #67524b; background: transparent; color: #d9b3a5; font-size: 9px; cursor: pointer; }
+.customer-cancel-trigger:hover { border-color: #ad7b6d; color: #ffd5c4; }
+.customer-order-body > .customer-cancel-confirm { display: grid; gap: 10px; padding: 11px; border: 1px solid #6b5141; background: #1b1511; }
+.customer-cancel-confirm p { margin: 0; color: #e2c9b6; font-size: 9px; line-height: 1.6; }
+.customer-cancel-confirm > div { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.customer-cancel-confirm button { min-height: 34px; padding: 0 10px; font-size: 9px; cursor: pointer; }
+.customer-cancel-keep { border: 1px solid #3d473e; background: transparent; color: #d2dbd1; }
+.customer-cancel-confirm-button { border: 1px solid #795b4c; background: #784a3b; color: #fff1e9; }
+.customer-cancel-confirm button:disabled { opacity: .55; cursor: wait; }
+.customer-cancelled-section .customer-past-list article > span:last-child { color: #d19b9b; }
 .customer-empty-orders { padding: 30px 15px; border: 1px dashed #384239; background: #0f130f; text-align: center; }
 .customer-empty-orders > span { color: #c7ff72; }
 .customer-empty-orders h3 { margin: 8px 0 5px; font-size: 14px; }
@@ -940,6 +955,7 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .customer-order-grid { grid-template-columns: 1fr; }
   .customer-order-photo { height: 170px; }
   .customer-past-list article { grid-template-columns: 43px 1fr auto; gap: 8px; font-size: 9px; }
+  .customer-past-heading { flex-wrap: wrap; }
   .customer-past-list article > span:nth-child(3) { grid-column: 2; }
   .customer-past-list article > span:last-child { grid-column: 3; grid-row: 1 / span 2; }
   .customer-account-footer { padding-inline: 18px; }

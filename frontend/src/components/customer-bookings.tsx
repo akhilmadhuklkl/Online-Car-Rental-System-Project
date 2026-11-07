@@ -6,16 +6,20 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 
 type AvailableCar = { id: number; name: string; city: string; capacity: string; rent: string; image: string };
-type BookingStatus = "upcoming" | "in_progress" | "return_due" | "completed" | "dates_unavailable";
-type Booking = { id: number; car: string; city: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean; status?: BookingStatus; image: string };
+type BookingStatus = "upcoming" | "in_progress" | "return_due" | "completed" | "cancelled" | "dates_unavailable";
+type Booking = { id: number; car: string; city: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean; is_cancelled?: boolean; status?: BookingStatus; image: string };
+
+function bookingStatus(booking: Booking): BookingStatus {
+  return booking.status ?? (booking.is_cancelled ? "cancelled" : booking.is_complete ? "completed" : "upcoming");
+}
 
 function bookingStatusLabel(booking: Booking) {
-  if (booking.status) return ({ upcoming: "Upcoming drive", in_progress: "In progress", return_due: "Return due", completed: "Completed", dates_unavailable: "Dates unavailable" } satisfies Record<BookingStatus, string>)[booking.status];
-  return booking.is_complete ? "Completed" : "Upcoming drive";
+  return ({ upcoming: "Upcoming drive", in_progress: "In progress", return_due: "Return due", completed: "Completed", cancelled: "Cancelled", dates_unavailable: "Dates unavailable" } satisfies Record<BookingStatus, string>)[bookingStatus(booking)];
 }
 
 function BookingTimeline({ booking }: { booking: Booking }) {
-  const status = booking.status ?? (booking.is_complete ? "completed" : "upcoming");
+  const status = bookingStatus(booking);
+  if (status === "cancelled") return <p className="booking-timeline-unavailable">Cancelled before pickup. This vehicle has been returned to the available fleet.</p>;
   if (status === "dates_unavailable" || !booking.pickup_date || !booking.return_date) {
     return <p className="booking-timeline-unavailable">Timeline unavailable because rental dates were not recorded.</p>;
   }
@@ -35,7 +39,7 @@ function BookingTimeline({ booking }: { booking: Booking }) {
 }
 
 function bookingReminder(booking: Booking, today: string) {
-  const status = booking.status ?? (booking.is_complete ? "completed" : "upcoming");
+  const status = bookingStatus(booking);
   if (!booking.pickup_date || !booking.return_date || status === "dates_unavailable") return null;
   if (booking.pickup_date === today) return { tone: "pickup-today", text: "Pick-up is today" };
   if (status === "upcoming") {
@@ -86,6 +90,7 @@ const demoRentalTerms = [
   ["Daily distance", "250 km per rental day"],
   ["Extra distance", "₹10 per km beyond the sample allowance"],
   ["Security deposit", "₹5,000 refundable sample deposit"],
+  ["Cancellation", "No fee before pick-up in this demo; cancellation closes once the pick-up date begins"],
   ["Fuel", "Return with the same fuel level as pickup"],
   ["Pickup checklist", "Bring a valid driving licence and photo ID"],
 ] as const;
@@ -114,7 +119,7 @@ function csvCell(value: string | number) {
   return `"${safeText.replaceAll('"', '""')}"`;
 }
 
-function exportCustomerBookings(bookings: Booking[], category: "open" | "completed") {
+function exportCustomerBookings(bookings: Booking[], category: "open" | "completed" | "cancelled") {
   const rows = [
     ["Booking number", "Vehicle", "City", "Pick-up date", "Return date", "Duration (days)", "Total (INR)", "Status"],
     ...bookings.map((booking) => [
@@ -150,6 +155,8 @@ export default function CustomerBookings() {
   const [returnDate, setReturnDate] = useState("");
   const [today, setToday] = useState("");
   const [reviewing, setReviewing] = useState(false);
+  const [confirmCancelId, setConfirmCancelId] = useState<number | null>(null);
+  const [cancellingId, setCancellingId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -195,6 +202,22 @@ export default function CustomerBookings() {
   const estimatedTotal = selectedCar && days > 0 ? (Number(selectedCar.rent) || 0) * days : 0;
   const minimumReturnDate = pickupDate ? shiftDate(pickupDate, 1) : shiftDate(today, 1);
 
+  async function cancelBooking(booking: Booking) {
+    setCancellingId(booking.id);
+    setError("");
+    setNotice("");
+    try {
+      await request(`/api/customer/bookings/${booking.id}/cancel`, { method: "POST" });
+      setConfirmCancelId(null);
+      setNotice(`Booking #${String(booking.id).padStart(4, "0")} for ${booking.car} was cancelled. The car is available again.`);
+      await refresh();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "We could not cancel this booking.");
+    } finally {
+      setCancellingId(null);
+    }
+  }
+
   async function book(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selectedId) { setError("Choose an available car to continue."); return; }
@@ -222,8 +245,9 @@ export default function CustomerBookings() {
   }
 
   if (loading) return <main className="customer-loading"><span className="dealer-spinner" /><p>Loading your journeys…</p></main>;
-  const current = bookings.filter((booking) => (booking.status ?? (booking.is_complete ? "completed" : "upcoming")) !== "completed");
-  const past = bookings.filter((booking) => (booking.status ?? (booking.is_complete ? "completed" : "upcoming")) === "completed");
+  const current = bookings.filter((booking) => bookingStatus(booking) !== "completed" && bookingStatus(booking) !== "cancelled");
+  const past = bookings.filter((booking) => bookingStatus(booking) === "completed");
+  const cancelled = bookings.filter((booking) => bookingStatus(booking) === "cancelled");
 
   return <main className="customer-account">
     <header className="site-header customer-account-header"><Link className="brand" href="/" aria-label="Rove home"><span className="brand-mark">r</span><span>rove<span className="brand-period">.</span></span></Link><nav><Link href="/#fleet">Explore cars</Link><button type="button" onClick={() => void logout()}>Sign out</button></nav></header>
@@ -251,9 +275,10 @@ export default function CustomerBookings() {
       </section>
 
       <section className="customer-orders-section"><div className="customer-orders-heading"><div><p className="dealer-kicker">ON THE ROAD</p><h2>Your bookings <span>{current.length}</span></h2></div><div className="customer-booking-heading-actions"><button className="customer-booking-export" type="button" disabled={!current.length} onClick={() => exportCustomerBookings(current, "open")}>↓ Export open CSV</button><Link href="/#fleet">Browse the fleet <span>↗</span></Link></div></div>
-        {current.length ? <div className="customer-order-grid">{current.map((booking) => { const reminder = bookingReminder(booking, today); return <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span className={`customer-order-status ${booking.status ?? "upcoming"}`}>{bookingStatusLabel(booking)}</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><div className="customer-order-trip-meta"><span>{booking.city}</span><span>{durationLabel(booking.days)}</span></div>{reminder ? <p className={`customer-booking-reminder ${reminder.tone}`} role="status">{reminder.text}</p> : null}{booking.pickup_date && booking.return_date ? <dl className="customer-order-dates"><div><dt>Pick-up</dt><dd>{displayDate(booking.pickup_date)}</dd></div><div><dt>Return</dt><dd>{displayDate(booking.return_date)}</dd></div></dl> : <p className="customer-order-legacy-dates">Dates not recorded</p>}<BookingTimeline booking={booking} /><div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>; })}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
+        {current.length ? <div className="customer-order-grid">{current.map((booking) => { const reminder = bookingReminder(booking, today); const canCancel = bookingStatus(booking) === "upcoming"; const isConfirmingCancel = confirmCancelId === booking.id; return <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span className={`customer-order-status ${bookingStatus(booking)}`}>{bookingStatusLabel(booking)}</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><div className="customer-order-trip-meta"><span>{booking.city}</span><span>{durationLabel(booking.days)}</span></div>{reminder ? <p className={`customer-booking-reminder ${reminder.tone}`} role="status">{reminder.text}</p> : null}{booking.pickup_date && booking.return_date ? <dl className="customer-order-dates"><div><dt>Pick-up</dt><dd>{displayDate(booking.pickup_date)}</dd></div><div><dt>Return</dt><dd>{displayDate(booking.return_date)}</dd></div></dl> : <p className="customer-order-legacy-dates">Dates not recorded</p>}<BookingTimeline booking={booking} /><div className="customer-order-actions"><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span>{canCancel && portfolioReadOnly ? <span className="customer-cancel-unavailable">Cancellation disabled in this portfolio preview</span> : null}{canCancel && !portfolioReadOnly && !isConfirmingCancel ? <button className="customer-cancel-trigger" type="button" onClick={() => setConfirmCancelId(booking.id)}>Cancel booking</button> : null}</div>{canCancel && !portfolioReadOnly && isConfirmingCancel ? <div className="customer-cancel-confirm" role="group" aria-label={`Confirm cancellation for booking ${booking.id}`}><p>No cancellation fee under this illustrative demo policy. Cancellation is unavailable on or after the pick-up date.</p><div><button type="button" className="customer-cancel-keep" onClick={() => setConfirmCancelId(null)} disabled={cancellingId === booking.id}>Keep booking</button><button type="button" className="customer-cancel-confirm-button" onClick={() => void cancelBooking(booking)} disabled={cancellingId === booking.id}>{cancellingId === booking.id ? "Cancelling…" : "Confirm cancellation"}</button></div></div> : null}</div></article>; })}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
       </section>
       {past.length ? <section className="customer-past-section"><div className="customer-past-heading"><div><p className="dealer-kicker">MILES ALREADY MADE</p><h2>Past drives</h2></div><button className="customer-booking-export" type="button" onClick={() => exportCustomerBookings(past, "completed")}>↓ Export history CSV</button></div><div className="customer-past-list">{past.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{dateRangeLabel(booking.pickup_date, booking.return_date)} · {durationLabel(booking.days)} · {rupees(booking.rent)}</span><span>Completed</span></article>)}</div></section> : null}
+      {cancelled.length ? <section className="customer-past-section customer-cancelled-section"><div className="customer-past-heading"><div><p className="dealer-kicker">BOOKING HISTORY</p><h2>Cancelled bookings</h2></div><button className="customer-booking-export" type="button" onClick={() => exportCustomerBookings(cancelled, "cancelled")}>↓ Export cancelled CSV</button></div><div className="customer-past-list">{cancelled.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{dateRangeLabel(booking.pickup_date, booking.return_date)} · {durationLabel(booking.days)} · {rupees(booking.rent)}</span><span>Cancelled</span></article>)}</div></section> : null}
     </section>
     <footer className="site-footer customer-account-footer"><div className="footer-bottom"><span>© 2026 Rove Mobility</span><span>Good journeys begin here.</span></div></footer>
   </main>;

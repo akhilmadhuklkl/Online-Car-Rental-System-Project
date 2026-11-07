@@ -87,6 +87,8 @@ def _car_data(car):
 
 
 def _booking_status(order, today=None):
+    if order.is_cancelled:
+        return "cancelled"
     if order.is_complete:
         return "completed"
     if not order.pickup_date or not order.return_date:
@@ -196,6 +198,7 @@ def customer_bookings_api(request, customer):
             "return_date": order.return_date.isoformat() if order.return_date else None,
             "rent": order.rent,
             "is_complete": order.is_complete,
+            "is_cancelled": order.is_cancelled,
             "status": _booking_status(order),
             "image": _car_data(order.car)["image"],
         } for order in orders]})
@@ -257,6 +260,37 @@ def customer_bookings_api(request, customer):
         "return_date": return_date.isoformat(),
         "rent": order.rent,
     }}, status=201)
+
+
+@_customer_required
+@require_POST
+def cancel_customer_booking(request, customer, order_id):
+    with transaction.atomic():
+        order = Order.objects.select_for_update().filter(pk=order_id, user=customer.user).first()
+        if order is None:
+            return JsonResponse({"error": "Booking not found in your account."}, status=404)
+        if order.is_cancelled:
+            return JsonResponse({"error": "This booking has already been cancelled."}, status=409)
+        if order.is_complete:
+            return JsonResponse({"error": "Completed rentals cannot be cancelled."}, status=409)
+        status = _booking_status(order)
+        if status != "upcoming":
+            return JsonResponse({"error": "Bookings can only be cancelled before the pickup date."}, status=409)
+
+        order.is_cancelled = True
+        order.save(update_fields=["is_cancelled"])
+        car = Car.objects.select_for_update().get(pk=order.car_id)
+        car.is_available = True
+        car.save(update_fields=["is_available"])
+        dealer = CarDealer.objects.select_for_update().get(pk=order.car_dealer_id)
+        try:
+            booking_total = int(order.rent)
+        except (TypeError, ValueError):
+            booking_total = 0
+        dealer.earnings = max(0, dealer.earnings - booking_total)
+        dealer.save(update_fields=["earnings"])
+
+    return JsonResponse({"ok": True, "status": "cancelled"})
 
 
 @require_POST
@@ -321,6 +355,7 @@ def dealer_dashboard(request, dealer):
             "return_date": order.return_date.isoformat() if order.return_date else None,
             "rent": order.rent,
             "is_complete": order.is_complete,
+            "is_cancelled": order.is_cancelled,
             "status": _booking_status(order),
         } for order in orders],
         "earnings": dealer.earnings,

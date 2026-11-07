@@ -58,3 +58,4 @@ class Order(models.Model):
     pickup_date = models.DateField(null=True, blank=True)
     return_date = models.DateField(null=True, blank=True)
     is_complete = models.BooleanField(default=False)
+    is_cancelled = models.BooleanField(default=False)

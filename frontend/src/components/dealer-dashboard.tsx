@@ -6,10 +6,14 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 
 type Car = { id: number; name: string; city: string; capacity: string; rent: string; is_available: boolean; image: string };
-type RentalStatus = "upcoming" | "in_progress" | "return_due" | "completed" | "dates_unavailable";
+type RentalStatus = "upcoming" | "in_progress" | "return_due" | "completed" | "cancelled" | "dates_unavailable";
 type BookingSort = "newest" | "pickup" | "return";
-type Rental = { id: number; car: string; car_id: number; customer: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean; status?: RentalStatus };
+type Rental = { id: number; car: string; car_id: number; customer: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean; is_cancelled?: boolean; status?: RentalStatus };
 type DashboardData = { cars: Car[]; orders: Rental[]; earnings: number; city: string };
+
+function rentalStatus(rental: Rental): RentalStatus {
+  return rental.status ?? (rental.is_cancelled ? "cancelled" : rental.is_complete ? "completed" : "upcoming");
+}
 
 function localDateISO(date = new Date()) {
   const year = date.getFullYear();
@@ -59,6 +63,7 @@ function rentalDates(rental: Rental) {
 }
 
 function RentalTimeline({ status, pickupDate, returnDate }: { status: RentalStatus; pickupDate?: string | null; returnDate?: string | null }) {
+  if (status === "cancelled") return <p className="booking-timeline-unavailable">Cancelled before pickup. The car is available for new bookings.</p>;
   if (status === "dates_unavailable" || !pickupDate || !returnDate) return <p className="booking-timeline-unavailable">Timeline unavailable because rental dates were not recorded.</p>;
   const format = (value: string) => new Date(`${value}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
   const steps = [
@@ -135,7 +140,7 @@ export default function DealerDashboard() {
   const [busyId, setBusyId] = useState<number | null>(null);
   const [newBookingIds, setNewBookingIds] = useState<number[]>([]);
   const [today, setToday] = useState("");
-  const [bookingFilter, setBookingFilter] = useState<"open" | "completed">("open");
+  const [bookingFilter, setBookingFilter] = useState<"open" | "completed" | "cancelled">("open");
   const [bookingSearch, setBookingSearch] = useState("");
   const [bookingSort, setBookingSort] = useState<BookingSort>("newest");
   const knownBookingIds = useRef<Set<number> | null>(null);
@@ -155,8 +160,9 @@ export default function DealerDashboard() {
     if (knownBookingIds.current === null) {
       knownBookingIds.current = currentIds;
     } else {
-      const arrivals = [...currentIds].filter((id) => !knownBookingIds.current?.has(id));
-      if (arrivals.length) setNewBookingIds((previous) => [...new Set([...previous, ...arrivals])]);
+      const activeIds = new Set<number>((result.orders as Rental[]).filter((rental) => rentalStatus(rental) !== "cancelled" && !rental.is_complete).map((rental) => rental.id));
+      const arrivals = [...currentIds].filter((id) => activeIds.has(id) && !knownBookingIds.current?.has(id));
+      setNewBookingIds((previous) => [...new Set([...previous.filter((id) => activeIds.has(id)), ...arrivals])]);
       knownBookingIds.current = currentIds;
     }
     setData(result);
@@ -217,12 +223,13 @@ export default function DealerDashboard() {
   if (loading) return <main className="dealer-loading"><span className="dealer-spinner" /><p>Opening your workspace…</p></main>;
   const cars = data?.cars ?? [];
   const rentals = data?.orders ?? [];
-  const openBookings = rentals.filter((rental) => (rental.status ?? (rental.is_complete ? "completed" : "upcoming")) !== "completed");
+  const openBookings = rentals.filter((rental) => !["completed", "cancelled"].includes(rentalStatus(rental)));
   const upcomingRentals = rentals.filter((rental) => rental.status === "upcoming");
   const inProgressRentals = rentals.filter((rental) => rental.status === "in_progress");
   const returnDueRentals = rentals.filter((rental) => rental.status === "return_due");
-  const completedRentals = rentals.filter((rental) => rental.status === "completed" || (!rental.status && rental.is_complete));
-  const filterSource = bookingFilter === "open" ? openBookings : completedRentals;
+  const completedRentals = rentals.filter((rental) => rentalStatus(rental) === "completed");
+  const cancelledRentals = rentals.filter((rental) => rentalStatus(rental) === "cancelled");
+  const filterSource = bookingFilter === "open" ? openBookings : bookingFilter === "completed" ? completedRentals : cancelledRentals;
   const normalizedSearch = bookingSearch.trim().toLocaleLowerCase();
   const searchedRentals = normalizedSearch ? filterSource.filter((rental) => [String(rental.id), String(rental.id).padStart(4, "0"), rental.customer, rental.car].some((value) => value.toLocaleLowerCase().includes(normalizedSearch))) : filterSource;
   const filteredRentals = [...searchedRentals].sort((left, right) => {
@@ -247,7 +254,7 @@ export default function DealerDashboard() {
         rental.return_date ?? "Not recorded",
         rental.days,
         rental.rent,
-        rental.status ?? (rental.is_complete ? "completed" : "upcoming"),
+        rentalStatus(rental),
       ]),
     ];
     const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
@@ -261,7 +268,7 @@ export default function DealerDashboard() {
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
   const pickupAlerts = today ? rentals.flatMap((rental) => {
-    if (rental.is_complete || !rental.pickup_date) return [];
+    if (rental.is_complete || rentalStatus(rental) === "cancelled" || !rental.pickup_date) return [];
     const daysUntilPickup = daysFromToday(rental.pickup_date, today);
     return daysUntilPickup >= 0 && daysUntilPickup <= 3 ? [{ rental, daysUntilPickup }] : [];
   }) : [];
@@ -304,8 +311,8 @@ export default function DealerDashboard() {
       </section>
 
       <section className="dealer-section dealer-bookings-section" id="bookings">
-        <div className="dealer-section-heading"><div><p className="dealer-kicker">RENTAL ACTIVITY</p><h2>Bookings <span>{openBookings.length} open</span></h2></div><div className="dealer-booking-tools"><label className="dealer-booking-search"><span aria-hidden="true">⌕</span><input type="search" value={bookingSearch} onChange={(event) => setBookingSearch(event.target.value)} placeholder="Search customer, car, or booking #" aria-label="Search bookings by customer, car, or booking number" /></label><label className="dealer-booking-sort-label"><span>Sort</span><select value={bookingSort} onChange={(event) => setBookingSort(event.target.value as BookingSort)} aria-label="Sort bookings"><option value="newest">Newest</option><option value="pickup">Pick-up date</option><option value="return">Return date</option></select></label><div className="dealer-booking-filters" role="group" aria-label="Filter bookings"><button className={bookingFilter === "open" ? "selected" : ""} type="button" aria-pressed={bookingFilter === "open"} onClick={() => setBookingFilter("open")}>Open <i>{openBookings.length}</i></button><button className={bookingFilter === "completed" ? "selected" : ""} type="button" aria-pressed={bookingFilter === "completed"} onClick={() => setBookingFilter("completed")}>Completed <i>{completedRentals.length}</i></button></div><button className="dealer-booking-export" type="button" onClick={exportBookings} disabled={!filteredRentals.length} title={`Export ${filteredRentals.length} visible booking${filteredRentals.length === 1 ? "" : "s"} as CSV`}>↓ Export CSV</button></div></div>
-        {rentals.length ? filteredRentals.length ? <div className="dealer-booking-list">{filteredRentals.map((rental) => { const status = rental.status ?? (rental.is_complete ? "completed" : "upcoming"); const label = ({ upcoming: "Upcoming", in_progress: "In progress", return_due: "Return due", completed: "Complete", dates_unavailable: "Dates unavailable" } satisfies Record<RentalStatus, string>)[status]; const formatDate = (value?: string | null) => value ? new Date(`${value}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : "Not recorded"; const completionAllowed = status === "in_progress" || status === "return_due"; const actionHint = status === "upcoming" ? "Completion is available after the pickup date." : status === "dates_unavailable" ? "Review the legacy dates before completing this booking." : ""; const isNew = newBookingIds.includes(rental.id); return <article className={`dealer-booking-row ${isNew ? "is-new" : ""}`} key={rental.id}><div className="dealer-booking-id">#{String(rental.id).padStart(4, "0")}</div><div className="dealer-booking-main"><strong>{rental.car}{isNew ? <span className="dealer-new-booking-badge">NEW</span> : null}</strong><span>{rental.customer} <i>·</i> {rentalDates(rental)}</span></div><strong className="dealer-booking-price">{money(rental.rent)}</strong><span className={`dealer-booking-status ${status}`}>{label}</span>{rental.is_complete ? null : completionAllowed ? <button className={`dealer-secondary ${status === "return_due" ? "dealer-return-due-action" : ""}`} disabled={busyId === rental.id} onClick={() => void completeRental(rental)} type="button">{busyId === rental.id ? "Saving…" : status === "return_due" ? "Confirm return" : "Mark complete"}</button> : <span className="dealer-booking-action-hint">{actionHint}</span>}<details className="dealer-booking-details"><summary>View details</summary><dl><div><dt>Customer</dt><dd>{rental.customer}</dd></div><div><dt>Vehicle</dt><dd>{rental.car}</dd></div><div><dt>Pick-up date</dt><dd>{formatDate(rental.pickup_date)}</dd></div><div><dt>Return date</dt><dd>{formatDate(rental.return_date)}</dd></div><div><dt>Duration</dt><dd>{rental.days} day{Number(rental.days) === 1 ? "" : "s"}</dd></div><div><dt>Total rental</dt><dd>{money(rental.rent)}</dd></div><div><dt>Booking status</dt><dd>{label}</dd></div></dl><RentalTimeline status={status} pickupDate={rental.pickup_date} returnDate={rental.return_date} /></details></article>; })}</div> : <div className="dealer-bookings-empty">{normalizedSearch ? `No ${bookingFilter} bookings match “${bookingSearch.trim()}”.` : `No ${bookingFilter} bookings to show.`}</div> : <div className="dealer-bookings-empty">No bookings yet. New rentals for your listed vehicles will appear here.</div>}
+        <div className="dealer-section-heading"><div><p className="dealer-kicker">RENTAL ACTIVITY</p><h2>Bookings <span>{openBookings.length} open</span></h2></div><div className="dealer-booking-tools"><label className="dealer-booking-search"><span aria-hidden="true">⌕</span><input type="search" value={bookingSearch} onChange={(event) => setBookingSearch(event.target.value)} placeholder="Search customer, car, or booking #" aria-label="Search bookings by customer, car, or booking number" /></label><label className="dealer-booking-sort-label"><span>Sort</span><select value={bookingSort} onChange={(event) => setBookingSort(event.target.value as BookingSort)} aria-label="Sort bookings"><option value="newest">Newest</option><option value="pickup">Pick-up date</option><option value="return">Return date</option></select></label><div className="dealer-booking-filters" role="group" aria-label="Filter bookings"><button className={bookingFilter === "open" ? "selected" : ""} type="button" aria-pressed={bookingFilter === "open"} onClick={() => setBookingFilter("open")}>Open <i>{openBookings.length}</i></button><button className={bookingFilter === "completed" ? "selected" : ""} type="button" aria-pressed={bookingFilter === "completed"} onClick={() => setBookingFilter("completed")}>Completed <i>{completedRentals.length}</i></button><button className={bookingFilter === "cancelled" ? "selected" : ""} type="button" aria-pressed={bookingFilter === "cancelled"} onClick={() => setBookingFilter("cancelled")}>Cancelled <i>{cancelledRentals.length}</i></button></div><button className="dealer-booking-export" type="button" onClick={exportBookings} disabled={!filteredRentals.length} title={`Export ${filteredRentals.length} visible booking${filteredRentals.length === 1 ? "" : "s"} as CSV`}>↓ Export CSV</button></div></div>
+        {rentals.length ? filteredRentals.length ? <div className="dealer-booking-list">{filteredRentals.map((rental) => { const status = rental.status ?? (rental.is_complete ? "completed" : "upcoming"); const label = ({ upcoming: "Upcoming", in_progress: "In progress", return_due: "Return due", completed: "Complete", cancelled: "Cancelled", dates_unavailable: "Dates unavailable" } satisfies Record<RentalStatus, string>)[status]; const formatDate = (value?: string | null) => value ? new Date(`${value}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : "Not recorded"; const completionAllowed = status === "in_progress" || status === "return_due"; const actionHint = status === "upcoming" ? "Completion is available after the pickup date." : status === "dates_unavailable" ? "Review the legacy dates before completing this booking." : status === "cancelled" ? "Cancelled by the customer." : ""; const isNew = newBookingIds.includes(rental.id); return <article className={`dealer-booking-row ${isNew ? "is-new" : ""}`} key={rental.id}><div className="dealer-booking-id">#{String(rental.id).padStart(4, "0")}</div><div className="dealer-booking-main"><strong>{rental.car}{isNew ? <span className="dealer-new-booking-badge">NEW</span> : null}</strong><span>{rental.customer} <i>·</i> {rentalDates(rental)}</span></div><strong className="dealer-booking-price">{money(rental.rent)}</strong><span className={`dealer-booking-status ${status}`}>{label}</span>{rental.is_complete || status === "cancelled" ? null : completionAllowed ? <button className={`dealer-secondary ${status === "return_due" ? "dealer-return-due-action" : ""}`} disabled={busyId === rental.id} onClick={() => void completeRental(rental)} type="button">{busyId === rental.id ? "Saving…" : status === "return_due" ? "Confirm return" : "Mark complete"}</button> : <span className="dealer-booking-action-hint">{actionHint}</span>}<details className="dealer-booking-details"><summary>View details</summary><dl><div><dt>Customer</dt><dd>{rental.customer}</dd></div><div><dt>Vehicle</dt><dd>{rental.car}</dd></div><div><dt>Pick-up date</dt><dd>{formatDate(rental.pickup_date)}</dd></div><div><dt>Return date</dt><dd>{formatDate(rental.return_date)}</dd></div><div><dt>Duration</dt><dd>{rental.days} day{Number(rental.days) === 1 ? "" : "s"}</dd></div><div><dt>Total rental</dt><dd>{money(rental.rent)}</dd></div><div><dt>Booking status</dt><dd>{label}</dd></div></dl><RentalTimeline status={status} pickupDate={rental.pickup_date} returnDate={rental.return_date} /></details></article>; })}</div> : <div className="dealer-bookings-empty">{normalizedSearch ? `No ${bookingFilter} bookings match “${bookingSearch.trim()}”.` : `No ${bookingFilter} bookings to show.`}</div> : <div className="dealer-bookings-empty">No bookings yet. New rentals for your listed vehicles will appear here.</div>}
       </section>
       <footer className="dealer-footer"><span>Rove dealer space</span><span>Inventory changes sync to the customer fleet</span><button type="button" onClick={() => void refresh()}>↻ Refresh data</button></footer>
     </section>

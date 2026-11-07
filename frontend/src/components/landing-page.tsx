@@ -70,6 +70,15 @@ const cityPaintHues: Record<string, number> = {
   jaipur: 325,
 };
 
+function shuffleFleet<T>(items: T[]): T[] {
+  const shuffled = [...items];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
+
 // Curated editorial slideshow; the live catalog below is loaded from the fleet API.
 const featuredCars = [
   { id: 901, name: "Toyota Innova Crysta", model: "toyota innova crysta|diesel", category: "Premium" as const, location: "Trivandrum", seats: 7, price: 3500, fuel: "Diesel" },
@@ -262,7 +271,7 @@ export default function LandingPage() {
         .then((result: { cars: Array<{ id: number; name: string; city: string; capacity: string; rent: string; image: string; fuel_type?: string; model_year?: number | null; is_demo?: boolean; image_credit?: string; image_license?: string; image_source_url?: string; image_attribution_url?: string; image_is_illustrative?: boolean }> }) => {
           if (!active) return;
           if (!Array.isArray(result.cars)) { setCatalog([]); setCatalogLoaded(true); return; }
-          setCatalog(result.cars.map((car) => {
+          const nextCatalog = result.cars.map((car) => {
             const preview = vehicles.find((item) => item.id === car.id);
             const seats = Number.parseInt(car.capacity, 10) || 4;
             const name = car.name.toLowerCase();
@@ -270,7 +279,12 @@ export default function LandingPage() {
             const studio = studioFrames.get(`${name}|${(car.fuel_type ?? "").toLowerCase()}`);
             const city = car.city || "Kerala";
             return { id: car.id, name: car.name, category, location: city, seats, price: Number.parseInt(car.rent, 10) || 0, image: car.image ?? preview?.image ?? "", studioImage: studio?.image, studioPosition: studio?.position, studioHue: cityPaintHues[city.trim().toLowerCase()] ?? 0, fuelType: car.fuel_type, modelYear: car.model_year, imageCredit: car.image_credit, imageLicense: car.image_license, imageSourceUrl: car.image_source_url, imageAttributionUrl: car.image_attribution_url, imageIsIllustrative: studio ? true : car.image_is_illustrative, showcaseImage: preview?.showcaseImage, accent: preview?.accent ?? "#e4e6e3", tag: car.is_demo ? "Sample listing" : seats >= 7 ? `${seats} seats` : undefined };
-          }));
+          });
+          setCatalog((currentCatalog) => {
+            const currentIds = currentCatalog.map((car) => car.id).sort((a, b) => a - b).join(",");
+            const nextIds = nextCatalog.map((car) => car.id).sort((a, b) => a - b).join(",");
+            return currentIds === nextIds ? currentCatalog : shuffleFleet(nextCatalog);
+          });
           setCatalogLoaded(true);
         })
         .catch(() => { if (active) { setCatalog([]); setCatalogLoaded(true); } });

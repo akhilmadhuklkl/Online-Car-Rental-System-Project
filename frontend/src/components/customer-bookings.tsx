@@ -108,6 +108,37 @@ function rupees(value: string | number) {
   return `₹${Number.isFinite(amount) ? amount.toLocaleString("en-IN") : "0"}`;
 }
 
+function csvCell(value: string | number) {
+  const text = String(value);
+  const safeText = /^[\s]*[=+@\-]/.test(text) ? `'${text}` : text;
+  return `"${safeText.replaceAll('"', '""')}"`;
+}
+
+function exportCustomerBookings(bookings: Booking[], category: "open" | "completed") {
+  const rows = [
+    ["Booking number", "Vehicle", "City", "Pick-up date", "Return date", "Duration (days)", "Total (INR)", "Status"],
+    ...bookings.map((booking) => [
+      `#${String(booking.id).padStart(4, "0")}`,
+      booking.car,
+      booking.city,
+      booking.pickup_date ?? "Not recorded",
+      booking.return_date ?? "Not recorded",
+      booking.days,
+      booking.rent,
+      booking.status ?? (booking.is_complete ? "completed" : "upcoming"),
+    ]),
+  ];
+  const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `rove-${category}-bookings-${localDateISO()}.csv`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export default function CustomerBookings() {
   const router = useRouter();
   const portfolioReadOnly = process.env.NEXT_PUBLIC_PORTFOLIO_DEMO === "true";
@@ -219,10 +250,10 @@ export default function CustomerBookings() {
         {selectedCar ? <div className="customer-selected-car"><div>{selectedCar.image ? <Image src={selectedCar.image} alt={selectedCar.name} fill sizes="120px" /> : null}</div><p><strong>{selectedCar.name}</strong><span>{selectedCar.city} · {selectedCar.capacity} seats · {rupees(selectedCar.rent)} per day</span></p>{portfolioReadOnly && !reviewing ? <RentalTerms compact /> : null}</div> : null}
       </section>
 
-      <section className="customer-orders-section"><div className="customer-orders-heading"><div><p className="dealer-kicker">ON THE ROAD</p><h2>Your bookings <span>{current.length}</span></h2></div><Link href="/#fleet">Browse the fleet <span>↗</span></Link></div>
+      <section className="customer-orders-section"><div className="customer-orders-heading"><div><p className="dealer-kicker">ON THE ROAD</p><h2>Your bookings <span>{current.length}</span></h2></div><div className="customer-booking-heading-actions"><button className="customer-booking-export" type="button" disabled={!current.length} onClick={() => exportCustomerBookings(current, "open")}>↓ Export open CSV</button><Link href="/#fleet">Browse the fleet <span>↗</span></Link></div></div>
         {current.length ? <div className="customer-order-grid">{current.map((booking) => { const reminder = bookingReminder(booking, today); return <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span className={`customer-order-status ${booking.status ?? "upcoming"}`}>{bookingStatusLabel(booking)}</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><div className="customer-order-trip-meta"><span>{booking.city}</span><span>{durationLabel(booking.days)}</span></div>{reminder ? <p className={`customer-booking-reminder ${reminder.tone}`} role="status">{reminder.text}</p> : null}{booking.pickup_date && booking.return_date ? <dl className="customer-order-dates"><div><dt>Pick-up</dt><dd>{displayDate(booking.pickup_date)}</dd></div><div><dt>Return</dt><dd>{displayDate(booking.return_date)}</dd></div></dl> : <p className="customer-order-legacy-dates">Dates not recorded</p>}<BookingTimeline booking={booking} /><div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>; })}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
       </section>
-      {past.length ? <section className="customer-past-section"><p className="dealer-kicker">MILES ALREADY MADE</p><h2>Past drives</h2><div className="customer-past-list">{past.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{dateRangeLabel(booking.pickup_date, booking.return_date)} · {durationLabel(booking.days)} · {rupees(booking.rent)}</span><span>Completed</span></article>)}</div></section> : null}
+      {past.length ? <section className="customer-past-section"><div className="customer-past-heading"><div><p className="dealer-kicker">MILES ALREADY MADE</p><h2>Past drives</h2></div><button className="customer-booking-export" type="button" onClick={() => exportCustomerBookings(past, "completed")}>↓ Export history CSV</button></div><div className="customer-past-list">{past.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{dateRangeLabel(booking.pickup_date, booking.return_date)} · {durationLabel(booking.days)} · {rupees(booking.rent)}</span><span>Completed</span></article>)}</div></section> : null}
     </section>
     <footer className="site-footer customer-account-footer"><div className="footer-bottom"><span>© 2026 Rove Mobility</span><span>Good journeys begin here.</span></div></footer>
   </main>;

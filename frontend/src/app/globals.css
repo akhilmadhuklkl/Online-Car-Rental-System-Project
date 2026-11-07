@@ -868,6 +868,11 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .customer-orders-heading h2 span { display: grid; place-items: center; min-width: 21px; height: 21px; border: 1px solid #434d43; border-radius: 50%; color: #caff79; font-size: 9px; font-weight: 400; }
 .customer-orders-heading > a { color: #bdf668; font-size: 10px; }
 .customer-orders-heading > a span { padding-left: 5px; }
+.customer-booking-heading-actions { display: flex; align-items: center; gap: 14px; }
+.customer-booking-export { min-height: 34px; padding: 0 10px; border: 1px solid #47553d; background: #caff79; color: #11160e; font-size: 9px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+.customer-booking-export:hover:not(:disabled) { background: #d8ff9b; }
+.customer-booking-export:focus-visible { outline: 2px solid #caff79; outline-offset: 2px; }
+.customer-booking-export:disabled { opacity: .45; cursor: not-allowed; }
 .customer-order-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .customer-order-card { overflow: hidden; border: 1px solid #303832; background: #111512; }
 .customer-order-photo { position: relative; height: 180px; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at center, #232a23, #111512 75%); }
@@ -901,6 +906,7 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .customer-empty-orders h3 { margin: 8px 0 5px; font-size: 14px; }
 .customer-empty-orders p { margin: 0; color: #a2aca2; font-size: 10px; }
 .customer-past-section { margin-top: 43px; }
+.customer-past-heading { display: flex; align-items: end; justify-content: space-between; gap: 14px; }
 .customer-past-section .dealer-kicker { margin-bottom: 7px; }
 .customer-past-list { margin-top: 14px; border-top: 1px solid #343c35; }
 .customer-past-list article { min-height: 52px; display: grid; grid-template-columns: 70px 1fr minmax(120px, auto) 82px; align-items: center; gap: 14px; padding: 8px 12px; border: 1px solid #343c35; border-top: 0; background: #111512; font-size: 10px; }
@@ -1092,6 +1098,8 @@ svg {
   .customer-account-header nav { min-width: 0; gap: clamp(9px, 3vw, 15px); }
   .customer-panel-heading,
   .customer-orders-heading { align-items: flex-start; }
+  .customer-booking-heading-actions { flex-wrap: wrap; justify-content: flex-end; gap: 9px; }
+  .customer-past-heading { align-items: flex-start; }
   .customer-panel-heading > span { flex: 0 0 auto; font-size: 11px; }
   .customer-order-body > div { flex-wrap: wrap; }
   .dealer-booking-row { grid-template-columns: 40px minmax(0, 1fr) auto; }

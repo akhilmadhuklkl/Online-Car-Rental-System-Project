@@ -632,6 +632,10 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .dealer-booking-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #eff2ed; font: inherit; font-size: 9px; }
 .dealer-booking-search input::placeholder { color: #899389; }
 .dealer-booking-search:focus-within { border-color: #8bac5e; box-shadow: 0 0 0 1px #8bac5e44; }
+.dealer-booking-sort-label { min-height: 38px; display: flex; align-items: center; gap: 6px; padding: 0 9px; border: 1px solid #303832; background: #0c100d; color: #929d92; font-size: 8px; }
+.dealer-booking-sort-label select { max-width: 110px; border: 0; outline: 0; background: transparent; color: #e6ebe4; font: inherit; font-size: 9px; cursor: pointer; }
+.dealer-booking-sort-label select option { background: #111512; color: #e6ebe4; }
+.dealer-booking-sort-label:focus-within { border-color: #8bac5e; box-shadow: 0 0 0 1px #8bac5e44; }
 .dealer-booking-filters { display: inline-flex; flex: 0 0 auto; gap: 4px; padding: 4px; border: 1px solid #303832; background: #0c100d; }
 .dealer-booking-filters button { display: inline-flex; align-items: center; gap: 7px; min-height: 30px; padding: 0 10px; border: 1px solid transparent; background: transparent; color: #a8b0a7; font-size: 9px; cursor: pointer; }
 .dealer-booking-filters button.selected { border-color: #39443a; background: #171d17; color: #d9f6b5; }
@@ -769,6 +773,8 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .dealer-bookings-section > .dealer-section-heading { align-items: flex-start; flex-wrap: wrap; }
   .dealer-booking-tools { width: 100%; align-items: stretch; flex-direction: column; }
   .dealer-booking-search { width: 100%; min-height: 40px; }
+  .dealer-booking-sort-label { width: 100%; min-height: 40px; justify-content: space-between; padding-inline: 11px; }
+  .dealer-booking-sort-label select { max-width: none; flex: 1; text-align: right; }
   .dealer-booking-filters { width: 100%; }
   .dealer-booking-filters button { flex: 1; justify-content: center; }
   .dealer-vehicle-grid { gap: 10px; }

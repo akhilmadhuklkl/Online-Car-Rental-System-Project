@@ -6,7 +6,13 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 
 type AvailableCar = { id: number; name: string; city: string; capacity: string; rent: string; image: string };
-type Booking = { id: number; car: string; city: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean; image: string };
+type BookingStatus = "upcoming" | "in_progress" | "return_due" | "completed" | "dates_unavailable";
+type Booking = { id: number; car: string; city: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean; status?: BookingStatus; image: string };
+
+function bookingStatusLabel(booking: Booking) {
+  if (booking.status) return ({ upcoming: "Upcoming drive", in_progress: "In progress", return_due: "Return due", completed: "Completed", dates_unavailable: "Dates unavailable" } satisfies Record<BookingStatus, string>)[booking.status];
+  return booking.is_complete ? "Completed" : "Upcoming drive";
+}
 
 function localDateISO(date = new Date()) {
   const year = date.getFullYear();
@@ -149,8 +155,8 @@ export default function CustomerBookings() {
   }
 
   if (loading) return <main className="customer-loading"><span className="dealer-spinner" /><p>Loading your journeys…</p></main>;
-  const current = bookings.filter((booking) => !booking.is_complete);
-  const past = bookings.filter((booking) => booking.is_complete);
+  const current = bookings.filter((booking) => (booking.status ?? (booking.is_complete ? "completed" : "upcoming")) !== "completed");
+  const past = bookings.filter((booking) => (booking.status ?? (booking.is_complete ? "completed" : "upcoming")) === "completed");
 
   return <main className="customer-account">
     <header className="site-header customer-account-header"><Link className="brand" href="/" aria-label="Rove home"><span className="brand-mark">r</span><span>rove<span className="brand-period">.</span></span></Link><nav><Link href="/#fleet">Explore cars</Link><button type="button" onClick={() => void logout()}>Sign out</button></nav></header>
@@ -178,7 +184,7 @@ export default function CustomerBookings() {
       </section>
 
       <section className="customer-orders-section"><div className="customer-orders-heading"><div><p className="dealer-kicker">ON THE ROAD</p><h2>Your bookings <span>{current.length}</span></h2></div><Link href="/#fleet">Browse the fleet <span>↗</span></Link></div>
-        {current.length ? <div className="customer-order-grid">{current.map((booking) => <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span>UPCOMING DRIVE</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><div className="customer-order-trip-meta"><span>{booking.city}</span><span>{durationLabel(booking.days)}</span></div>{booking.pickup_date && booking.return_date ? <dl className="customer-order-dates"><div><dt>Pick-up</dt><dd>{displayDate(booking.pickup_date)}</dd></div><div><dt>Return</dt><dd>{displayDate(booking.return_date)}</dd></div></dl> : <p className="customer-order-legacy-dates">Dates not recorded</p>}<div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>)}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
+        {current.length ? <div className="customer-order-grid">{current.map((booking) => <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span className={`customer-order-status ${booking.status ?? "upcoming"}`}>{bookingStatusLabel(booking)}</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><div className="customer-order-trip-meta"><span>{booking.city}</span><span>{durationLabel(booking.days)}</span></div>{booking.pickup_date && booking.return_date ? <dl className="customer-order-dates"><div><dt>Pick-up</dt><dd>{displayDate(booking.pickup_date)}</dd></div><div><dt>Return</dt><dd>{displayDate(booking.return_date)}</dd></div></dl> : <p className="customer-order-legacy-dates">Dates not recorded</p>}<div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>)}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
       </section>
       {past.length ? <section className="customer-past-section"><p className="dealer-kicker">MILES ALREADY MADE</p><h2>Past drives</h2><div className="customer-past-list">{past.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{dateRangeLabel(booking.pickup_date, booking.return_date)} · {durationLabel(booking.days)} · {rupees(booking.rent)}</span><span>Completed</span></article>)}</div></section> : null}
     </section>

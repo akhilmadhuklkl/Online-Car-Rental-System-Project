@@ -651,7 +651,10 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .dealer-booking-main i { padding: 0 4px; color: #667066; font-style: normal; }
 .dealer-booking-price { color: #d0ff84; font-size: 11px; }
 .dealer-booking-status { font-size: 9px; }
-.dealer-booking-status.active { color: #d0ff84; }
+.dealer-booking-status.upcoming { color: #aebbb0; }
+.dealer-booking-status.in_progress { color: #d0ff84; }
+.dealer-booking-status.return_due { color: #ffc36b; }
+.dealer-booking-status.dates_unavailable { color: #a0aaa0; }
 .dealer-booking-status.complete { color: #a0aaa0; }
 .dealer-booking-row > .dealer-secondary { white-space: nowrap; }
 .dealer-footer { min-height: 45px; display: flex; align-items: center; gap: 20px; padding-top: 13px; border-top: 1px solid #2e352f; color: #909a90; font-size: 9px; }
@@ -788,6 +791,11 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .customer-order-photo { position: relative; height: 180px; display: grid; place-items: center; overflow: hidden; background: radial-gradient(ellipse at center, #232a23, #111512 75%); }
 .customer-order-photo img { object-fit: contain; padding: 10px; }
 .customer-order-photo > span { position: absolute; left: 13px; bottom: 12px; z-index: 1; color: #d1ff8b; font-size: 8px; letter-spacing: .15em; }
+.customer-order-photo > .customer-order-status { padding: 7px 9px; border: 1px solid #ffffff22; background: #0b0f0ddd; backdrop-filter: blur(8px); text-transform: uppercase; }
+.customer-order-status.upcoming { color: #d1ff8b; }
+.customer-order-status.in_progress { color: #d1ff8b; }
+.customer-order-status.return_due { color: #ffc36b; }
+.customer-order-status.dates_unavailable { color: #c2c9c1; }
 .customer-order-body { padding: 15px 17px; }
 .customer-order-id { margin: 0 0 7px; color: #929d92; font-size: 8px; letter-spacing: .13em; }
 .customer-order-body h3 { margin: 0; font-size: 16px; letter-spacing: -.025em; }

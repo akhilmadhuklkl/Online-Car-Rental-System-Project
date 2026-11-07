@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 
 type Car = { id: number; name: string; city: string; capacity: string; rent: string; is_available: boolean; image: string };
-type Rental = { id: number; car: string; car_id: number; customer: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean };
+type RentalStatus = "upcoming" | "in_progress" | "return_due" | "completed" | "dates_unavailable";
+type Rental = { id: number; car: string; car_id: number; customer: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean; status?: RentalStatus };
 type DashboardData = { cars: Car[]; orders: Rental[]; earnings: number; city: string };
 
 async function csrfToken() {
@@ -170,7 +171,8 @@ export default function DealerDashboard() {
   if (loading) return <main className="dealer-loading"><span className="dealer-spinner" /><p>Opening your workspace…</p></main>;
   const cars = data?.cars ?? [];
   const rentals = data?.orders ?? [];
-  const activeRentals = rentals.filter((rental) => !rental.is_complete);
+  const openBookings = rentals.filter((rental) => (rental.status ?? (rental.is_complete ? "completed" : "upcoming")) !== "completed");
+  const inProgressRentals = rentals.filter((rental) => rental.status === "in_progress");
 
   return <main className="dealer-app">
     <aside className="dealer-sidebar">
@@ -178,7 +180,7 @@ export default function DealerDashboard() {
       <p className="dealer-side-label">DEALER SPACE</p>
       <a className="dealer-side-link current" href="#overview"><span>◫</span> Overview</a>
       <a className="dealer-side-link" href="#vehicles"><span>▱</span> My vehicles</a>
-      <a className="dealer-side-link" href="#bookings"><span>▤</span> Bookings <i>{activeRentals.length}</i></a>
+      <a className="dealer-side-link" href="#bookings"><span>▤</span> Bookings <i>{openBookings.length}</i></a>
       <div className="dealer-sidebar-bottom"><span className="dealer-avatar">{dealerName.slice(0, 1).toUpperCase()}</span><span className="dealer-user"><strong>{dealerName}</strong><small>Verified dealer</small></span><button onClick={() => void logout()} type="button" aria-label="Sign out">↗</button></div>
     </aside>
 
@@ -189,7 +191,7 @@ export default function DealerDashboard() {
 
       <div className="dealer-stats">
         <article className="dealer-stat-card"><span>Vehicles listed</span><strong>{cars.length.toString().padStart(2, "0")}</strong><small>{cars.filter((car) => car.is_available).length} available to rent</small></article>
-        <article className="dealer-stat-card"><span>Active rentals</span><strong>{activeRentals.length.toString().padStart(2, "0")}</strong><small>Across your fleet</small></article>
+        <article className="dealer-stat-card"><span>In-progress rentals</span><strong>{inProgressRentals.length.toString().padStart(2, "0")}</strong><small>{openBookings.length} open booking{openBookings.length === 1 ? "" : "s"} across your fleet</small></article>
         <article className="dealer-stat-card dealer-earnings-card"><span>Total earnings</span><strong>{money(data?.earnings ?? 0)}</strong><small>Recorded rental revenue</small><i aria-hidden="true">↗</i></article>
       </div>
 
@@ -203,8 +205,8 @@ export default function DealerDashboard() {
       </section>
 
       <section className="dealer-section dealer-bookings-section" id="bookings">
-        <div className="dealer-section-heading"><div><p className="dealer-kicker">RENTAL ACTIVITY</p><h2>Bookings <span>{activeRentals.length} active</span></h2></div></div>
-        {rentals.length ? <div className="dealer-booking-list">{rentals.map((rental) => <article className="dealer-booking-row" key={rental.id}><div className="dealer-booking-id">#{String(rental.id).padStart(4, "0")}</div><div className="dealer-booking-main"><strong>{rental.car}</strong><span>{rental.customer} <i>·</i> {rentalDates(rental)}</span></div><strong className="dealer-booking-price">{money(rental.rent)}</strong><span className={`dealer-booking-status ${rental.is_complete ? "complete" : "active"}`}>{rental.is_complete ? "Complete" : "In progress"}</span>{rental.is_complete ? null : <button className="dealer-secondary" disabled={busyId === rental.id} onClick={() => void completeRental(rental)} type="button">{busyId === rental.id ? "Saving…" : "Mark complete"}</button>}</article>)}</div> : <div className="dealer-bookings-empty">No bookings yet. New rentals for your listed vehicles will appear here.</div>}
+        <div className="dealer-section-heading"><div><p className="dealer-kicker">RENTAL ACTIVITY</p><h2>Bookings <span>{openBookings.length} open</span></h2></div></div>
+        {rentals.length ? <div className="dealer-booking-list">{rentals.map((rental) => { const status = rental.status ?? (rental.is_complete ? "completed" : "upcoming"); const label = ({ upcoming: "Upcoming", in_progress: "In progress", return_due: "Return due", completed: "Complete", dates_unavailable: "Dates unavailable" } satisfies Record<RentalStatus, string>)[status]; return <article className="dealer-booking-row" key={rental.id}><div className="dealer-booking-id">#{String(rental.id).padStart(4, "0")}</div><div className="dealer-booking-main"><strong>{rental.car}</strong><span>{rental.customer} <i>·</i> {rentalDates(rental)}</span></div><strong className="dealer-booking-price">{money(rental.rent)}</strong><span className={`dealer-booking-status ${status}`}>{label}</span>{rental.is_complete ? null : <button className="dealer-secondary" disabled={busyId === rental.id} onClick={() => void completeRental(rental)} type="button">{busyId === rental.id ? "Saving…" : "Mark complete"}</button>}</article>; })}</div> : <div className="dealer-bookings-empty">No bookings yet. New rentals for your listed vehicles will appear here.</div>}
       </section>
       <footer className="dealer-footer"><span>Rove dealer space</span><span>Inventory changes sync to the customer fleet</span><button type="button" onClick={() => void refresh()}>↻ Refresh data</button></footer>
     </section>

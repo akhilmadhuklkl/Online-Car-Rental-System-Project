@@ -86,6 +86,19 @@ def _car_data(car):
     }
 
 
+def _booking_status(order, today=None):
+    if order.is_complete:
+        return "completed"
+    if not order.pickup_date or not order.return_date:
+        return "dates_unavailable"
+    today = today or timezone.localdate()
+    if today < order.pickup_date:
+        return "upcoming"
+    if today < order.return_date:
+        return "in_progress"
+    return "return_due"
+
+
 @ensure_csrf_cookie
 @require_GET
 def csrf_token(request):
@@ -183,6 +196,7 @@ def customer_bookings_api(request, customer):
             "return_date": order.return_date.isoformat() if order.return_date else None,
             "rent": order.rent,
             "is_complete": order.is_complete,
+            "status": _booking_status(order),
             "image": _car_data(order.car)["image"],
         } for order in orders]})
 
@@ -307,6 +321,7 @@ def dealer_dashboard(request, dealer):
             "return_date": order.return_date.isoformat() if order.return_date else None,
             "rent": order.rent,
             "is_complete": order.is_complete,
+            "status": _booking_status(order),
         } for order in orders],
         "earnings": dealer.earnings,
         "city": dealer.location.city,

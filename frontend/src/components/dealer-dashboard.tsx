@@ -3,12 +3,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 
 type Car = { id: number; name: string; city: string; capacity: string; rent: string; is_available: boolean; image: string };
 type RentalStatus = "upcoming" | "in_progress" | "return_due" | "completed" | "dates_unavailable";
 type Rental = { id: number; car: string; car_id: number; customer: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean; status?: RentalStatus };
 type DashboardData = { cars: Car[]; orders: Rental[]; earnings: number; city: string };
+
+function localDateISO(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function daysFromToday(value: string, today: string) {
+  return Math.round((Date.parse(`${value}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86_400_000);
+}
 
 async function csrfToken() {
   const response = await fetch("/api/backend-proxy/api/csrf", { credentials: "same-origin" });
@@ -115,6 +126,9 @@ export default function DealerDashboard() {
   const [notice, setNotice] = useState("");
   const [editing, setEditing] = useState<Car | null | false>(false);
   const [busyId, setBusyId] = useState<number | null>(null);
+  const [newBookingIds, setNewBookingIds] = useState<number[]>([]);
+  const [today, setToday] = useState("");
+  const knownBookingIds = useRef<Set<number> | null>(null);
 
   const refresh = useCallback(async () => {
     const sessionResponse = await fetch("/api/backend-proxy/api/dealer/session", { credentials: "same-origin", cache: "no-store" });
@@ -127,6 +141,14 @@ export default function DealerDashboard() {
     const response = await fetch("/api/backend-proxy/api/dealer/dashboard", { credentials: "same-origin", cache: "no-store" });
     const result = await response.json();
     if (!response.ok) throw new Error(result.error ?? "Could not load your dealer workspace.");
+    const currentIds = new Set<number>((result.orders as Rental[]).map((rental) => rental.id));
+    if (knownBookingIds.current === null) {
+      knownBookingIds.current = currentIds;
+    } else {
+      const arrivals = [...currentIds].filter((id) => !knownBookingIds.current?.has(id));
+      if (arrivals.length) setNewBookingIds((previous) => [...new Set([...previous, ...arrivals])]);
+      knownBookingIds.current = currentIds;
+    }
     setData(result);
   }, [router]);
 
@@ -135,10 +157,11 @@ export default function DealerDashboard() {
       void refresh().catch((cause) => setError(cause instanceof Error ? cause.message : "Unable to load the dealer workspace.")).finally(() => setLoading(false));
     };
     const task = window.setTimeout(() => {
+      setToday(localDateISO());
       load();
     }, 0);
     const interval = window.setInterval(() => {
-      if (document.visibilityState === "visible") load();
+      if (document.visibilityState === "visible") { setToday(localDateISO()); load(); }
     }, 20000);
     return () => { window.clearTimeout(task); window.clearInterval(interval); };
   }, [refresh]);
@@ -188,6 +211,12 @@ export default function DealerDashboard() {
   const upcomingRentals = rentals.filter((rental) => rental.status === "upcoming");
   const inProgressRentals = rentals.filter((rental) => rental.status === "in_progress");
   const returnDueRentals = rentals.filter((rental) => rental.status === "return_due");
+  const pickupAlerts = today ? rentals.flatMap((rental) => {
+    if (rental.is_complete || !rental.pickup_date) return [];
+    const daysUntilPickup = daysFromToday(rental.pickup_date, today);
+    return daysUntilPickup >= 0 && daysUntilPickup <= 3 ? [{ rental, daysUntilPickup }] : [];
+  }) : [];
+  const attentionCount = newBookingIds.length + pickupAlerts.length + returnDueRentals.length;
 
   return <main className="dealer-app">
     <aside className="dealer-sidebar">
@@ -203,6 +232,12 @@ export default function DealerDashboard() {
       <header className="dealer-topbar"><div><p className="dealer-kicker">DEALER DASHBOARD <span>·</span> {data?.city ?? "YOUR BUSINESS"}</p><h1>Good to see you, <em>{dealerName.split(" ")[0]}.</em></h1></div><div className="dealer-top-actions"><span className="dealer-live-dot">Live inventory</span><button className="dealer-primary dealer-add-top" onClick={() => setEditing(null)} type="button">＋ Add a car</button></div></header>
       {error ? <p className="dealer-banner dealer-banner-error" role="alert">{error}<button type="button" onClick={() => setError("")}>Dismiss</button></p> : null}
       {notice ? <p className="dealer-banner" role="status">{notice}<button type="button" onClick={() => setNotice("")}>Dismiss</button></p> : null}
+
+      {attentionCount ? <section className="dealer-attention-panel" aria-label="Booking notifications"><div className="dealer-attention-heading"><div><p className="dealer-kicker">NEEDS YOUR ATTENTION</p><h2>{attentionCount} booking update{attentionCount === 1 ? "" : "s"}</h2></div>{newBookingIds.length ? <button type="button" onClick={() => setNewBookingIds([])}>Mark new bookings seen</button> : null}</div><div className="dealer-attention-items">
+        {newBookingIds.map((id) => { const rental = rentals.find((item) => item.id === id); return rental ? <a className="dealer-attention-item new" href="#bookings" key={`new-${id}`}><span className="dealer-attention-tag">New</span><strong>New booking #{String(id).padStart(4, "0")}</strong><small>{rental.car} · {rental.customer}</small></a> : null; })}
+        {pickupAlerts.map(({ rental, daysUntilPickup }) => <a className="dealer-attention-item pickup" href="#bookings" key={`pickup-${rental.id}`}><span className="dealer-attention-tag">Pickup</span><strong>{daysUntilPickup === 0 ? "Pickup today" : `Pickup in ${daysUntilPickup} day${daysUntilPickup === 1 ? "" : "s"}`}</strong><small>{rental.car} · {rental.customer}</small></a>)}
+        {returnDueRentals.map((rental) => <a className="dealer-attention-item due" href="#bookings" key={`due-${rental.id}`}><span className="dealer-attention-tag">Return</span><strong>Return is due</strong><small>{rental.car} · {rental.customer}</small></a>)}
+      </div></section> : null}
 
       <div className="dealer-stats">
         <article className="dealer-stat-card"><span>Vehicles listed</span><strong>{cars.length.toString().padStart(2, "0")}</strong><small>{cars.filter((car) => car.is_available).length} available to rent</small></article>
@@ -221,7 +256,7 @@ export default function DealerDashboard() {
 
       <section className="dealer-section dealer-bookings-section" id="bookings">
         <div className="dealer-section-heading"><div><p className="dealer-kicker">RENTAL ACTIVITY</p><h2>Bookings <span>{openBookings.length} open</span></h2></div></div>
-        {rentals.length ? <div className="dealer-booking-list">{rentals.map((rental) => { const status = rental.status ?? (rental.is_complete ? "completed" : "upcoming"); const label = ({ upcoming: "Upcoming", in_progress: "In progress", return_due: "Return due", completed: "Complete", dates_unavailable: "Dates unavailable" } satisfies Record<RentalStatus, string>)[status]; const formatDate = (value?: string | null) => value ? new Date(`${value}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : "Not recorded"; const completionAllowed = status === "in_progress" || status === "return_due"; const actionHint = status === "upcoming" ? "Completion is available after the pickup date." : status === "dates_unavailable" ? "Review the legacy dates before completing this booking." : ""; return <article className="dealer-booking-row" key={rental.id}><div className="dealer-booking-id">#{String(rental.id).padStart(4, "0")}</div><div className="dealer-booking-main"><strong>{rental.car}</strong><span>{rental.customer} <i>·</i> {rentalDates(rental)}</span></div><strong className="dealer-booking-price">{money(rental.rent)}</strong><span className={`dealer-booking-status ${status}`}>{label}</span>{rental.is_complete ? null : completionAllowed ? <button className={`dealer-secondary ${status === "return_due" ? "dealer-return-due-action" : ""}`} disabled={busyId === rental.id} onClick={() => void completeRental(rental)} type="button">{busyId === rental.id ? "Saving…" : status === "return_due" ? "Confirm return" : "Mark complete"}</button> : <span className="dealer-booking-action-hint">{actionHint}</span>}<details className="dealer-booking-details"><summary>View details</summary><dl><div><dt>Customer</dt><dd>{rental.customer}</dd></div><div><dt>Vehicle</dt><dd>{rental.car}</dd></div><div><dt>Pick-up date</dt><dd>{formatDate(rental.pickup_date)}</dd></div><div><dt>Return date</dt><dd>{formatDate(rental.return_date)}</dd></div><div><dt>Duration</dt><dd>{rental.days} day{Number(rental.days) === 1 ? "" : "s"}</dd></div><div><dt>Total rental</dt><dd>{money(rental.rent)}</dd></div><div><dt>Booking status</dt><dd>{label}</dd></div></dl><RentalTimeline status={status} pickupDate={rental.pickup_date} returnDate={rental.return_date} /></details></article>; })}</div> : <div className="dealer-bookings-empty">No bookings yet. New rentals for your listed vehicles will appear here.</div>}
+        {rentals.length ? <div className="dealer-booking-list">{rentals.map((rental) => { const status = rental.status ?? (rental.is_complete ? "completed" : "upcoming"); const label = ({ upcoming: "Upcoming", in_progress: "In progress", return_due: "Return due", completed: "Complete", dates_unavailable: "Dates unavailable" } satisfies Record<RentalStatus, string>)[status]; const formatDate = (value?: string | null) => value ? new Date(`${value}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : "Not recorded"; const completionAllowed = status === "in_progress" || status === "return_due"; const actionHint = status === "upcoming" ? "Completion is available after the pickup date." : status === "dates_unavailable" ? "Review the legacy dates before completing this booking." : ""; const isNew = newBookingIds.includes(rental.id); return <article className={`dealer-booking-row ${isNew ? "is-new" : ""}`} key={rental.id}><div className="dealer-booking-id">#{String(rental.id).padStart(4, "0")}</div><div className="dealer-booking-main"><strong>{rental.car}{isNew ? <span className="dealer-new-booking-badge">NEW</span> : null}</strong><span>{rental.customer} <i>·</i> {rentalDates(rental)}</span></div><strong className="dealer-booking-price">{money(rental.rent)}</strong><span className={`dealer-booking-status ${status}`}>{label}</span>{rental.is_complete ? null : completionAllowed ? <button className={`dealer-secondary ${status === "return_due" ? "dealer-return-due-action" : ""}`} disabled={busyId === rental.id} onClick={() => void completeRental(rental)} type="button">{busyId === rental.id ? "Saving…" : status === "return_due" ? "Confirm return" : "Mark complete"}</button> : <span className="dealer-booking-action-hint">{actionHint}</span>}<details className="dealer-booking-details"><summary>View details</summary><dl><div><dt>Customer</dt><dd>{rental.customer}</dd></div><div><dt>Vehicle</dt><dd>{rental.car}</dd></div><div><dt>Pick-up date</dt><dd>{formatDate(rental.pickup_date)}</dd></div><div><dt>Return date</dt><dd>{formatDate(rental.return_date)}</dd></div><div><dt>Duration</dt><dd>{rental.days} day{Number(rental.days) === 1 ? "" : "s"}</dd></div><div><dt>Total rental</dt><dd>{money(rental.rent)}</dd></div><div><dt>Booking status</dt><dd>{label}</dd></div></dl><RentalTimeline status={status} pickupDate={rental.pickup_date} returnDate={rental.return_date} /></details></article>; })}</div> : <div className="dealer-bookings-empty">No bookings yet. New rentals for your listed vehicles will appear here.</div>}
       </section>
       <footer className="dealer-footer"><span>Rove dealer space</span><span>Inventory changes sync to the customer fleet</span><button type="button" onClick={() => void refresh()}>↻ Refresh data</button></footer>
     </section>

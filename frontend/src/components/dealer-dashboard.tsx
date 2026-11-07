@@ -45,6 +45,12 @@ function money(value: string | number) {
   return `₹${Number.isFinite(amount) ? amount.toLocaleString("en-IN") : "0"}`;
 }
 
+function csvCell(value: string | number) {
+  const text = String(value);
+  const safeText = /^[\s]*[=+@\-]/.test(text) ? `'${text}` : text;
+  return `"${safeText.replaceAll('"', '""')}"`;
+}
+
 function rentalDates(rental: Rental) {
   const duration = `${rental.days} day${Number(rental.days) === 1 ? "" : "s"}`;
   if (!rental.pickup_date || !rental.return_date) return duration;
@@ -229,6 +235,31 @@ export default function DealerDashboard() {
     if (!rightDate) return -1;
     return leftDate.localeCompare(rightDate) || right.id - left.id;
   });
+
+  function exportBookings() {
+    const rows = [
+      ["Booking number", "Customer", "Vehicle", "Pick-up date", "Return date", "Duration (days)", "Total (INR)", "Status"],
+      ...filteredRentals.map((rental) => [
+        `#${String(rental.id).padStart(4, "0")}`,
+        rental.customer,
+        rental.car,
+        rental.pickup_date ?? "Not recorded",
+        rental.return_date ?? "Not recorded",
+        rental.days,
+        rental.rent,
+        rental.status ?? (rental.is_complete ? "completed" : "upcoming"),
+      ]),
+    ];
+    const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(",")).join("\r\n")}`;
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `rove-${bookingFilter}-bookings-${localDateISO()}.csv`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
   const pickupAlerts = today ? rentals.flatMap((rental) => {
     if (rental.is_complete || !rental.pickup_date) return [];
     const daysUntilPickup = daysFromToday(rental.pickup_date, today);
@@ -273,7 +304,7 @@ export default function DealerDashboard() {
       </section>
 
       <section className="dealer-section dealer-bookings-section" id="bookings">
-        <div className="dealer-section-heading"><div><p className="dealer-kicker">RENTAL ACTIVITY</p><h2>Bookings <span>{openBookings.length} open</span></h2></div><div className="dealer-booking-tools"><label className="dealer-booking-search"><span aria-hidden="true">⌕</span><input type="search" value={bookingSearch} onChange={(event) => setBookingSearch(event.target.value)} placeholder="Search customer, car, or booking #" aria-label="Search bookings by customer, car, or booking number" /></label><label className="dealer-booking-sort-label"><span>Sort</span><select value={bookingSort} onChange={(event) => setBookingSort(event.target.value as BookingSort)} aria-label="Sort bookings"><option value="newest">Newest</option><option value="pickup">Pick-up date</option><option value="return">Return date</option></select></label><div className="dealer-booking-filters" role="group" aria-label="Filter bookings"><button className={bookingFilter === "open" ? "selected" : ""} type="button" aria-pressed={bookingFilter === "open"} onClick={() => setBookingFilter("open")}>Open <i>{openBookings.length}</i></button><button className={bookingFilter === "completed" ? "selected" : ""} type="button" aria-pressed={bookingFilter === "completed"} onClick={() => setBookingFilter("completed")}>Completed <i>{completedRentals.length}</i></button></div></div></div>
+        <div className="dealer-section-heading"><div><p className="dealer-kicker">RENTAL ACTIVITY</p><h2>Bookings <span>{openBookings.length} open</span></h2></div><div className="dealer-booking-tools"><label className="dealer-booking-search"><span aria-hidden="true">⌕</span><input type="search" value={bookingSearch} onChange={(event) => setBookingSearch(event.target.value)} placeholder="Search customer, car, or booking #" aria-label="Search bookings by customer, car, or booking number" /></label><label className="dealer-booking-sort-label"><span>Sort</span><select value={bookingSort} onChange={(event) => setBookingSort(event.target.value as BookingSort)} aria-label="Sort bookings"><option value="newest">Newest</option><option value="pickup">Pick-up date</option><option value="return">Return date</option></select></label><div className="dealer-booking-filters" role="group" aria-label="Filter bookings"><button className={bookingFilter === "open" ? "selected" : ""} type="button" aria-pressed={bookingFilter === "open"} onClick={() => setBookingFilter("open")}>Open <i>{openBookings.length}</i></button><button className={bookingFilter === "completed" ? "selected" : ""} type="button" aria-pressed={bookingFilter === "completed"} onClick={() => setBookingFilter("completed")}>Completed <i>{completedRentals.length}</i></button></div><button className="dealer-booking-export" type="button" onClick={exportBookings} disabled={!filteredRentals.length} title={`Export ${filteredRentals.length} visible booking${filteredRentals.length === 1 ? "" : "s"} as CSV`}>↓ Export CSV</button></div></div>
         {rentals.length ? filteredRentals.length ? <div className="dealer-booking-list">{filteredRentals.map((rental) => { const status = rental.status ?? (rental.is_complete ? "completed" : "upcoming"); const label = ({ upcoming: "Upcoming", in_progress: "In progress", return_due: "Return due", completed: "Complete", dates_unavailable: "Dates unavailable" } satisfies Record<RentalStatus, string>)[status]; const formatDate = (value?: string | null) => value ? new Date(`${value}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : "Not recorded"; const completionAllowed = status === "in_progress" || status === "return_due"; const actionHint = status === "upcoming" ? "Completion is available after the pickup date." : status === "dates_unavailable" ? "Review the legacy dates before completing this booking." : ""; const isNew = newBookingIds.includes(rental.id); return <article className={`dealer-booking-row ${isNew ? "is-new" : ""}`} key={rental.id}><div className="dealer-booking-id">#{String(rental.id).padStart(4, "0")}</div><div className="dealer-booking-main"><strong>{rental.car}{isNew ? <span className="dealer-new-booking-badge">NEW</span> : null}</strong><span>{rental.customer} <i>·</i> {rentalDates(rental)}</span></div><strong className="dealer-booking-price">{money(rental.rent)}</strong><span className={`dealer-booking-status ${status}`}>{label}</span>{rental.is_complete ? null : completionAllowed ? <button className={`dealer-secondary ${status === "return_due" ? "dealer-return-due-action" : ""}`} disabled={busyId === rental.id} onClick={() => void completeRental(rental)} type="button">{busyId === rental.id ? "Saving…" : status === "return_due" ? "Confirm return" : "Mark complete"}</button> : <span className="dealer-booking-action-hint">{actionHint}</span>}<details className="dealer-booking-details"><summary>View details</summary><dl><div><dt>Customer</dt><dd>{rental.customer}</dd></div><div><dt>Vehicle</dt><dd>{rental.car}</dd></div><div><dt>Pick-up date</dt><dd>{formatDate(rental.pickup_date)}</dd></div><div><dt>Return date</dt><dd>{formatDate(rental.return_date)}</dd></div><div><dt>Duration</dt><dd>{rental.days} day{Number(rental.days) === 1 ? "" : "s"}</dd></div><div><dt>Total rental</dt><dd>{money(rental.rent)}</dd></div><div><dt>Booking status</dt><dd>{label}</dd></div></dl><RentalTimeline status={status} pickupDate={rental.pickup_date} returnDate={rental.return_date} /></details></article>; })}</div> : <div className="dealer-bookings-empty">{normalizedSearch ? `No ${bookingFilter} bookings match “${bookingSearch.trim()}”.` : `No ${bookingFilter} bookings to show.`}</div> : <div className="dealer-bookings-empty">No bookings yet. New rentals for your listed vehicles will appear here.</div>}
       </section>
       <footer className="dealer-footer"><span>Rove dealer space</span><span>Inventory changes sync to the customer fleet</span><button type="button" onClick={() => void refresh()}>↻ Refresh data</button></footer>

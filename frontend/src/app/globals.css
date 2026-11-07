@@ -626,6 +626,12 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .dealer-section-heading .dealer-kicker { margin-bottom: 7px; }
 .dealer-section-heading h2 { display: flex; align-items: center; gap: 11px; margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.04em; }
 .dealer-section-heading h2 > span { display: inline-flex; align-items: center; min-height: 21px; padding: 0 8px; border: 1px solid #39433a; border-radius: 20px; color: #aeb8ad; font-size: 9px; font-weight: 400; letter-spacing: 0; }
+.dealer-booking-tools { min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.dealer-booking-search { width: clamp(170px, 20vw, 250px); min-width: 0; min-height: 38px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid #303832; background: #0c100d; color: #a9b2a8; }
+.dealer-booking-search > span { color: #caff79; font-size: 17px; line-height: 1; }
+.dealer-booking-search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #eff2ed; font: inherit; font-size: 9px; }
+.dealer-booking-search input::placeholder { color: #899389; }
+.dealer-booking-search:focus-within { border-color: #8bac5e; box-shadow: 0 0 0 1px #8bac5e44; }
 .dealer-booking-filters { display: inline-flex; flex: 0 0 auto; gap: 4px; padding: 4px; border: 1px solid #303832; background: #0c100d; }
 .dealer-booking-filters button { display: inline-flex; align-items: center; gap: 7px; min-height: 30px; padding: 0 10px; border: 1px solid transparent; background: transparent; color: #a8b0a7; font-size: 9px; cursor: pointer; }
 .dealer-booking-filters button.selected { border-color: #39443a; background: #171d17; color: #d9f6b5; }
@@ -761,6 +767,8 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .dealer-rental-status-counts small { font-size: 7px; }
   .dealer-section { margin-bottom: 37px; }
   .dealer-bookings-section > .dealer-section-heading { align-items: flex-start; flex-wrap: wrap; }
+  .dealer-booking-tools { width: 100%; align-items: stretch; flex-direction: column; }
+  .dealer-booking-search { width: 100%; min-height: 40px; }
   .dealer-booking-filters { width: 100%; }
   .dealer-booking-filters button { flex: 1; justify-content: center; }
   .dealer-vehicle-grid { gap: 10px; }

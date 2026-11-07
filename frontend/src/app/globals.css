@@ -926,6 +926,11 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .customer-reschedule-pending strong { color: #e9d08a; font-size: 10px; }
 .customer-reschedule-pending span { color: #e2e9df; font-size: 10px; }
 .customer-reschedule-pending small { color: #b0b8aa; font-size: 8px; line-height: 1.5; }
+.customer-order-body > .customer-reschedule-outcome { display: grid; gap: 6px; padding: 11px; border: 1px solid #3d5940; background: #101810; }
+.customer-reschedule-outcome strong { color: #caff9a; font-size: 10px; }
+.customer-reschedule-outcome span { color: #cad4c6; font-size: 9px; line-height: 1.6; }
+.customer-order-body > .customer-reschedule-outcome.declined { border-color: #665148; background: #191310; }
+.customer-reschedule-outcome.declined strong { color: #edb9a5; }
 .customer-order-body > .customer-reschedule-form { display: grid; gap: 10px; padding: 12px; border: 1px solid #424c40; background: #0e130f; }
 .customer-reschedule-form > p { margin: 0; color: #c2cbc0; font-size: 9px; line-height: 1.6; }
 .customer-reschedule-form > div:first-of-type { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }

@@ -14,6 +14,26 @@ function bookingStatusLabel(booking: Booking) {
   return booking.is_complete ? "Completed" : "Upcoming drive";
 }
 
+function BookingTimeline({ booking }: { booking: Booking }) {
+  const status = booking.status ?? (booking.is_complete ? "completed" : "upcoming");
+  if (status === "dates_unavailable" || !booking.pickup_date || !booking.return_date) {
+    return <p className="booking-timeline-unavailable">Timeline unavailable because rental dates were not recorded.</p>;
+  }
+  const pickupLabel = displayDate(booking.pickup_date);
+  const returnLabel = displayDate(booking.return_date);
+  const steps = [
+    { title: "Booked", detail: "Reservation confirmed", state: "complete" },
+    { title: "Pick-up", detail: pickupLabel, state: status === "upcoming" ? "next" : "complete" },
+    { title: "Return", detail: returnLabel, state: status === "completed" ? "complete" : status === "return_due" ? "current" : status === "in_progress" ? "next" : "future" },
+  ];
+  return <ol className={`booking-timeline ${status}`} aria-label={`Booking timeline: ${bookingStatusLabel(booking)}`}>
+    {steps.map((step) => <li className={`booking-timeline-step ${step.state}`} key={step.title} aria-current={step.state === "current" || step.state === "next" ? "step" : undefined}>
+      <span className="booking-timeline-marker" aria-hidden="true" />
+      <span className="booking-timeline-copy"><strong>{step.title}</strong><small>{step.detail}</small></span>
+    </li>)}
+  </ol>;
+}
+
 function localDateISO(date = new Date()) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -184,7 +204,7 @@ export default function CustomerBookings() {
       </section>
 
       <section className="customer-orders-section"><div className="customer-orders-heading"><div><p className="dealer-kicker">ON THE ROAD</p><h2>Your bookings <span>{current.length}</span></h2></div><Link href="/#fleet">Browse the fleet <span>↗</span></Link></div>
-        {current.length ? <div className="customer-order-grid">{current.map((booking) => <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span className={`customer-order-status ${booking.status ?? "upcoming"}`}>{bookingStatusLabel(booking)}</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><div className="customer-order-trip-meta"><span>{booking.city}</span><span>{durationLabel(booking.days)}</span></div>{booking.pickup_date && booking.return_date ? <dl className="customer-order-dates"><div><dt>Pick-up</dt><dd>{displayDate(booking.pickup_date)}</dd></div><div><dt>Return</dt><dd>{displayDate(booking.return_date)}</dd></div></dl> : <p className="customer-order-legacy-dates">Dates not recorded</p>}<div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>)}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
+        {current.length ? <div className="customer-order-grid">{current.map((booking) => <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span className={`customer-order-status ${booking.status ?? "upcoming"}`}>{bookingStatusLabel(booking)}</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><div className="customer-order-trip-meta"><span>{booking.city}</span><span>{durationLabel(booking.days)}</span></div>{booking.pickup_date && booking.return_date ? <dl className="customer-order-dates"><div><dt>Pick-up</dt><dd>{displayDate(booking.pickup_date)}</dd></div><div><dt>Return</dt><dd>{displayDate(booking.return_date)}</dd></div></dl> : <p className="customer-order-legacy-dates">Dates not recorded</p>}<BookingTimeline booking={booking} /><div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>)}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
       </section>
       {past.length ? <section className="customer-past-section"><p className="dealer-kicker">MILES ALREADY MADE</p><h2>Past drives</h2><div className="customer-past-list">{past.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{dateRangeLabel(booking.pickup_date, booking.return_date)} · {durationLabel(booking.days)} · {rupees(booking.rent)}</span><span>Completed</span></article>)}</div></section> : null}
     </section>

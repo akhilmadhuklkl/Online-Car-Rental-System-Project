@@ -172,7 +172,9 @@ export default function DealerDashboard() {
   const cars = data?.cars ?? [];
   const rentals = data?.orders ?? [];
   const openBookings = rentals.filter((rental) => (rental.status ?? (rental.is_complete ? "completed" : "upcoming")) !== "completed");
+  const upcomingRentals = rentals.filter((rental) => rental.status === "upcoming");
   const inProgressRentals = rentals.filter((rental) => rental.status === "in_progress");
+  const returnDueRentals = rentals.filter((rental) => rental.status === "return_due");
 
   return <main className="dealer-app">
     <aside className="dealer-sidebar">
@@ -191,7 +193,7 @@ export default function DealerDashboard() {
 
       <div className="dealer-stats">
         <article className="dealer-stat-card"><span>Vehicles listed</span><strong>{cars.length.toString().padStart(2, "0")}</strong><small>{cars.filter((car) => car.is_available).length} available to rent</small></article>
-        <article className="dealer-stat-card"><span>In-progress rentals</span><strong>{inProgressRentals.length.toString().padStart(2, "0")}</strong><small>{openBookings.length} open booking{openBookings.length === 1 ? "" : "s"} across your fleet</small></article>
+        <article className="dealer-stat-card dealer-rental-status-card"><span>Rental status</span><div className="dealer-rental-status-counts"><div><strong>{upcomingRentals.length.toString().padStart(2, "0")}</strong><small>Upcoming</small></div><div><strong>{inProgressRentals.length.toString().padStart(2, "0")}</strong><small>In progress</small></div><div><strong>{returnDueRentals.length.toString().padStart(2, "0")}</strong><small>Return due</small></div></div><small>{openBookings.length} open booking{openBookings.length === 1 ? "" : "s"} across your fleet</small></article>
         <article className="dealer-stat-card dealer-earnings-card"><span>Total earnings</span><strong>{money(data?.earnings ?? 0)}</strong><small>Recorded rental revenue</small><i aria-hidden="true">↗</i></article>
       </div>
 

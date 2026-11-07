@@ -121,7 +121,8 @@ export default function CustomerBookings() {
       {error ? <p className="dealer-banner dealer-banner-error" role="alert">{error}<button type="button" onClick={() => setError("")}>Dismiss</button></p> : null}
       {notice ? <p className="dealer-banner" role="status">{notice}<button type="button" onClick={() => setNotice("")}>Dismiss</button></p> : null}
       <section className="customer-booking-panel"><div className="customer-panel-heading"><div><p className="dealer-kicker">MAKE A LITTLE PLAN</p><h2>Book your next drive</h2></div><span>01 <i> / </i> NOW</span></div>
-        {portfolioReadOnly ? <p className="dealer-banner" role="status">Booking creation is disabled in this portfolio preview. Your account and any existing bookings remain available to view.</p> : cars.length ? <form className="customer-booking-form" onSubmit={book}>
+        {portfolioReadOnly ? <p className="dealer-banner" role="status">Portfolio preview: explore the car, estimate, and sample terms. The final booking action is disabled.</p> : null}
+        {cars.length ? <form className="customer-booking-form" onSubmit={book}>
           {!reviewing ? <>
             <label>Choose a car<select value={selectedId} onChange={(event) => { setSelectedId(event.target.value); setReviewing(false); }} required><option value="">Select from available cars</option>{cars.map((car) => <option value={car.id} key={car.id}>{car.name} · {car.city} · {rupees(car.rent)}/day</option>)}</select></label>
             <label>Rental days<input type="number" min={1} max={365} value={days} onChange={(event) => { setDays(event.target.value); setReviewing(false); }} required /></label>
@@ -131,10 +132,10 @@ export default function CustomerBookings() {
             <div className="customer-review-heading"><div><p className="dealer-kicker">HUMAN REVIEW</p><h3>Check your rental details</h3></div><strong>{rupees(estimatedTotal)}</strong></div>
             {selectedCar ? <dl className="customer-review-summary"><div><dt>Car</dt><dd>{selectedCar.name}</dd></div><div><dt>Pickup city</dt><dd>{selectedCar.city}</dd></div><div><dt>Seats</dt><dd>{selectedCar.capacity}</dd></div><div><dt>Duration</dt><dd>{days} day{days === "1" ? "" : "s"}</dd></div><div><dt>Daily rate</dt><dd>{rupees(selectedCar.rent)} / day</dd></div><div><dt>Estimated rental total</dt><dd>{rupees(estimatedTotal)}</dd></div></dl> : null}
             <RentalTerms />
-            <div className="customer-review-actions"><button className="button button-outline" type="button" onClick={() => setReviewing(false)} disabled={submitting}>Edit details</button><button className="button button-dark" type="submit" disabled={submitting}>{submitting ? "Confirming…" : "Confirm booking"}<span aria-hidden="true">→</span></button></div>
+            <div className="customer-review-actions"><button className="button button-outline" type="button" onClick={() => setReviewing(false)} disabled={submitting}>Edit details</button><button className="button button-dark" type="submit" disabled={submitting || portfolioReadOnly}>{portfolioReadOnly ? "Booking disabled in preview" : submitting ? "Confirming…" : "Confirm booking"}<span aria-hidden="true">→</span></button></div>
           </div>}
         </form> : <div className="customer-no-cars"><p>Every car is currently out on a drive. Check back soon for new availability.</p><Link className="text-link" href="/#fleet">See the fleet <span>→</span></Link></div>}
-        {selectedCar ? <div className="customer-selected-car"><div>{selectedCar.image ? <Image src={selectedCar.image} alt={selectedCar.name} fill sizes="120px" /> : null}</div><p><strong>{selectedCar.name}</strong><span>{selectedCar.city} · {selectedCar.capacity} seats · {rupees(selectedCar.rent)} per day</span></p>{portfolioReadOnly ? <RentalTerms compact /> : null}</div> : null}
+        {selectedCar ? <div className="customer-selected-car"><div>{selectedCar.image ? <Image src={selectedCar.image} alt={selectedCar.name} fill sizes="120px" /> : null}</div><p><strong>{selectedCar.name}</strong><span>{selectedCar.city} · {selectedCar.capacity} seats · {rupees(selectedCar.rent)} per day</span></p>{portfolioReadOnly && !reviewing ? <RentalTerms compact /> : null}</div> : null}
       </section>
 
       <section className="customer-orders-section"><div className="customer-orders-heading"><div><p className="dealer-kicker">ON THE ROAD</p><h2>Your bookings <span>{current.length}</span></h2></div><Link href="/#fleet">Browse the fleet <span>↗</span></Link></div>

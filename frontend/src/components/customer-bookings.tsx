@@ -31,6 +31,15 @@ function displayDate(value?: string | null) {
   return new Date(`${value}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
 
+function durationLabel(days: string | number) {
+  return `${days} day${Number(days) === 1 ? "" : "s"}`;
+}
+
+function dateRangeLabel(pickup?: string | null, returned?: string | null) {
+  if (!pickup || !returned) return "Dates not recorded";
+  return `${displayDate(pickup)} → ${displayDate(returned)}`;
+}
+
 const demoRentalTerms = [
   ["Daily distance", "250 km per rental day"],
   ["Extra distance", "₹10 per km beyond the sample allowance"],
@@ -95,11 +104,11 @@ export default function CustomerBookings() {
   }, [router]);
 
   useEffect(() => {
-    setToday(localDateISO());
     const load = () => {
       void refresh().catch((cause) => setError(cause instanceof Error ? cause.message : "Unable to load your bookings.")).finally(() => setLoading(false));
     };
     const task = window.setTimeout(() => {
+      setToday(localDateISO());
       load();
     }, 0);
     const interval = window.setInterval(() => {
@@ -169,9 +178,9 @@ export default function CustomerBookings() {
       </section>
 
       <section className="customer-orders-section"><div className="customer-orders-heading"><div><p className="dealer-kicker">ON THE ROAD</p><h2>Your bookings <span>{current.length}</span></h2></div><Link href="/#fleet">Browse the fleet <span>↗</span></Link></div>
-        {current.length ? <div className="customer-order-grid">{current.map((booking) => <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span>UPCOMING DRIVE</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><p>{booking.city} <i>·</i> {displayDate(booking.pickup_date)} → {displayDate(booking.return_date)} <i>·</i> {booking.days} day{booking.days === "1" ? "" : "s"}</p><div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>)}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
+        {current.length ? <div className="customer-order-grid">{current.map((booking) => <article className="customer-order-card" key={booking.id}><div className="customer-order-photo">{booking.image ? <Image src={booking.image} alt={booking.car} fill sizes="(max-width: 700px) 90vw, 360px" /> : null}<span>UPCOMING DRIVE</span></div><div className="customer-order-body"><p className="customer-order-id">BOOKING #{String(booking.id).padStart(4, "0")}</p><h3>{booking.car}</h3><div className="customer-order-trip-meta"><span>{booking.city}</span><span>{durationLabel(booking.days)}</span></div>{booking.pickup_date && booking.return_date ? <dl className="customer-order-dates"><div><dt>Pick-up</dt><dd>{displayDate(booking.pickup_date)}</dd></div><div><dt>Return</dt><dd>{displayDate(booking.return_date)}</dd></div></dl> : <p className="customer-order-legacy-dates">Dates not recorded</p>}<div><strong>{rupees(booking.rent)}</strong><span>Confirmed with your host</span></div></div></article>)}</div> : <div className="customer-empty-orders"><span>✳</span><h3>No upcoming drives just yet.</h3><p>{portfolioReadOnly ? "This portfolio preview lets you explore your account while booking actions stay disabled." : "Choose a car above and turn a free day into a good story."}</p></div>}
       </section>
-      {past.length ? <section className="customer-past-section"><p className="dealer-kicker">MILES ALREADY MADE</p><h2>Past drives</h2><div className="customer-past-list">{past.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{displayDate(booking.pickup_date)} → {displayDate(booking.return_date)} · {booking.days} days · {rupees(booking.rent)}</span><span>Completed</span></article>)}</div></section> : null}
+      {past.length ? <section className="customer-past-section"><p className="dealer-kicker">MILES ALREADY MADE</p><h2>Past drives</h2><div className="customer-past-list">{past.map((booking) => <article key={booking.id}><span>#{String(booking.id).padStart(4, "0")}</span><strong>{booking.car}</strong><span>{dateRangeLabel(booking.pickup_date, booking.return_date)} · {durationLabel(booking.days)} · {rupees(booking.rent)}</span><span>Completed</span></article>)}</div></section> : null}
     </section>
     <footer className="site-footer customer-account-footer"><div className="footer-bottom"><span>© 2026 Rove Mobility</span><span>Good journeys begin here.</span></div></footer>
   </main>;

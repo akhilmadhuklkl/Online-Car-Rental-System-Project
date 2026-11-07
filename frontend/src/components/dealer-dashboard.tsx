@@ -33,9 +33,10 @@ function money(value: string | number) {
 }
 
 function rentalDates(rental: Rental) {
-  if (!rental.pickup_date || !rental.return_date) return `${rental.days} days`;
+  const duration = `${rental.days} day${Number(rental.days) === 1 ? "" : "s"}`;
+  if (!rental.pickup_date || !rental.return_date) return duration;
   const format = (value: string) => new Date(`${value}T00:00:00Z`).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
-  return `${format(rental.pickup_date)} → ${format(rental.return_date)} · ${rental.days} days`;
+  return `Pick-up ${format(rental.pickup_date)} · Return ${format(rental.return_date)} · ${duration}`;
 }
 
 function CarForm({ car, onClose, onSaved }: { car?: Car; onClose: () => void; onSaved: () => void }) {

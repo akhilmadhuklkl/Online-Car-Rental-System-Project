@@ -838,6 +838,11 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .customer-order-id { margin: 0 0 7px; color: #929d92; font-size: 8px; letter-spacing: .13em; }
 .customer-order-body h3 { margin: 0; font-size: 16px; letter-spacing: -.025em; }
 .customer-order-trip-meta { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 6px 12px; margin-top: 7px; color: #abb4aa; font-size: 10px; }
+.customer-booking-reminder { margin: 12px 0 -2px; padding: 9px 10px; border-left: 2px solid #a7d85e; background: #161d13; color: #d9f6b5; font-size: 9px; line-height: 1.5; }
+.customer-booking-reminder.pickup-today { border-left-color: #b8ff36; background: #1b2413; color: #d9ff9d; }
+.customer-booking-reminder.return-upcoming { border-left-color: #d6ba72; background: #201d13; color: #f1dfa5; }
+.customer-booking-reminder.return-today,
+.customer-booking-reminder.return-due { border-left-color: #ffc36b; background: #241b11; color: #ffd49c; }
 .customer-order-dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 12px 0; padding: 10px 0; border-top: 1px solid #2a332b; border-bottom: 1px solid #2a332b; }
 .customer-order-dates > div { display: grid; gap: 4px; min-width: 0; }
 .customer-order-dates dt { color: #96a196; font-size: 8px; }

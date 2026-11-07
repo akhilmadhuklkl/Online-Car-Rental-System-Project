@@ -652,6 +652,13 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .dealer-empty .dealer-primary { margin-top: 9px; }
 .dealer-booking-list { border-top: 1px solid #303832; }
 .dealer-booking-row { min-height: 72px; display: grid; grid-template-columns: 63px minmax(120px, 1fr) minmax(70px, .35fr) 91px auto; align-items: center; gap: 16px; padding: 10px 13px; border: 1px solid #303832; border-top: 0; background: #101411; }
+.dealer-booking-details { grid-column: 2 / -1; min-width: 0; border-top: 1px solid #29302b; }
+.dealer-booking-details summary { width: fit-content; padding: 10px 0; color: #caff79; font-size: 9px; cursor: pointer; }
+.dealer-booking-details summary:focus-visible { outline: 2px solid #b8ff36; outline-offset: 3px; }
+.dealer-booking-details dl { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 20px; margin: 2px 0 12px; }
+.dealer-booking-details dl > div { min-width: 0; display: grid; gap: 5px; }
+.dealer-booking-details dt { color: #909a90; font-size: 8px; text-transform: uppercase; letter-spacing: .09em; }
+.dealer-booking-details dd { margin: 0; color: #e5eae3; font-size: 10px; overflow-wrap: anywhere; }
 .dealer-booking-id { color: #a1aaa0; font-size: 10px; }
 .dealer-booking-main { min-width: 0; display: grid; gap: 5px; }
 .dealer-booking-main strong { overflow: hidden; color: #edf0ec; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
@@ -725,6 +732,8 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .dealer-vehicle-actions button { min-height: 34px; font-size: 8px; }
   .dealer-vehicle-actions .dealer-remove { flex-basis: 100%; border-top: 1px solid #29302b; }
   .dealer-booking-row { grid-template-columns: 45px minmax(100px, 1fr) auto; gap: 9px; padding: 12px 9px; }
+  .dealer-booking-details { grid-column: 1 / -1; }
+  .dealer-booking-details dl { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .dealer-booking-price { justify-self: end; }
   .dealer-booking-status { grid-column: 2; }
   .dealer-booking-row > .dealer-secondary { grid-column: 3; grid-row: 2; min-height: 29px; padding-inline: 8px; font-size: 8px; }
@@ -1019,6 +1028,7 @@ svg {
   .customer-panel-heading > span { flex: 0 0 auto; font-size: 11px; }
   .customer-order-body > div { flex-wrap: wrap; }
   .dealer-booking-row { grid-template-columns: 40px minmax(0, 1fr) auto; }
+  .dealer-booking-details { grid-column: 1 / -1; }
   .dealer-modal-backdrop { place-items: start center; padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
   .dealer-modal { width: min(100%, 480px); max-height: calc(100dvh - 24px); padding: clamp(20px, 6vw, 30px); }
 }

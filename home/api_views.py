@@ -101,6 +101,17 @@ def _booking_status(order, today=None):
     return "return_due"
 
 
+def _has_car_date_conflict(car_id, pickup_date, return_date, exclude_order_id):
+    """Treat rentals as [pickup, return) ranges so same-day handovers can work."""
+    return Order.objects.filter(
+        car_id=car_id,
+        is_cancelled=False,
+        is_complete=False,
+        pickup_date__lt=return_date,
+        return_date__gt=pickup_date,
+    ).exclude(pk=exclude_order_id).exists()
+
+
 @ensure_csrf_cookie
 @require_GET
 def csrf_token(request):
@@ -300,6 +311,11 @@ def request_booking_reschedule(request, customer, order_id):
             return JsonResponse({"error": "Date changes can only be requested before the current pick-up date."}, status=409)
         if order.reschedule_status == "pending":
             return JsonResponse({"error": "Your date-change request is already waiting for dealer review."}, status=409)
+        # Serialize date-change checks for this vehicle with booking creation and
+        # dealer approval, which also lock the car row before changing reservations.
+        Car.objects.select_for_update().get(pk=order.car_id)
+        if _has_car_date_conflict(order.car_id, pickup_date, return_date, order.pk):
+            return JsonResponse({"error": "This car is already reserved for some or all of those dates. Choose another date range."}, status=409)
         try:
             daily_rate = int(order.daily_rate)
             new_total = daily_rate * days
@@ -331,6 +347,9 @@ def decide_booking_reschedule(request, dealer, order_id, decision):
             days = (order.requested_return_date - order.requested_pickup_date).days
             if order.requested_pickup_date < timezone.localdate() or not 1 <= days <= 365:
                 return JsonResponse({"error": "The requested dates are no longer valid. Ask the customer to submit new dates."}, status=409)
+            Car.objects.select_for_update().get(pk=order.car_id)
+            if _has_car_date_conflict(order.car_id, order.requested_pickup_date, order.requested_return_date, order.pk):
+                return JsonResponse({"error": "These dates now conflict with another active rental. Decline this request and ask the customer to choose different dates."}, status=409)
             try:
                 daily_rate = int(order.daily_rate)
                 new_total = daily_rate * days

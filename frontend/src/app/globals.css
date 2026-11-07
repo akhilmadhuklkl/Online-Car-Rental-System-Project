@@ -626,6 +626,11 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .dealer-section-heading .dealer-kicker { margin-bottom: 7px; }
 .dealer-section-heading h2 { display: flex; align-items: center; gap: 11px; margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.04em; }
 .dealer-section-heading h2 > span { display: inline-flex; align-items: center; min-height: 21px; padding: 0 8px; border: 1px solid #39433a; border-radius: 20px; color: #aeb8ad; font-size: 9px; font-weight: 400; letter-spacing: 0; }
+.dealer-booking-filters { display: inline-flex; flex: 0 0 auto; gap: 4px; padding: 4px; border: 1px solid #303832; background: #0c100d; }
+.dealer-booking-filters button { display: inline-flex; align-items: center; gap: 7px; min-height: 30px; padding: 0 10px; border: 1px solid transparent; background: transparent; color: #a8b0a7; font-size: 9px; cursor: pointer; }
+.dealer-booking-filters button.selected { border-color: #39443a; background: #171d17; color: #d9f6b5; }
+.dealer-booking-filters button:focus-visible { outline: 2px solid #b8ff36; outline-offset: 2px; }
+.dealer-booking-filters i { display: inline-grid; place-items: center; min-width: 17px; height: 17px; border-radius: 20px; background: #293229; color: #cbd3ca; font-size: 8px; font-style: normal; }
 .dealer-attention-panel { margin: 19px 0 4px; padding: 17px; border: 1px solid #39443a; background: linear-gradient(120deg, #121813, #0d100e); }
 .dealer-attention-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .dealer-attention-heading .dealer-kicker { margin: 0 0 5px; }
@@ -755,6 +760,9 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .dealer-rental-status-counts strong { font-size: clamp(15px, 4vw, 20px); }
   .dealer-rental-status-counts small { font-size: 7px; }
   .dealer-section { margin-bottom: 37px; }
+  .dealer-bookings-section > .dealer-section-heading { align-items: flex-start; flex-wrap: wrap; }
+  .dealer-booking-filters { width: 100%; }
+  .dealer-booking-filters button { flex: 1; justify-content: center; }
   .dealer-vehicle-grid { gap: 10px; }
   .dealer-vehicle-image { height: 120px; }
   .dealer-vehicle-info { min-height: 77px; align-items: flex-start; flex-direction: column; gap: 7px; }

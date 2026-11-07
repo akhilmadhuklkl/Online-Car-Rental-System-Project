@@ -8,6 +8,14 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 type AvailableCar = { id: number; name: string; city: string; capacity: string; rent: string; image: string };
 type Booking = { id: number; car: string; city: string; days: string; rent: string; is_complete: boolean; image: string };
 
+const demoRentalTerms = [
+  ["Daily distance", "250 km per rental day"],
+  ["Extra distance", "₹10 per km beyond the sample allowance"],
+  ["Security deposit", "₹5,000 refundable sample deposit"],
+  ["Fuel", "Return with the same fuel level as pickup"],
+  ["Pickup checklist", "Bring a valid driving licence and photo ID"],
+] as const;
+
 async function request(path: string, init: RequestInit = {}) {
   const csrfResponse = await fetch("/api/backend-proxy/api/csrf", { credentials: "same-origin" });
   const csrf = await csrfResponse.json();
@@ -34,6 +42,7 @@ export default function CustomerBookings() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [selectedId, setSelectedId] = useState("");
   const [days, setDays] = useState("1");
+  const [reviewing, setReviewing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -79,6 +88,7 @@ export default function CustomerBookings() {
   async function book(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selectedId) { setError("Choose an available car to continue."); return; }
+    if (!reviewing) { setReviewing(true); setError(""); return; }
     setSubmitting(true); setError(""); setNotice("");
     try {
       const result = await request("/api/customer/bookings", {
@@ -87,7 +97,7 @@ export default function CustomerBookings() {
         body: JSON.stringify({ car_id: selectedId, days }),
       });
       setNotice(`${result.booking.car} is booked for ${result.booking.days} day${result.booking.days === "1" ? "" : "s"}. Total: ${rupees(result.booking.rent)}.`);
-      setSelectedId(""); setDays("1");
+      setSelectedId(""); setDays("1"); setReviewing(false);
       await refresh();
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "We could not place this booking.");
@@ -112,12 +122,19 @@ export default function CustomerBookings() {
       {notice ? <p className="dealer-banner" role="status">{notice}<button type="button" onClick={() => setNotice("")}>Dismiss</button></p> : null}
       <section className="customer-booking-panel"><div className="customer-panel-heading"><div><p className="dealer-kicker">MAKE A LITTLE PLAN</p><h2>Book your next drive</h2></div><span>01 <i> / </i> NOW</span></div>
         {portfolioReadOnly ? <p className="dealer-banner" role="status">Booking creation is disabled in this portfolio preview. Your account and any existing bookings remain available to view.</p> : cars.length ? <form className="customer-booking-form" onSubmit={book}>
-          <label>Choose a car<select value={selectedId} onChange={(event) => setSelectedId(event.target.value)} required><option value="">Select from available cars</option>{cars.map((car) => <option value={car.id} key={car.id}>{car.name} · {car.city} · {rupees(car.rent)}/day</option>)}</select></label>
-          <label>Rental days<input type="number" min={1} max={365} value={days} onChange={(event) => setDays(event.target.value)} required /></label>
-          <div className="customer-estimate"><span>Estimated total</span><strong>{rupees(estimatedTotal)}</strong></div>
-          <button className="button button-dark" type="submit" disabled={submitting || !selectedId}>{submitting ? "Confirming…" : "Confirm booking"}<span aria-hidden="true">→</span></button>
+          {!reviewing ? <>
+            <label>Choose a car<select value={selectedId} onChange={(event) => { setSelectedId(event.target.value); setReviewing(false); }} required><option value="">Select from available cars</option>{cars.map((car) => <option value={car.id} key={car.id}>{car.name} · {car.city} · {rupees(car.rent)}/day</option>)}</select></label>
+            <label>Rental days<input type="number" min={1} max={365} value={days} onChange={(event) => { setDays(event.target.value); setReviewing(false); }} required /></label>
+            <div className="customer-estimate"><span>Estimated rental total</span><strong>{rupees(estimatedTotal)}</strong></div>
+            <button className="button button-dark" type="submit" disabled={submitting || !selectedId}>Review booking <span aria-hidden="true">→</span></button>
+          </> : <div className="customer-booking-review">
+            <div className="customer-review-heading"><div><p className="dealer-kicker">HUMAN REVIEW</p><h3>Check your rental details</h3></div><strong>{rupees(estimatedTotal)}</strong></div>
+            {selectedCar ? <dl className="customer-review-summary"><div><dt>Car</dt><dd>{selectedCar.name}</dd></div><div><dt>Pickup city</dt><dd>{selectedCar.city}</dd></div><div><dt>Seats</dt><dd>{selectedCar.capacity}</dd></div><div><dt>Duration</dt><dd>{days} day{days === "1" ? "" : "s"}</dd></div><div><dt>Daily rate</dt><dd>{rupees(selectedCar.rent)} / day</dd></div><div><dt>Estimated rental total</dt><dd>{rupees(estimatedTotal)}</dd></div></dl> : null}
+            <RentalTerms />
+            <div className="customer-review-actions"><button className="button button-outline" type="button" onClick={() => setReviewing(false)} disabled={submitting}>Edit details</button><button className="button button-dark" type="submit" disabled={submitting}>{submitting ? "Confirming…" : "Confirm booking"}<span aria-hidden="true">→</span></button></div>
+          </div>}
         </form> : <div className="customer-no-cars"><p>Every car is currently out on a drive. Check back soon for new availability.</p><Link className="text-link" href="/#fleet">See the fleet <span>→</span></Link></div>}
-        {selectedCar ? <div className="customer-selected-car"><div>{selectedCar.image ? <Image src={selectedCar.image} alt={selectedCar.name} fill sizes="120px" /> : null}</div><p><strong>{selectedCar.name}</strong><span>{selectedCar.city} · {selectedCar.capacity} seats · {rupees(selectedCar.rent)} per day</span></p></div> : null}
+        {selectedCar ? <div className="customer-selected-car"><div>{selectedCar.image ? <Image src={selectedCar.image} alt={selectedCar.name} fill sizes="120px" /> : null}</div><p><strong>{selectedCar.name}</strong><span>{selectedCar.city} · {selectedCar.capacity} seats · {rupees(selectedCar.rent)} per day</span></p>{portfolioReadOnly ? <RentalTerms compact /> : null}</div> : null}
       </section>
 
       <section className="customer-orders-section"><div className="customer-orders-heading"><div><p className="dealer-kicker">ON THE ROAD</p><h2>Your bookings <span>{current.length}</span></h2></div><Link href="/#fleet">Browse the fleet <span>↗</span></Link></div>
@@ -127,5 +144,13 @@ export default function CustomerBookings() {
     </section>
     <footer className="site-footer customer-account-footer"><div className="footer-bottom"><span>© 2026 Rove Mobility</span><span>Good journeys begin here.</span></div></footer>
   </main>;
+}
+
+function RentalTerms({ compact = false }: { compact?: boolean }) {
+  return <aside className={`customer-rental-terms ${compact ? "is-compact" : ""}`}>
+    <div><p className="dealer-kicker">ILLUSTRATIVE DEMO TERMS</p>{compact ? null : <h4>Sample rental terms</h4>}</div>
+    <dl>{demoRentalTerms.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+    <p className="customer-terms-note">Portfolio example only. These sample terms are not a live dealer offer or binding rental policy. Confirm actual terms with the car provider before booking.</p>
+  </aside>;
 }
 

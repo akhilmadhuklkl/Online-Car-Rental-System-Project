@@ -750,11 +750,31 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .customer-estimate strong { color: #d0ff84; font-size: 15px; }
 .customer-booking-form > button { min-height: 43px; gap: 14px; white-space: nowrap; }
 .customer-selected-car { display: flex; align-items: center; gap: 12px; margin-top: 17px; padding-top: 13px; border-top: 1px solid #2b332c; }
+.customer-selected-car { display: grid; grid-template-columns: 84px minmax(0, 1fr); }
 .customer-selected-car > div { position: relative; width: 84px; height: 51px; overflow: hidden; border: 1px solid #303831; background: #171c18; }
 .customer-selected-car img { object-fit: contain; padding: 3px; }
 .customer-selected-car p { display: grid; gap: 5px; margin: 0; }
 .customer-selected-car strong { font-size: 11px; }
 .customer-selected-car p span { color: #a2aca1; font-size: 9px; }
+.customer-selected-car .customer-rental-terms { grid-column: 1 / -1; }
+.customer-booking-review { grid-column: 1 / -1; min-width: 0; padding: 18px; border: 1px solid #39443a; background: #0b0f0c; }
+.customer-review-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.customer-review-heading .dealer-kicker, .customer-rental-terms .dealer-kicker { margin: 0 0 6px; }
+.customer-review-heading h3 { margin: 0; font-size: 17px; letter-spacing: -.03em; }
+.customer-review-heading > strong { color: #d0ff84; font-size: 18px; }
+.customer-review-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 16px; margin: 16px 0 0; padding: 13px 0; border-top: 1px solid #2f3931; border-bottom: 1px solid #2f3931; }
+.customer-review-summary > div { display: grid; gap: 4px; padding: 6px 0; }
+.customer-review-summary dt, .customer-rental-terms dt { color: #96a196; font-size: 9px; }
+.customer-review-summary dd, .customer-rental-terms dd { margin: 0; color: #e2e8e0; font-size: 10px; }
+.customer-rental-terms { min-width: 0; margin-top: 14px; padding: 14px; border: 1px solid #303a32; background: #101511; }
+.customer-rental-terms h4 { margin: 0; font-size: 12px; }
+.customer-rental-terms dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; margin: 8px 0 0; }
+.customer-rental-terms dl > div { display: grid; gap: 4px; padding: 9px 0; border-top: 1px solid #29332b; }
+.customer-rental-terms dd { line-height: 1.5; }
+.customer-rental-terms .customer-terms-note { margin: 8px 0 0; color: #a0aaa0; font-size: 9px; line-height: 1.6; }
+.customer-rental-terms.is-compact { padding: 12px; }
+.customer-review-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
+.customer-review-actions .button { min-height: 42px; gap: 12px; }
 .customer-no-cars { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-top: 18px; color: #aab3aa; font-size: 11px; }
 .customer-no-cars .text-link { flex: 0 0 auto; }
 .customer-orders-section { margin-top: 51px; }
@@ -804,6 +824,12 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
   .customer-booking-panel { padding: 16px; }
   .customer-booking-form { grid-template-columns: 1fr; gap: 12px; }
   .customer-booking-form > button { width: 100%; }
+  .customer-booking-review { padding: 13px; }
+  .customer-review-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .customer-rental-terms { padding: 12px; }
+  .customer-rental-terms dl { grid-template-columns: 1fr; }
+  .customer-review-actions { flex-direction: column-reverse; }
+  .customer-review-actions .button { width: 100%; }
   .customer-estimate { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; }
   .customer-order-grid { grid-template-columns: 1fr; }
   .customer-order-photo { height: 170px; }

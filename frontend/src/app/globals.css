@@ -1104,6 +1104,8 @@ svg {
 .fleet-modal-grid .vehicle-name-row h3 { font-size: clamp(15px, 1.7vw, 19px); }
 .fleet-modal-grid .vehicle-meta { font-size: 10px; }
 .fleet-modal-grid .vehicle-bottom { gap: 12px; }
+.fleet-modal-count { margin: 3px 0 12px; color: #a9b2a7; font-size: 10px; }
+.fleet-modal-more { gap: 8px; }
 .fleet-modal :focus-visible { outline: 2px solid #b8ff36; outline-offset: 3px; }
 
 @media (max-width: 700px) {

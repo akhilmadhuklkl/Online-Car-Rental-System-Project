@@ -932,6 +932,21 @@ body { font-family: "Rove Poppins", Poppins, Arial, sans-serif; }
 .customer-order-body > .customer-reschedule-outcome.declined { border-color: #665148; background: #191310; }
 .customer-reschedule-outcome.declined strong { color: #edb9a5; }
 .customer-order-body > .customer-reschedule-form { display: grid; gap: 10px; padding: 12px; border: 1px solid #424c40; background: #0e130f; }
+.customer-order-body > .booking-reschedule-history { min-width: 0; border-top: 1px solid #29302b; }
+.booking-reschedule-history summary, .dealer-reschedule-history summary { width: fit-content; padding: 9px 0; color: #caff79; font-size: 9px; cursor: pointer; }
+.booking-reschedule-history summary span { display: inline-grid; min-width: 16px; height: 16px; place-items: center; margin-left: 4px; border: 1px solid #526243; border-radius: 999px; font-size: 8px; }
+.booking-reschedule-history ol, .dealer-reschedule-history ol { display: grid; gap: 7px; margin: 0 0 10px; padding: 0; list-style: none; }
+.booking-reschedule-history li, .dealer-reschedule-history li { display: flex; justify-content: space-between; align-items: start; gap: 10px; padding: 9px; border: 1px solid #303a30; background: #0b0f0c; }
+.booking-reschedule-history li > div, .dealer-reschedule-history li > div { display: grid; gap: 4px; min-width: 0; }
+.booking-reschedule-history li strong, .dealer-reschedule-history li strong { color: #dce5d8; font-size: 9px; }
+.booking-reschedule-history li span, .dealer-reschedule-history li span { color: #b2bdb0; font-size: 9px; }
+.booking-reschedule-history li small, .dealer-reschedule-history li small { color: #859183; font-size: 8px; line-height: 1.5; }
+.booking-reschedule-history li b, .dealer-reschedule-history li b { flex: 0 0 auto; color: #caff79; font-size: 9px; }
+.booking-reschedule-history .history-approved strong, .dealer-reschedule-history .history-approved strong { color: #b8ff72; }
+.booking-reschedule-history .history-declined strong, .dealer-reschedule-history .history-declined strong { color: #e0a59a; }
+.booking-reschedule-history .history-cancelled strong, .dealer-reschedule-history .history-cancelled strong { color: #c2a899; }
+.customer-past-list .booking-reschedule-history { grid-column: 1 / -1; min-width: 0; border-top: 1px solid #29302b; }
+.dealer-reschedule-history { grid-column: 1 / -1; min-width: 0; border-top: 1px solid #29302b; }
 .customer-reschedule-form > p { margin: 0; color: #c2cbc0; font-size: 9px; line-height: 1.6; }
 .customer-reschedule-form > div:first-of-type { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
 .customer-reschedule-form label { display: grid; gap: 5px; color: #aab5a8; font-size: 9px; }

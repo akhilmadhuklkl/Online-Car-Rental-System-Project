@@ -16,7 +16,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
-from .models import Car, CarDealer, Customer, Location, Order
+from .models import BookingRescheduleRequest, Car, CarDealer, Customer, Location, Order
 
 
 def _dealer_for(request):
@@ -112,6 +112,18 @@ def _has_car_date_conflict(car_id, pickup_date, return_date, exclude_order_id):
     ).exclude(pk=exclude_order_id).exists()
 
 
+def _reschedule_history(order):
+    return [{
+        "id": request.pk,
+        "pickup_date": request.requested_pickup_date.isoformat(),
+        "return_date": request.requested_return_date.isoformat(),
+        "proposed_total": request.proposed_total,
+        "status": request.status,
+        "requested_at": request.requested_at.isoformat() if request.requested_at else None,
+        "decided_at": request.decided_at.isoformat() if request.decided_at else None,
+    } for request in order.reschedule_requests.all()]
+
+
 @ensure_csrf_cookie
 @require_GET
 def csrf_token(request):
@@ -199,7 +211,7 @@ def customer_session_api(request):
 @require_http_methods(["GET", "POST"])
 def customer_bookings_api(request, customer):
     if request.method == "GET":
-        orders = Order.objects.filter(user=customer.user).select_related("car", "car_dealer").order_by("-id")
+        orders = Order.objects.filter(user=customer.user).select_related("car", "car_dealer").prefetch_related("reschedule_requests").order_by("-id")
         return JsonResponse({"bookings": [{
             "id": order.pk,
             "car": order.car.name,
@@ -215,6 +227,7 @@ def customer_bookings_api(request, customer):
             "requested_return_date": order.requested_return_date.isoformat() if order.requested_return_date else None,
             "reschedule_status": order.reschedule_status,
             "requested_rent": str(int(order.daily_rate) * ((order.requested_return_date - order.requested_pickup_date).days)) if order.daily_rate.isdigit() and order.requested_pickup_date and order.requested_return_date else None,
+            "reschedule_history": _reschedule_history(order),
             "image": _car_data(order.car)["image"],
         } for order in orders]})
 
@@ -327,6 +340,14 @@ def request_booking_reschedule(request, customer, order_id):
         order.requested_return_date = return_date
         order.reschedule_status = "pending"
         order.save(update_fields=["requested_pickup_date", "requested_return_date", "reschedule_status"])
+        BookingRescheduleRequest.objects.create(
+            order=order,
+            requested_pickup_date=pickup_date,
+            requested_return_date=return_date,
+            proposed_total=str(new_total),
+            status="pending",
+            requested_at=timezone.now(),
+        )
     return JsonResponse({"ok": True, "status": "pending", "requested_rent": str(new_total)})
 
 
@@ -341,6 +362,9 @@ def decide_booking_reschedule(request, dealer, order_id, decision):
             return JsonResponse({"error": "Rental not found in your bookings."}, status=404)
         if order.reschedule_status != "pending" or not order.requested_pickup_date or not order.requested_return_date:
             return JsonResponse({"error": "There is no pending date-change request for this rental."}, status=409)
+        history_item = BookingRescheduleRequest.objects.select_for_update().filter(order=order, status="pending").order_by("-id").first()
+        if history_item is None:
+            return JsonResponse({"error": "The pending date-change history could not be found. Refresh the booking before continuing."}, status=409)
         if _booking_status(order) != "upcoming":
             return JsonResponse({"error": "This booking is no longer eligible for a date change."}, status=409)
         if decision == "approve":
@@ -365,11 +389,17 @@ def decide_booking_reschedule(request, dealer, order_id, decision):
             order.days = str(days)
             order.rent = str(new_total)
             order.reschedule_status = "approved"
+            history_item.status = "approved"
+            history_item.decided_at = timezone.now()
+            history_item.save(update_fields=["status", "decided_at"])
             dealer_locked.earnings = earnings
             dealer_locked.save(update_fields=["earnings"])
             order.save(update_fields=["pickup_date", "return_date", "days", "rent", "reschedule_status"])
         else:
             order.reschedule_status = "declined"
+            history_item.status = "declined"
+            history_item.decided_at = timezone.now()
+            history_item.save(update_fields=["status", "decided_at"])
             order.save(update_fields=["reschedule_status"])
     return JsonResponse({"ok": True, "status": order.reschedule_status})
 
@@ -390,6 +420,7 @@ def cancel_customer_booking(request, customer, order_id):
             return JsonResponse({"error": "Bookings can only be cancelled before the pickup date."}, status=409)
 
         order.is_cancelled = True
+        BookingRescheduleRequest.objects.filter(order=order, status="pending").update(status="cancelled", decided_at=timezone.now())
         order.reschedule_status = ""
         order.requested_pickup_date = None
         order.requested_return_date = None
@@ -457,7 +488,7 @@ def dealer_session(request):
 @require_GET
 def dealer_dashboard(request, dealer):
     cars = Car.objects.filter(car_dealer=dealer).select_related("location").order_by("-id")
-    orders = Order.objects.filter(car_dealer=dealer).select_related("car", "user").order_by("-id")
+    orders = Order.objects.filter(car_dealer=dealer).select_related("car", "user").prefetch_related("reschedule_requests").order_by("-id")
     return JsonResponse({
         "cars": [_car_data(car) for car in cars],
         "orders": [{
@@ -476,6 +507,7 @@ def dealer_dashboard(request, dealer):
             "requested_return_date": order.requested_return_date.isoformat() if order.requested_return_date else None,
             "reschedule_status": order.reschedule_status,
             "requested_rent": str(int(order.daily_rate) * ((order.requested_return_date - order.requested_pickup_date).days)) if order.daily_rate.isdigit() and order.requested_pickup_date and order.requested_return_date else None,
+            "reschedule_history": _reschedule_history(order),
         } for order in orders],
         "earnings": dealer.earnings,
         "city": dealer.location.city,

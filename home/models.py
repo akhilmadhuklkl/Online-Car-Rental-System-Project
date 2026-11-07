@@ -69,3 +69,23 @@ class Order(models.Model):
     requested_pickup_date = models.DateField(null=True, blank=True)
     requested_return_date = models.DateField(null=True, blank=True)
     reschedule_status = models.CharField(max_length=10, choices=RESCHEDULE_STATUSES, blank=True, default="")
+
+
+class BookingRescheduleRequest(models.Model):
+    STATUSES = [
+        ("pending", "Pending dealer review"),
+        ("approved", "Approved"),
+        ("declined", "Declined"),
+        ("cancelled", "Booking cancelled"),
+    ]
+
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="reschedule_requests")
+    requested_pickup_date = models.DateField()
+    requested_return_date = models.DateField()
+    proposed_total = models.CharField(max_length=10)
+    status = models.CharField(max_length=10, choices=STATUSES, default="pending")
+    requested_at = models.DateTimeField(null=True, blank=True)
+    decided_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["requested_at", "id"]

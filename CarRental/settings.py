@@ -158,6 +158,21 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
+# Use Django's console backend locally so development never sends real mail by
+# accident. Production can use any SMTP provider configured through Vercel envs.
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "").strip()
+EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "true").strip().lower() in {"1", "true", "yes"}
+EMAIL_USE_SSL = os.environ.get("EMAIL_USE_SSL", "false").strip().lower() in {"1", "true", "yes"}
+EMAIL_TIMEOUT = int(os.environ.get("EMAIL_TIMEOUT", "5"))
+EMAIL_BACKEND = os.environ.get(
+    "EMAIL_BACKEND",
+    "django.core.mail.backends.smtp.EmailBackend" if EMAIL_HOST else "django.core.mail.backends.console.EmailBackend",
+)
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "notifications@rove.local" if DEBUG else "").strip()
+
 if PORTFOLIO_DEMO and not DEBUG:
     # The public portfolio preview has no persistent upload store or live operator.
     # Keep account creation and write actions disabled until those are provisioned.

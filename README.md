@@ -14,6 +14,8 @@ The Vercel setup uses two projects from this repository: `online-car-rental` bui
 
 Set `PORTFOLIO_DEMO=true` with `DJANGO_DEBUG=false` for the protected portfolio preview. In that mode Django admin is unavailable; customer login, signup, and logout are allowed, while booking writes and all dealer changes remain blocked. Set `NEXT_PUBLIC_CUSTOMER_AUTH_ENABLED=true` on the protected customer frontend project to enable the customer sign-in and signup controls. The homepage shows synthetic sample cars when the production fleet is empty. Dealer photo uploads require durable object storage before enabling write operations.
 
+Dealer date-change decisions can email the customer account address. Configure `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`, and `DEFAULT_FROM_EMAIL` as private environment variables on the Django API deployment. Set `EMAIL_USE_TLS` or `EMAIL_USE_SSL` to match the SMTP provider; never commit mail credentials. Local development uses Django's console email backend and prints messages to the server console. Without production SMTP settings, booking decisions still save and the dealer sees that email delivery is not configured.
+
 Run the backend from the project root:
 
 ```powershell

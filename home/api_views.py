@@ -1,4 +1,5 @@
 import json
+import logging
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from functools import wraps
@@ -6,6 +7,8 @@ from functools import wraps
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.conf import settings
+from django.core.mail import send_mail
 from django.db import transaction
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
@@ -17,6 +20,8 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from .models import BookingRescheduleRequest, Car, CarDealer, Customer, Location, Order
+
+logger = logging.getLogger(__name__)
 
 
 def _dealer_for(request):
@@ -123,6 +128,51 @@ def _reschedule_history(order):
         "requested_at": request.requested_at.isoformat() if request.requested_at else None,
         "decided_at": request.decided_at.isoformat() if request.decided_at else None,
     } for request in order.reschedule_requests.all()]
+
+
+def _send_reschedule_decision_email(order, history_item):
+    recipient = (order.user.email or "").strip()
+    if not recipient or not settings.DEFAULT_FROM_EMAIL:
+        return {"sent": False, "mode": "unconfigured", "message": "Decision saved; customer email is not configured."}
+
+    console_backend = settings.EMAIL_BACKEND.endswith("console.EmailBackend")
+    if not console_backend and not settings.EMAIL_HOST and settings.EMAIL_BACKEND.endswith("smtp.EmailBackend"):
+        return {"sent": False, "mode": "unconfigured", "message": "Decision saved; customer email is not configured."}
+
+    approved = history_item.status == "approved"
+    subject_status = "approved" if approved else "declined"
+    subject = f"Rove booking #{order.pk:04d}: date change {subject_status}"
+    greeting = order.user.first_name.strip() or "there"
+    if approved:
+        result = (
+            "Your dealer approved your date-change request. Your rental dates are now "
+            f"{order.pickup_date:%d %b %Y} to {order.return_date:%d %b %Y}, "
+            f"and the revised rental total is ₹{order.rent}."
+        )
+    else:
+        result = (
+            "Your dealer could not approve the requested dates. Your original booking "
+            f"remains {order.pickup_date:%d %b %Y} to {order.return_date:%d %b %Y} "
+            f"with a rental total of ₹{order.rent}."
+        )
+    note = f"\n\nNote from your dealer:\n{history_item.response_note}" if history_item.response_note else ""
+    message = (
+        f"Hi {greeting},\n\n{result}\n\n"
+        f"Requested dates: {history_item.requested_pickup_date:%d %b %Y} to "
+        f"{history_item.requested_return_date:%d %b %Y}.\n"
+        f"Vehicle: {order.car.name}\nBooking: #{order.pk:04d}"
+        f"{note}\n\nYou can review the booking in your Rove account."
+    )
+    try:
+        sent_count = send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [recipient], fail_silently=False)
+    except Exception as error:
+        logger.warning("Reschedule decision email failed (%s).", type(error).__name__)
+        return {"sent": False, "mode": "failed", "message": "Decision saved, but the customer email could not be delivered."}
+    if sent_count != 1:
+        return {"sent": False, "mode": "failed", "message": "Decision saved, but the customer email could not be delivered."}
+    if console_backend:
+        return {"sent": True, "mode": "console", "message": "Email captured in the local server console."}
+    return {"sent": True, "mode": "smtp", "message": "Customer email sent."}
 
 
 @ensure_csrf_cookie
@@ -413,7 +463,8 @@ def decide_booking_reschedule(request, dealer, order_id, decision):
             history_item.decided_at = timezone.now()
             history_item.save(update_fields=["status", "response_note", "decided_at"])
             order.save(update_fields=["reschedule_status"])
-    return JsonResponse({"ok": True, "status": order.reschedule_status})
+    notification = _send_reschedule_decision_email(order, history_item)
+    return JsonResponse({"ok": True, "status": order.reschedule_status, "notification": notification})
 
 
 @_customer_required

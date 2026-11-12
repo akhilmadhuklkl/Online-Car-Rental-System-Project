@@ -237,8 +237,9 @@ export default function DealerDashboard() {
   async function decideReschedule(rental: Rental, decision: "approve" | "decline") {
     setBusyId(rental.id); setError(""); setNotice("");
     try {
-      await apiRequest(`/api/dealer/orders/${rental.id}/reschedule/${decision}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ response_note: rescheduleNotes[rental.id] ?? "" }) });
-      setNotice(decision === "approve" ? `Date change approved for booking #${String(rental.id).padStart(4, "0")}.` : `Date change declined for booking #${String(rental.id).padStart(4, "0")}.`);
+      const result = await apiRequest(`/api/dealer/orders/${rental.id}/reschedule/${decision}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ response_note: rescheduleNotes[rental.id] ?? "" }) });
+      const decisionMessage = decision === "approve" ? "Date change approved" : "Date change declined";
+      setNotice(`${decisionMessage} for booking #${String(rental.id).padStart(4, "0")}. ${result.notification?.message ?? ""}`);
       setRescheduleNotes((previous) => ({ ...previous, [rental.id]: "" }));
       await refresh();
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Could not update the date-change request."); }

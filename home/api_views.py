@@ -119,6 +119,7 @@ def _reschedule_history(order):
         "return_date": request.requested_return_date.isoformat(),
         "proposed_total": request.proposed_total,
         "status": request.status,
+        "response_note": request.response_note,
         "requested_at": request.requested_at.isoformat() if request.requested_at else None,
         "decided_at": request.decided_at.isoformat() if request.decided_at else None,
     } for request in order.reschedule_requests.all()]
@@ -356,6 +357,15 @@ def request_booking_reschedule(request, customer, order_id):
 def decide_booking_reschedule(request, dealer, order_id, decision):
     if decision not in {"approve", "decline"}:
         return JsonResponse({"error": "Choose approve or decline for this request."}, status=400)
+    data = _json_body(request)
+    if data is None:
+        return JsonResponse({"error": "Enter a valid dealer response."}, status=400)
+    raw_response_note = data.get("response_note", "")
+    if not isinstance(raw_response_note, str):
+        return JsonResponse({"error": "Enter the response note as plain text."}, status=400)
+    response_note = strip_tags(raw_response_note).strip()
+    if len(response_note) > 500:
+        return JsonResponse({"error": "The response note must be 500 characters or fewer."}, status=400)
     with transaction.atomic():
         order = Order.objects.select_for_update().filter(pk=order_id, car_dealer=dealer).first()
         if order is None:
@@ -390,16 +400,18 @@ def decide_booking_reschedule(request, dealer, order_id, decision):
             order.rent = str(new_total)
             order.reschedule_status = "approved"
             history_item.status = "approved"
+            history_item.response_note = response_note
             history_item.decided_at = timezone.now()
-            history_item.save(update_fields=["status", "decided_at"])
+            history_item.save(update_fields=["status", "response_note", "decided_at"])
             dealer_locked.earnings = earnings
             dealer_locked.save(update_fields=["earnings"])
             order.save(update_fields=["pickup_date", "return_date", "days", "rent", "reschedule_status"])
         else:
             order.reschedule_status = "declined"
             history_item.status = "declined"
+            history_item.response_note = response_note
             history_item.decided_at = timezone.now()
-            history_item.save(update_fields=["status", "decided_at"])
+            history_item.save(update_fields=["status", "response_note", "decided_at"])
             order.save(update_fields=["reschedule_status"])
     return JsonResponse({"ok": True, "status": order.reschedule_status})
 

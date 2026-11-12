@@ -7,7 +7,7 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 
 type AvailableCar = { id: number; name: string; city: string; capacity: string; rent: string; image: string };
 type BookingStatus = "upcoming" | "in_progress" | "return_due" | "completed" | "cancelled" | "dates_unavailable";
-type RescheduleHistoryItem = { id: number; pickup_date: string; return_date: string; proposed_total: string; status: "pending" | "approved" | "declined" | "cancelled"; requested_at?: string | null; decided_at?: string | null };
+type RescheduleHistoryItem = { id: number; pickup_date: string; return_date: string; proposed_total: string; status: "pending" | "approved" | "declined" | "cancelled"; response_note?: string; requested_at?: string | null; decided_at?: string | null };
 type Booking = { id: number; car: string; city: string; days: string; pickup_date?: string | null; return_date?: string | null; rent: string; is_complete: boolean; is_cancelled?: boolean; status?: BookingStatus; image: string; requested_pickup_date?: string | null; requested_return_date?: string | null; reschedule_status?: "" | "pending" | "approved" | "declined"; requested_rent?: string | null; reschedule_history?: RescheduleHistoryItem[] };
 
 function bookingStatus(booking: Booking): BookingStatus {
@@ -97,7 +97,7 @@ function HistoryDateTime({ value }: { value?: string | null }) {
 function RescheduleHistory({ items }: { items?: RescheduleHistoryItem[] }) {
   if (!items?.length) return null;
   const labels = { pending: "Awaiting dealer", approved: "Approved", declined: "Declined", cancelled: "Booking cancelled" } satisfies Record<RescheduleHistoryItem["status"], string>;
-  return <details className="booking-reschedule-history"><summary>Date-change history <span>{items.length}</span></summary><ol>{items.map((item) => <li key={item.id} className={`history-${item.status}`}><div><strong>{labels[item.status]}</strong><span>{dateRangeLabel(item.pickup_date, item.return_date)}</span><small>Requested · <HistoryDateTime value={item.requested_at} /></small>{item.status !== "pending" ? <small>Decision · <HistoryDateTime value={item.decided_at} /></small> : null}</div><b>{rupees(item.proposed_total)}</b></li>)}</ol></details>;
+  return <details className="booking-reschedule-history"><summary>Date-change history <span>{items.length}</span></summary><ol>{items.map((item) => <li key={item.id} className={`history-${item.status}`}><div><strong>{labels[item.status]}</strong><span>{dateRangeLabel(item.pickup_date, item.return_date)}</span><small>Requested · <HistoryDateTime value={item.requested_at} /></small>{item.status !== "pending" ? <small>Decision · <HistoryDateTime value={item.decided_at} /></small> : null}{item.response_note ? <p className="reschedule-response-note">Dealer note: {item.response_note}</p> : null}</div><b>{rupees(item.proposed_total)}</b></li>)}</ol></details>;
 }
 
 const demoRentalTerms = [

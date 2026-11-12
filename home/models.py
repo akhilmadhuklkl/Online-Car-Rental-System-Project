@@ -84,6 +84,7 @@ class BookingRescheduleRequest(models.Model):
     requested_return_date = models.DateField()
     proposed_total = models.CharField(max_length=10)
     status = models.CharField(max_length=10, choices=STATUSES, default="pending")
+    response_note = models.TextField(blank=True)
     requested_at = models.DateTimeField(null=True, blank=True)
     decided_at = models.DateTimeField(null=True, blank=True)
 
